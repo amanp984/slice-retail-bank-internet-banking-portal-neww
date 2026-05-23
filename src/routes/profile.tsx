@@ -14,7 +14,7 @@ export const Route = createFileRoute("/profile")({
 
 const info = [
   { i: IdCard, k: "Customer ID", v: "380008301629" },
-  { i: IdCard, k: "Aadhaar Card (Last 4 Digits)", v: "XXXX XXXX 9501" },
+  { i: IdCard, k: "Aadhaar Card (Last 4 Digits)", v: "XXXX XXXX 8990" },
   { i: MapPin, k: "Address", v: "Sodawala Nagar complex number 3, sector 44 Mumbai 400092" },
   { i: IdCard, k: "PAN Card Number", v: "GOXXXXXX77B" },
   { i: MapPin, k: "Permanent Address", v: "Sodawala Nagar complex number 3, sector 44 Mumbai 400092" },
