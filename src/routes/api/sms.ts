@@ -82,7 +82,7 @@ async function handle(request: Request) {
   const accountRef: string =
     body.account_reference ||
     process.env.DEFAULT_ACCOUNT_REFERENCE ||
-    "033311501069501";
+    "033311501068990";
 
   if (!raw || typeof raw !== "string" || !raw.trim()) {
     console.warn("[sms] empty body, ignoring but returning 200");

@@ -29,7 +29,7 @@ const modes = [
 ];
 
 const savedBeneficiaries = [
-  { initials: "RA", name: "Rahul Sharma", bank: "HDFC Bank", acct: "XXXX XXXX 9501" },
+  { initials: "RA", name: "Rahul Sharma", bank: "HDFC Bank", acct: "XXXX XXXX 8990" },
   { initials: "NT", name: "Neha Tripathi", bank: "SBI Bank", acct: "XXXX XXXX 1122" },
   { initials: "VB", name: "Vijay Builders Pvt Ltd", bank: "Axis Bank", acct: "XXXX XXXX 3456" },
   { initials: "SA", name: "Sunita Agarwal", bank: "ICICI Bank", acct: "XXXX XXXX 8901" },
@@ -81,7 +81,7 @@ function TransfersPage() {
                 </div>
                 <div className="flex-1">
                   <div className="font-semibold text-sm">Current Account</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">XXXX XXXX 9501</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">XXXX XXXX 8990</div>
                 </div>
                 <div className="text-right">
                   <div className="text-xs text-muted-foreground">Available Balance</div>

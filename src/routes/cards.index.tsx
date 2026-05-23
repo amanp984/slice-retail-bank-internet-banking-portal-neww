@@ -49,7 +49,7 @@ function Cards() {
             </div>
             <div className="mt-3 tracking-[0.3em] text-base font-medium">**** **** **** 5678</div>
             <div className="mt-4 flex justify-between text-[10px] uppercase opacity-90">
-              <div><div>Card Holder</div><div className="text-sm font-semibold tracking-wider mt-1">Rambabu Prajapati</div></div>
+              <div><div>Card Holder</div><div className="text-sm font-semibold tracking-wider mt-1">​AKASH TUFANI PR</div></div>
               <div><div>Valid Thru</div><div className="text-sm font-semibold mt-1">12/28</div></div>
             </div>
           </motion.div>

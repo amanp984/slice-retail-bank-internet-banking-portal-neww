@@ -91,7 +91,7 @@ function VerifyPage() {
               <div className="flex-1">
                 <div className="text-xs text-muted-foreground">From Account</div>
                 <div className="font-semibold text-sm">Current Account</div>
-                <div className="text-xs text-muted-foreground">XXXX XXXX 9501</div>
+                <div className="text-xs text-muted-foreground">XXXX XXXX 8990</div>
               </div>
             </div>
 

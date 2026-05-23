@@ -222,7 +222,7 @@ function PaymentForm() {
             <h3 className="font-bold mb-3">Pay from</h3>
             <div className="rounded-xl border border-border p-3">
               <div className="text-xs text-muted-foreground">Current Account</div>
-              <div className="font-semibold mt-0.5">​033311501069501</div>
+              <div className="font-semibold mt-0.5">​033311501068990</div>
               <div className="text-xs text-muted-foreground mt-2">Available Balance</div>
               <div className="font-bold text-primary">₹1,25,680.50</div>
             </div>
