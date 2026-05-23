@@ -42,14 +42,16 @@ async function handle(request: Request) {
 
   // Optional shared-secret auth for the webhook
   const expected = process.env.SMS_WEBHOOK_SECRET;
-  if (expected) {
-    const got =
-      request.headers.get("x-webhook-secret") ||
-      new URL(request.url).searchParams.get("secret");
-    if (got !== expected) {
-      console.warn("[sms] unauthorized webhook request");
-      return json({ ok: true, inserted: false, error: "unauthorized" });
-    }
+  if (!expected) {
+    console.error("[sms] SMS_WEBHOOK_SECRET not configured — refusing request");
+    return json({ ok: false, error: "unauthorized" }, 401);
+  }
+  const got =
+    request.headers.get("x-webhook-secret") ||
+    new URL(request.url).searchParams.get("secret");
+  if (got !== expected) {
+    console.warn("[sms] unauthorized webhook request");
+    return json({ ok: false, error: "unauthorized" }, 401);
   }
 
   let body: any = {};

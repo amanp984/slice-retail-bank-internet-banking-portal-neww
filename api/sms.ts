@@ -86,15 +86,18 @@ export default async function handler(req: any, res: any) {
     }
 
     const expected = process.env.SMS_WEBHOOK_SECRET;
-    if (expected) {
-      const got =
-        (req.headers["x-webhook-secret"] as string | undefined) ||
-        (new URL(req.url || "/", "http://x").searchParams.get("secret") ?? undefined);
-      if (got !== expected) {
-        console.warn("[api/sms] unauthorized");
-        res.status(200).json({ ok: true, inserted: false, error: "unauthorized" });
-        return;
-      }
+    if (!expected) {
+      console.error("[api/sms] SMS_WEBHOOK_SECRET not configured — refusing request");
+      res.status(401).json({ ok: false, error: "unauthorized" });
+      return;
+    }
+    const got =
+      (req.headers["x-webhook-secret"] as string | undefined) ||
+      (new URL(req.url || "/", "http://x").searchParams.get("secret") ?? undefined);
+    if (got !== expected) {
+      console.warn("[api/sms] unauthorized");
+      res.status(401).json({ ok: false, error: "unauthorized" });
+      return;
     }
 
     const body = await readBody(req);
