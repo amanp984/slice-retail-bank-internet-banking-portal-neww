@@ -182,7 +182,7 @@ export default async function handler(req: any, res: any) {
 
     if (error) {
       console.error("[api/sms] insert error:", error);
-      res.status(200).json({ ok: true, inserted: false, error: error.message });
+      res.status(200).json({ ok: true, inserted: false, error: "insert failed" });
       return;
     }
 
@@ -190,6 +190,6 @@ export default async function handler(req: any, res: any) {
     res.status(200).json({ ok: true, inserted: true, fallback: !!parsed.fallback, transaction: data });
   } catch (err: any) {
     console.error("[api/sms] unexpected error:", err);
-    res.status(200).json({ ok: true, inserted: false, error: err?.message || "unexpected" });
+    res.status(200).json({ ok: true, inserted: false, error: "unexpected error" });
   }
 }

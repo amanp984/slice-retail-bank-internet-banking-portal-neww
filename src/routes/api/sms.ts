@@ -181,14 +181,14 @@ async function handle(request: Request) {
 
     if (error) {
       console.error("[sms] Supabase insert error:", error);
-      return json({ ok: true, inserted: false, error: error.message });
+      return json({ ok: true, inserted: false, error: "insert failed" });
     }
 
     console.log("[sms] Supabase insert result:", { id: data?.id, fallback: parsed.fallback });
     return json({ ok: true, inserted: true, fallback: !!parsed.fallback, transaction: data });
   } catch (error) {
     console.error("[sms] Supabase insert failed:", error);
-    return json({ ok: true, inserted: false, error: error instanceof Error ? error.message : "insert failed" });
+    return json({ ok: true, inserted: false, error: "insert failed" });
   }
 }
 
