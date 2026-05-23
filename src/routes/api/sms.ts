@@ -10,9 +10,10 @@ const json = (body: unknown, status = 200) =>
 
 const SMS_TIMEOUT_MS = 8_000;
 
-async function withTimeout<T>(label: string, promise: Promise<T>, ms = SMS_TIMEOUT_MS): Promise<T> {
+async function withTimeout<T>(label: string, promiseLike: PromiseLike<T>, ms = SMS_TIMEOUT_MS): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
+    const promise = Promise.resolve(promiseLike);
     return await Promise.race([
       promise,
       new Promise<never>((_, reject) => {
