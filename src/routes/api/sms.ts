@@ -44,16 +44,35 @@ async function handle(request: Request) {
     return json({ error: "invalid body" }, 400);
   }
 
+  console.log("[sms] incoming body:", body);
+
   const raw: string =
     body.message || body.text || body.sms || body.body || body.content || "";
+  const sender: string | null =
+    body.sender || body.from || body.address || null;
   const externalId: string | undefined = body.id || body.external_id || body.messageId;
   const accountRef: string =
     body.account_reference ||
     process.env.DEFAULT_ACCOUNT_REFERENCE ||
     "033311501069501";
 
-  const parsed = parseSms(raw);
-  if (!parsed) return json({ error: "could not parse sms", raw }, 422);
+  if (!raw || typeof raw !== "string" || !raw.trim()) {
+    console.warn("[sms] empty body, ignoring but returning 200");
+    return json({ ok: true, skipped: "empty message" });
+  }
+
+  let parsed = parseSms(raw);
+  if (!parsed) {
+    parsed = {
+      amount: 0,
+      type: "debit",
+      sender_name: sender,
+      description: raw.slice(0, 240) || "Unparsed SMS",
+      fallback: true,
+    };
+  }
+  if (!parsed.sender_name && sender) parsed.sender_name = sender;
+  console.log("[sms] parsed:", parsed);
 
   const supabase = getAdmin();
 
@@ -96,8 +115,12 @@ async function handle(request: Request) {
     .select("*")
     .single();
 
-  if (error) return json({ error: error.message }, 500);
-  return json({ ok: true, transaction: data });
+  if (error) {
+    console.error("[sms] supabase insert error:", error);
+    return json({ ok: true, inserted: false, error: error.message });
+  }
+  console.log("[sms] inserted:", data?.id, "fallback:", parsed.fallback);
+  return json({ ok: true, inserted: true, fallback: !!parsed.fallback, transaction: data });
 }
 
 export const Route = createFileRoute("/api/sms")({
