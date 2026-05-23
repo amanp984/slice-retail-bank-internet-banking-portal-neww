@@ -8,21 +8,48 @@ const json = (body: unknown, status = 200) =>
     headers: { "content-type": "application/json" },
   });
 
+const SMS_TIMEOUT_MS = 8_000;
+
+async function withTimeout<T>(label: string, promiseLike: PromiseLike<T>, ms = SMS_TIMEOUT_MS): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const promise = Promise.resolve(promiseLike);
+    return await Promise.race([
+      promise,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
 function getAdmin() {
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.SUPABASE_PUBLISHABLE_KEY ||
+    process.env.VITE_SUPABASE_ANON_KEY ||
+    process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key) throw new Error("Missing Supabase URL or key in Vercel environment variables");
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
 async function handle(request: Request) {
+  console.log("[sms] request received", { method: request.method, url: request.url });
+
   // Optional shared-secret auth for the webhook
   const expected = process.env.SMS_WEBHOOK_SECRET;
   if (expected) {
     const got =
       request.headers.get("x-webhook-secret") ||
       new URL(request.url).searchParams.get("secret");
-    if (got !== expected) return json({ error: "unauthorized" }, 401);
+    if (got !== expected) {
+      console.warn("[sms] unauthorized webhook request");
+      return json({ ok: true, inserted: false, error: "unauthorized" });
+    }
   }
 
   let body: any = {};
@@ -40,8 +67,9 @@ async function handle(request: Request) {
         body = { message: txt };
       }
     }
-  } catch {
-    return json({ error: "invalid body" }, 400);
+  } catch (error) {
+    console.error("[sms] request body parse error:", error);
+    return json({ ok: true, inserted: false, error: "invalid body" });
   }
 
   console.log("[sms] incoming body:", body);
@@ -58,10 +86,16 @@ async function handle(request: Request) {
 
   if (!raw || typeof raw !== "string" || !raw.trim()) {
     console.warn("[sms] empty body, ignoring but returning 200");
-    return json({ ok: true, skipped: "empty message" });
+    return json({ ok: true, inserted: false, skipped: "empty message" });
   }
 
-  let parsed = parseSms(raw);
+  let parsed;
+  try {
+    parsed = parseSms(raw);
+  } catch (error) {
+    console.error("[sms] parseSms error:", error);
+    parsed = null;
+  }
   if (!parsed) {
     parsed = {
       amount: 0,
@@ -74,30 +108,56 @@ async function handle(request: Request) {
   if (!parsed.sender_name && sender) parsed.sender_name = sender;
   console.log("[sms] parsed:", parsed);
 
-  const supabase = getAdmin();
+  let supabase;
+  try {
+    supabase = getAdmin();
+  } catch (error) {
+    console.error("[sms] Supabase client setup error:", error);
+    return json({ ok: true, inserted: false, error: "database client unavailable" });
+  }
 
   // Dedupe
   if (externalId) {
-    const { data: dup } = await supabase
-      .from("transactions")
-      .select("id")
-      .eq("external_id", externalId)
-      .maybeSingle();
-    if (dup) return json({ ok: true, deduped: true, id: dup.id });
+    try {
+      const { data: dup, error } = await withTimeout(
+        "sms dedupe lookup",
+        supabase
+          .from("transactions")
+          .select("id")
+          .eq("external_id", externalId)
+          .maybeSingle(),
+      );
+      if (error) console.error("[sms] dedupe lookup error:", error);
+      if (dup) {
+        console.log("[sms] duplicate ignored:", dup.id);
+        return json({ ok: true, inserted: false, deduped: true, id: dup.id });
+      }
+    } catch (error) {
+      console.error("[sms] dedupe lookup failed:", error);
+    }
   }
 
   // Get latest balance for account
-  const { data: last } = await supabase
-    .from("transactions")
-    .select("balance_after_transaction")
-    .eq("account_reference", accountRef)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  let previousBalance = 0;
+  try {
+    const { data: last, error } = await withTimeout(
+      "sms balance lookup",
+      supabase
+        .from("transactions")
+        .select("balance_after_transaction")
+        .eq("account_reference", accountRef)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    );
+    if (error) console.error("[sms] balance lookup error:", error);
+    previousBalance = Number(last?.balance_after_transaction ?? 0);
+  } catch (error) {
+    console.error("[sms] balance lookup failed:", error);
+  }
 
-  const prev = Number(last?.balance_after_transaction ?? 0);
   const delta = parsed.type === "credit" ? parsed.amount : -parsed.amount;
-  const balance_after_transaction = Number((prev + delta).toFixed(2));
+  const balance_after_transaction = Number((previousBalance + delta).toFixed(2));
 
   const insert = {
     amount: parsed.amount,
@@ -109,24 +169,42 @@ async function handle(request: Request) {
     external_id: externalId ?? null,
   };
 
-  const { data, error } = await supabase
-    .from("transactions")
-    .insert(insert)
-    .select("*")
-    .single();
+  try {
+    const { data, error } = await withTimeout(
+      "sms transaction insert",
+      supabase
+        .from("transactions")
+        .insert(insert)
+        .select("*")
+        .single(),
+    );
 
-  if (error) {
-    console.error("[sms] supabase insert error:", error);
-    return json({ ok: true, inserted: false, error: error.message });
+    if (error) {
+      console.error("[sms] Supabase insert error:", error);
+      return json({ ok: true, inserted: false, error: error.message });
+    }
+
+    console.log("[sms] Supabase insert result:", { id: data?.id, fallback: parsed.fallback });
+    return json({ ok: true, inserted: true, fallback: !!parsed.fallback, transaction: data });
+  } catch (error) {
+    console.error("[sms] Supabase insert failed:", error);
+    return json({ ok: true, inserted: false, error: error instanceof Error ? error.message : "insert failed" });
   }
-  console.log("[sms] inserted:", data?.id, "fallback:", parsed.fallback);
-  return json({ ok: true, inserted: true, fallback: !!parsed.fallback, transaction: data });
+}
+
+async function safeHandle(request: Request) {
+  try {
+    return await handle(request);
+  } catch (error) {
+    console.error("[sms] unexpected webhook failure:", error);
+    return json({ ok: true, inserted: false, error: "unexpected webhook failure" });
+  }
 }
 
 export const Route = createFileRoute("/api/sms")({
   server: {
     handlers: {
-      POST: ({ request }) => handle(request),
+      POST: ({ request }) => safeHandle(request),
       GET: () => json({ ok: true, hint: "POST sms here" }),
     },
   },
