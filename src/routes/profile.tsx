@@ -39,7 +39,7 @@ function Profile() {
             <div className="flex items-center gap-5 pb-6 border-b border-border">
               <div className="w-20 h-20 rounded-full bg-accent text-primary grid place-items-center text-2xl font-bold">AT</div>
               <div>
-                <div className="text-lg font-bold">​AKASH T PR</div>
+                <div className="text-lg font-bold">​AKASH TUFANI</div>
                 <div className="text-sm text-muted-foreground">Customer ID: 380008301629</div>
               </div>
             </div>
