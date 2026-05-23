@@ -107,7 +107,7 @@ export default async function handler(req: any, res: any) {
     const accountRef: string =
       body.account_reference ||
       process.env.DEFAULT_ACCOUNT_REFERENCE ||
-      "033311501069501";
+      "033311501068990";
 
     if (!raw || typeof raw !== "string" || !raw.trim()) {
       console.warn("[api/sms] empty message");
