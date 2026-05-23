@@ -46,9 +46,7 @@ async function handle(request: Request) {
     console.error("[sms] SMS_WEBHOOK_SECRET not configured — refusing request");
     return json({ ok: false, error: "unauthorized" }, 401);
   }
-  const got =
-    request.headers.get("x-webhook-secret") ||
-    new URL(request.url).searchParams.get("secret");
+  const got = request.headers.get("x-webhook-secret");
   if (got !== expected) {
     console.warn("[sms] unauthorized webhook request");
     return json({ ok: false, error: "unauthorized" }, 401);

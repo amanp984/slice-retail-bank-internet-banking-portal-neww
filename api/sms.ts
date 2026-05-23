@@ -91,9 +91,7 @@ export default async function handler(req: any, res: any) {
       res.status(401).json({ ok: false, error: "unauthorized" });
       return;
     }
-    const got =
-      (req.headers["x-webhook-secret"] as string | undefined) ||
-      (new URL(req.url || "/", "http://x").searchParams.get("secret") ?? undefined);
+    const got = req.headers["x-webhook-secret"] as string | undefined;
     if (got !== expected) {
       console.warn("[api/sms] unauthorized");
       res.status(401).json({ ok: false, error: "unauthorized" });
