@@ -282,7 +282,7 @@ function HelpPage() {
               </div>
             </div>
             <div className="h-64 p-4 overflow-y-auto bg-secondary/30 space-y-2 text-sm">
-              <div className="bg-card rounded-xl px-3 py-2 max-w-[80%] shadow-sm">Hi ​AKASH TUFANI PR 👋 How can I help you today?</div>
+              <div className="bg-card rounded-xl px-3 py-2 max-w-[80%] shadow-sm">Hi ​AKASH T PR 👋 How can I help you today?</div>
               <div className="bg-card rounded-xl px-3 py-2 max-w-[80%] shadow-sm">You can ask about transfers, cards, statements or loans.</div>
             </div>
             <div className="p-3 border-t border-border flex gap-2">
