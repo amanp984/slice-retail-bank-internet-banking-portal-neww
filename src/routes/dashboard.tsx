@@ -20,11 +20,19 @@ export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
 });
 
-const quick = [
+type Quick = {
+  icon: typeof ArrowLeftRight;
+  title: string;
+  desc: string;
+  cta: string;
+  to?: string;
+  action?: "download-statement";
+};
+const quick: Quick[] = [
   { icon: ArrowLeftRight, title: "Fund Transfer", desc: "Transfer money within Slice Bank or to other banks", cta: "Transfer Now", to: "/transfers" },
   { icon: Receipt, title: "Bill Payments", desc: "Pay your bills and recharges instantly", cta: "Pay Now", to: "/payments" },
   { icon: ConciergeBell, title: "Request Services", desc: "Cheque book, debit card, statement & more", cta: "Request Now", to: "/cards" },
-  { icon: Download, title: "Download Statement", desc: "View and download your account statements", cta: "Download", to: "/dashboard" },
+  { icon: Download, title: "Download Statement", desc: "View and download your account statements", cta: "Download", action: "download-statement" },
 ];
 
 const fmt = (n: number) => new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2 }).format(Math.abs(n));
@@ -85,7 +93,16 @@ function Dashboard() {
               </div>
               <h3 className="font-semibold text-sm text-foreground">{q.title}</h3>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{q.desc}</p>
-              <Link to={q.to} className="inline-block mt-3 text-xs font-semibold text-primary hover:underline">{q.cta} →</Link>
+              {q.action === "download-statement" ? (
+                <button
+                  onClick={() => downloadStatementPdf(txns, balance)}
+                  className="inline-block mt-3 text-xs font-semibold text-primary hover:underline"
+                >
+                  {q.cta} →
+                </button>
+              ) : (
+                <Link to={q.to!} className="inline-block mt-3 text-xs font-semibold text-primary hover:underline">{q.cta} →</Link>
+              )}
             </motion.div>
           ))}
         </div>
