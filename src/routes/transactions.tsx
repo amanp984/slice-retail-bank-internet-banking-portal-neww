@@ -15,7 +15,7 @@ export const Route = createFileRoute("/transactions")({
 const fmt = (n: number) => new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2 }).format(Math.abs(n));
 const fmtDate = (iso: string) => {
   const d = new Date(iso);
-  return d.toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
 };
 
 function TransactionsPage() {
@@ -71,15 +71,15 @@ function TransactionsPage() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm border-separate border-spacing-0">
             <thead>
               <tr className="text-xs text-muted-foreground border-b border-border">
-                <th className="text-left font-medium py-3">Date</th>
-                <th className="text-left font-medium py-3">Description</th>
-                <th className="text-left font-medium py-3">Type</th>
-                <th className="text-right font-medium py-3">Amount (₹)</th>
-                <th className="text-right font-medium py-3">Balance (₹)</th>
-                <th className="text-right font-medium py-3">Status</th>
+                <th className="text-left font-medium py-3 pr-4 whitespace-nowrap">Date</th>
+                <th className="text-left font-medium py-3 pr-6">Description</th>
+                <th className="text-left font-medium py-3 pr-6 whitespace-nowrap">Type</th>
+                <th className="text-right font-medium py-3 pr-6 whitespace-nowrap">Amount (₹)</th>
+                <th className="text-right font-medium py-3 pr-6 whitespace-nowrap">Balance (₹)</th>
+                <th className="text-right font-medium py-3 whitespace-nowrap">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -92,16 +92,16 @@ function TransactionsPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="border-b border-border/60 last:border-0 hover:bg-secondary/30"
+                    className="hover:bg-secondary/30"
                   >
-                    <td className="py-3 text-foreground whitespace-nowrap">{fmtDate(t.created_at)}</td>
-                    <td className="py-3 text-foreground">{formatDescription(t)}</td>
-                    <td className="py-3 text-muted-foreground">{t.type === "credit" ? "Credit" : "Debit"}</td>
-                    <td className="py-3 text-right font-medium text-foreground tabular-nums">
+                    <td className="py-4 pr-4 text-foreground whitespace-nowrap align-top border-b border-border/60">{fmtDate(t.created_at)}</td>
+                    <td className="py-4 pr-6 text-foreground leading-relaxed align-top border-b border-border/60">{formatDescription(t)}</td>
+                    <td className="py-4 pr-6 text-muted-foreground align-top border-b border-border/60">{t.type === "credit" ? "Credit" : "Debit"}</td>
+                    <td className="py-4 pr-6 text-right font-medium text-foreground tabular-nums whitespace-nowrap align-top border-b border-border/60">
                       {t.type === "debit" ? "-" : "+"}{fmt(t.amount)}
                     </td>
-                    <td className="py-3 text-right text-foreground">{fmt(t.balance_after_transaction)}</td>
-                    <td className="py-3 text-right">
+                    <td className="py-4 pr-6 text-right text-foreground tabular-nums whitespace-nowrap align-top border-b border-border/60">{fmt(t.balance_after_transaction)}</td>
+                    <td className="py-4 text-right align-top border-b border-border/60">
                       <span className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-green-100 text-green-700">Success</span>
                     </td>
                   </motion.tr>

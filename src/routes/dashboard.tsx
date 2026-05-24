@@ -30,7 +30,7 @@ const quick = [
 const fmt = (n: number) => new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2 }).format(Math.abs(n));
 const fmtDate = (iso: string) => {
   const d = new Date(iso);
-  return d.toLocaleString("en-IN", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
 };
 const labelType = (t: "credit" | "debit") => (t === "credit" ? "Credit" : "Debit");
 
@@ -96,14 +96,14 @@ function Dashboard() {
             <h2 className="font-bold text-foreground">Recent Transactions</h2>
             <Link to="/transactions" className="text-sm font-semibold text-primary cursor-pointer">View All</Link>
           </div>
-          <table className="w-full text-sm">
+          <table className="w-full text-sm border-separate border-spacing-0">
             <thead>
               <tr className="text-xs text-muted-foreground border-b border-border">
-                <th className="text-left font-medium pb-2">Date</th>
-                <th className="text-left font-medium pb-2">Description</th>
-                <th className="text-left font-medium pb-2">Type</th>
-                <th className="text-right font-medium pb-2">Amount (₹)</th>
-                <th className="text-right font-medium pb-2">Balance (₹)</th>
+                <th className="text-left font-medium pb-3 pr-4 whitespace-nowrap">Date</th>
+                <th className="text-left font-medium pb-3 pr-6">Description</th>
+                <th className="text-left font-medium pb-3 pr-6 whitespace-nowrap">Type</th>
+                <th className="text-right font-medium pb-3 pr-6 whitespace-nowrap">Amount (₹)</th>
+                <th className="text-right font-medium pb-3 whitespace-nowrap">Balance (₹)</th>
               </tr>
             </thead>
             <tbody>
@@ -116,15 +116,15 @@ function Dashboard() {
                     animate={{ opacity: 1, y: 0, backgroundColor: "rgba(0,0,0,0)" }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.35 }}
-                    className="border-b border-border/60 last:border-0 hover:bg-secondary/30"
+                    className="hover:bg-secondary/30"
                   >
-                    <td className="py-3 text-foreground">{fmtDate(t.created_at)}</td>
-                    <td className="py-3 text-foreground">{formatDescription(t)}</td>
-                    <td className="py-3 text-muted-foreground">{labelType(t.type)}</td>
-                    <td className="py-3 text-right font-medium text-foreground tabular-nums">
+                    <td className="py-4 pr-4 text-foreground whitespace-nowrap align-top border-b border-border/60">{fmtDate(t.created_at)}</td>
+                    <td className="py-4 pr-6 text-foreground leading-relaxed align-top border-b border-border/60">{formatDescription(t)}</td>
+                    <td className="py-4 pr-6 text-muted-foreground align-top border-b border-border/60">{labelType(t.type)}</td>
+                    <td className="py-4 pr-6 text-right font-medium text-foreground tabular-nums whitespace-nowrap align-top border-b border-border/60">
                       {t.type === "debit" ? "-" : "+"}{fmt(t.amount)}
                     </td>
-                    <td className="py-3 text-right text-foreground">{fmt(t.balance_after_transaction)}</td>
+                    <td className="py-4 text-right text-foreground tabular-nums whitespace-nowrap align-top border-b border-border/60">{fmt(t.balance_after_transaction)}</td>
                   </motion.tr>
                 ))}
               </AnimatePresence>
