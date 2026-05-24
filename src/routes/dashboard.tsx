@@ -151,13 +151,13 @@ function Dashboard() {
           </select>
           <label className="text-xs text-muted-foreground">Select Period</label>
           <select className="w-full mt-1 mb-4 px-3 py-2 rounded-lg border border-border text-sm bg-white">
-            <option>May 2024</option><option>April 2024</option>
+            <option>May 2026</option><option>April 2026</option>
           </select>
           <div className="grid grid-cols-2 gap-3">
             {[
-              { Icon: FileType, label: "PDF", sub: "Download PDF", onClick: () => downloadStatementPdf(recent, balance) },
+              { Icon: FileType, label: "PDF", sub: "Download PDF", onClick: () => downloadStatementPdf(txns, balance) },
               { Icon: Eye, label: "View Statement", sub: "View Online", onClick: () => navigate({ to: "/transactions" }) },
-              { Icon: FileText, label: "CSV", sub: "Download CSV", onClick: () => downloadStatementCsv(recent) },
+              { Icon: FileText, label: "CSV", sub: "Download CSV", onClick: () => downloadStatementCsv(txns) },
               { Icon: MonitorPlay, label: "View Online", sub: "View Statement", onClick: () => navigate({ to: "/transactions" }) },
             ].map(({ Icon, label, sub, onClick }) => (
               <button key={label} onClick={onClick} className="flex items-center gap-2 p-3 rounded-lg border border-border hover:border-primary/40 hover:bg-accent/40 transition text-left">
