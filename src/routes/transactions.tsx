@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTransactions } from "@/hooks/useTransactions";
 import { formatDescription } from "@/lib/formatTxn";
+import { downloadStatementPdf } from "@/lib/statement";
 
 export const Route = createFileRoute("/transactions")({
   head: () => ({ meta: [{ title: "Transaction History — Slice Bank" }] }),
@@ -21,7 +22,7 @@ function TransactionsPage() {
   const [page, setPage] = useState(1);
   const [q, setQ] = useState("");
   const pageSize = 10;
-  const { txns, loading } = useTransactions(200);
+  const { txns, balance, loading } = useTransactions(200);
 
   const filtered = useMemo(
     () =>
@@ -47,7 +48,10 @@ function TransactionsPage() {
           <h1 className="text-2xl font-bold">Transaction History</h1>
           <p className="text-sm text-muted-foreground mt-1">View all your past transactions</p>
         </div>
-        <button className="flex items-center gap-1.5 px-4 py-2.5 text-sm border border-border rounded-lg hover:bg-secondary font-medium">
+        <button
+          onClick={() => downloadStatementPdf(filtered, balance)}
+          className="flex items-center gap-1.5 px-4 py-2.5 text-sm border border-border rounded-lg hover:bg-secondary font-medium"
+        >
           <Download className="w-4 h-4" /> Download
         </button>
       </div>
