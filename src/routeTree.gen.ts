@@ -11,12 +11,15 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TransfersRouteImport } from './routes/transfers'
 import { Route as TransactionsRouteImport } from './routes/transactions'
+import { Route as TermsAndConditionsRouteImport } from './routes/terms-and-conditions'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PaymentsRouteImport } from './routes/payments'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as LoansRouteImport } from './routes/loans'
 import { Route as HelpRouteImport } from './routes/help'
+import { Route as ForgotUsernameRouteImport } from './routes/forgot-username'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FixeddepositsRouteImport } from './routes/fixeddeposits'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CardsRouteImport } from './routes/cards'
@@ -40,6 +43,11 @@ const TransfersRoute = TransfersRouteImport.update({
 const TransactionsRoute = TransactionsRouteImport.update({
   id: '/transactions',
   path: '/transactions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsAndConditionsRoute = TermsAndConditionsRouteImport.update({
+  id: '/terms-and-conditions',
+  path: '/terms-and-conditions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -70,6 +78,16 @@ const LoansRoute = LoansRouteImport.update({
 const HelpRoute = HelpRouteImport.update({
   id: '/help',
   path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotUsernameRoute = ForgotUsernameRouteImport.update({
+  id: '/forgot-username',
+  path: '/forgot-username',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FixeddepositsRoute = FixeddepositsRouteImport.update({
@@ -150,12 +168,15 @@ export interface FileRoutesByFullPath {
   '/cards': typeof CardsRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/fixeddeposits': typeof FixeddepositsRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/forgot-username': typeof ForgotUsernameRoute
   '/help': typeof HelpRoute
   '/loans': typeof LoansRoute
   '/offers': typeof OffersRoute
   '/payments': typeof PaymentsRouteWithChildren
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/transactions': typeof TransactionsRoute
   '/transfers': typeof TransfersRouteWithChildren
   '/api/sms': typeof ApiSmsRoute
@@ -173,11 +194,14 @@ export interface FileRoutesByTo {
   '/accounts': typeof AccountsRoute
   '/dashboard': typeof DashboardRoute
   '/fixeddeposits': typeof FixeddepositsRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/forgot-username': typeof ForgotUsernameRoute
   '/help': typeof HelpRoute
   '/loans': typeof LoansRoute
   '/offers': typeof OffersRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/transactions': typeof TransactionsRoute
   '/api/sms': typeof ApiSmsRoute
   '/cards/block-card': typeof CardsBlockCardRoute
@@ -196,12 +220,15 @@ export interface FileRoutesById {
   '/cards': typeof CardsRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/fixeddeposits': typeof FixeddepositsRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/forgot-username': typeof ForgotUsernameRoute
   '/help': typeof HelpRoute
   '/loans': typeof LoansRoute
   '/offers': typeof OffersRoute
   '/payments': typeof PaymentsRouteWithChildren
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/transactions': typeof TransactionsRoute
   '/transfers': typeof TransfersRouteWithChildren
   '/api/sms': typeof ApiSmsRoute
@@ -222,12 +249,15 @@ export interface FileRouteTypes {
     | '/cards'
     | '/dashboard'
     | '/fixeddeposits'
+    | '/forgot-password'
+    | '/forgot-username'
     | '/help'
     | '/loans'
     | '/offers'
     | '/payments'
     | '/profile'
     | '/signup'
+    | '/terms-and-conditions'
     | '/transactions'
     | '/transfers'
     | '/api/sms'
@@ -245,11 +275,14 @@ export interface FileRouteTypes {
     | '/accounts'
     | '/dashboard'
     | '/fixeddeposits'
+    | '/forgot-password'
+    | '/forgot-username'
     | '/help'
     | '/loans'
     | '/offers'
     | '/profile'
     | '/signup'
+    | '/terms-and-conditions'
     | '/transactions'
     | '/api/sms'
     | '/cards/block-card'
@@ -267,12 +300,15 @@ export interface FileRouteTypes {
     | '/cards'
     | '/dashboard'
     | '/fixeddeposits'
+    | '/forgot-password'
+    | '/forgot-username'
     | '/help'
     | '/loans'
     | '/offers'
     | '/payments'
     | '/profile'
     | '/signup'
+    | '/terms-and-conditions'
     | '/transactions'
     | '/transfers'
     | '/api/sms'
@@ -292,12 +328,15 @@ export interface RootRouteChildren {
   CardsRoute: typeof CardsRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   FixeddepositsRoute: typeof FixeddepositsRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  ForgotUsernameRoute: typeof ForgotUsernameRoute
   HelpRoute: typeof HelpRoute
   LoansRoute: typeof LoansRoute
   OffersRoute: typeof OffersRoute
   PaymentsRoute: typeof PaymentsRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   SignupRoute: typeof SignupRoute
+  TermsAndConditionsRoute: typeof TermsAndConditionsRoute
   TransactionsRoute: typeof TransactionsRoute
   TransfersRoute: typeof TransfersRouteWithChildren
   ApiSmsRoute: typeof ApiSmsRoute
@@ -317,6 +356,13 @@ declare module '@tanstack/react-router' {
       path: '/transactions'
       fullPath: '/transactions'
       preLoaderRoute: typeof TransactionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms-and-conditions': {
+      id: '/terms-and-conditions'
+      path: '/terms-and-conditions'
+      fullPath: '/terms-and-conditions'
+      preLoaderRoute: typeof TermsAndConditionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -359,6 +405,20 @@ declare module '@tanstack/react-router' {
       path: '/help'
       fullPath: '/help'
       preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-username': {
+      id: '/forgot-username'
+      path: '/forgot-username'
+      fullPath: '/forgot-username'
+      preLoaderRoute: typeof ForgotUsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fixeddeposits': {
@@ -512,12 +572,15 @@ const rootRouteChildren: RootRouteChildren = {
   CardsRoute: CardsRouteWithChildren,
   DashboardRoute: DashboardRoute,
   FixeddepositsRoute: FixeddepositsRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  ForgotUsernameRoute: ForgotUsernameRoute,
   HelpRoute: HelpRoute,
   LoansRoute: LoansRoute,
   OffersRoute: OffersRoute,
   PaymentsRoute: PaymentsRouteWithChildren,
   ProfileRoute: ProfileRoute,
   SignupRoute: SignupRoute,
+  TermsAndConditionsRoute: TermsAndConditionsRoute,
   TransactionsRoute: TransactionsRoute,
   TransfersRoute: TransfersRouteWithChildren,
   ApiSmsRoute: ApiSmsRoute,

@@ -142,7 +142,7 @@ function LoginPage() {
                 />
               </Field>
               <p className="text-xs text-right mt-1 mb-3 text-muted-foreground">
-                Forgot Username? <span className="text-destructive font-semibold cursor-pointer hover:underline">Click Here</span>
+                Forgot Username? <Link to="/forgot-username" className="text-destructive font-semibold hover:underline">Click Here</Link>
               </p>
 
               <Field icon={<Lock className="w-4 h-4" />} label="Password">
@@ -160,7 +160,7 @@ function LoginPage() {
                 </div>
               </Field>
               <p className="text-xs text-right mt-1 mb-3 text-muted-foreground">
-                Forgot password? <span className="text-destructive font-semibold cursor-pointer hover:underline">Click Here</span>
+                Forgot password? <Link to="/forgot-password" className="text-destructive font-semibold hover:underline">Click Here</Link>
               </p>
 
               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
@@ -196,7 +196,7 @@ function LoginPage() {
                 className="block text-center w-full py-2.5 rounded-md bg-destructive text-destructive-foreground font-semibold hover:brightness-110 transition shadow-soft">
                 New User Sign Up
               </Link>
-              <p className="text-center text-sm mt-4 text-destructive font-medium underline cursor-pointer">Terms and Conditions</p>
+              <Link to="/terms-and-conditions" className="block text-center text-sm mt-4 text-destructive font-medium underline">Terms and Conditions</Link>
             </form>
           </motion.div>
         </div>
