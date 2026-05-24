@@ -16,8 +16,8 @@ export const Route = createFileRoute("/")({
   component: LoginPage,
 });
 
-const VALID_USER = "Slice34362";
-const VALID_PASS = "Rambabu@6153";
+const VALID_USER = "380008301629";
+const VALID_PASS = "AKASH#1102";
 const CAPTCHA_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
 const makeCaptcha = () => {
   let s = "";
@@ -239,23 +239,37 @@ function LoginPage() {
         )}
       </AnimatePresence>
 
-      {/* Success toast (bottom-right) */}
+      {/* Success toast (bottom-right, dark banking style) */}
       <AnimatePresence>
         {showSuccess && (
           <motion.div
-            initial={{ opacity: 0, x: 30, y: 0 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 40, y: 10 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            exit={{ opacity: 0, x: 40 }}
             transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            className="fixed bottom-6 right-6 z-50 bg-white rounded-xl border border-border shadow-2xl px-4 py-3 flex items-center gap-3 max-w-xs"
+            className="fixed bottom-6 right-6 z-50 overflow-hidden rounded-xl flex items-center gap-3 pl-4 pr-5 py-3 min-w-[260px] max-w-xs"
+            style={{
+              background: "linear-gradient(180deg, #1a1d24 0%, #0f1115 100%)",
+              boxShadow: "0 10px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05), 0 0 30px rgba(34,197,94,0.12)",
+            }}
           >
-            <div className="w-10 h-10 rounded-full grid place-items-center" style={{ backgroundColor: "color-mix(in oklab, var(--success) 18%, white)" }}>
-              <CheckCircle2 className="w-6 h-6" style={{ color: "var(--success)" }} />
+            <div
+              className="w-8 h-8 rounded-full grid place-items-center shrink-0"
+              style={{ backgroundColor: "rgba(34,197,94,0.15)" }}
+            >
+              <CheckCircle2 className="w-5 h-5" style={{ color: "#22c55e" }} />
             </div>
-            <div>
-              <div className="font-bold text-sm text-foreground">Login Successful</div>
-              <div className="text-[11px] text-muted-foreground">Redirecting to your dashboard…</div>
-            </div>
+            <div className="text-sm font-medium text-white tracking-tight">Login successfully</div>
+            <motion.div
+              initial={{ width: "100%" }}
+              animate={{ width: "0%" }}
+              transition={{ duration: 1.5, ease: "linear" }}
+              className="absolute bottom-0 left-0 h-[2px]"
+              style={{
+                background: "linear-gradient(90deg, #22c55e 0%, #4ade80 100%)",
+                boxShadow: "0 0 8px rgba(34,197,94,0.6)",
+              }}
+            />
           </motion.div>
         )}
       </AnimatePresence>
