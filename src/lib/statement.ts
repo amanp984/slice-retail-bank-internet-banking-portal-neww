@@ -6,8 +6,8 @@ import { formatDescription } from "./formatTxn";
 const fmtAmt = (n: number) =>
   new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2 }).format(Math.abs(n));
 const fmtDate = (iso: string) =>
-  new Date(iso).toLocaleString("en-IN", {
-    day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",
+  new Date(iso).toLocaleDateString("en-IN", {
+    day: "2-digit", month: "short", year: "numeric",
   });
 
 export function todayFileStamp(): string {
