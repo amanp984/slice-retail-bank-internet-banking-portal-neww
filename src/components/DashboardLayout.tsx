@@ -149,7 +149,7 @@ export function DashboardLayout({
           <div>
             {showGreeting && (
               <>
-                <h1 className="text-2xl font-bold text-foreground">Hello, ​AKASH TUFANI</h1>
+                <h1 className="text-2xl font-bold text-foreground">Hello, ​ANJAN </h1>
                 <p className="text-sm text-muted-foreground mt-1">Last login: {lastLogin || "—"}</p>
               </>
             )}
@@ -234,7 +234,7 @@ export function DashboardLayout({
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-accent text-primary grid place-items-center font-semibold text-sm">AT</div>
+              <div className="w-10 h-10 rounded-full bg-accent text-primary grid place-items-center font-semibold text-sm">AJ</div>
             </div>
           </div>
         </header>
