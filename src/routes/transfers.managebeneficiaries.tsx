@@ -11,7 +11,7 @@ export const Route = createFileRoute("/transfers/managebeneficiaries")({
 });
 
 const beneficiaries = [
-  { initials: "RA", name: "Rahul Sharma", email: "", acct: "XXXX XXXX 8990", bank: "HDFC Bank", ifsc: "HDFC0006942", ifscBank: "HDFC Bank Ltd", type: "Personal" },
+  { initials: "RA", name: "Rahul Sharma", email: "", acct: "XXXX XXXX 3842", bank: "HDFC Bank", ifsc: "HDFC0006942", ifscBank: "HDFC Bank Ltd", type: "Personal" },
   { initials: "SA", name: "Sunita Agarwal", email: "", acct: "XXXX XXXX 8901", bank: "ICICI Bank", ifsc: "ICIC0CH4044", ifscBank: "ICICI Bank Ltd", type: "Personal" },
   { initials: "VB", name: "Vijay Builders Pvt Ltd", email: "\u200b", acct: "XXXX XXXX 3456", bank: "Axis Bank", ifsc: "UTIBAGS9765", ifscBank: "Axis Bank Ltd", type: "Business" },
   { initials: "NT", name: "Neha Tripathi", email: "", acct: "XXXX XXXX 1122", bank: "State Bank of India", ifsc: "SBIN0007789", ifscBank: "State Bank of India", type: "Personal" },
