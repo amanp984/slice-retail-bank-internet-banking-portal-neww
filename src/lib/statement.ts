@@ -139,7 +139,8 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     doc.text(c.label, cx, y);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
-    doc.setTextColor(...(c.valueColor ?? [20, 20, 20]));
+    const vc = c.valueColor ?? [20, 20, 20];
+    doc.setTextColor(vc[0], vc[1], vc[2]);
     doc.text(c.value, cx, y + 22);
     if (c.sym && i > 0) {
       doc.setFont("helvetica", "normal");
@@ -174,12 +175,23 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
       fontStyle: "normal",
       textColor: [140, 140, 140],
       fontSize: 8,
-      lineWidth: { top: 0, right: 0, bottom: 0.5, left: 0 },
-      lineColor: [220, 220, 220],
+      lineWidth: 0,
+      fillColor: [255, 255, 255],
     },
     bodyStyles: {
-      lineWidth: { top: 0, right: 0, bottom: 0.4, left: 0 },
-      lineColor: [235, 235, 235],
+      lineWidth: 0,
+      fillColor: [255, 255, 255],
+    },
+    didDrawCell: (data) => {
+      // bottom border per row
+      if (data.column.index === 0) {
+        const { doc: d, cell, row, table } = data;
+        d.setDrawColor(data.section === "head" ? 220 : 235);
+        d.setLineWidth(0.4);
+        const yLine = cell.y + cell.height;
+        d.line(table.settings.margin.left, yLine, pageW - table.settings.margin.right, yLine);
+        void row;
+      }
     },
     columnStyles: {
       0: { cellWidth: 70 },
