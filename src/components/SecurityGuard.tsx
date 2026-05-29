@@ -55,7 +55,7 @@ export function SecurityGuard() {
   useEffect(() => {
     const onContext = (e: MouseEvent) => e.preventDefault();
     const onKey = (e: KeyboardEvent) => {
-      const key = e.key.toLowerCase();
+      const key = (e.key ?? "").toLowerCase();
       if (e.key === "F12") { e.preventDefault(); return; }
       if (e.ctrlKey && e.shiftKey && (key === "i" || key === "j" || key === "c")) {
         e.preventDefault();
