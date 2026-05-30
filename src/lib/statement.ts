@@ -216,7 +216,6 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
       cellPadding: { top: 16, bottom: 16, left: 6, right: 6 },
       textColor: [25, 25, 25],
       valign: "top",
-      lineHeight: 1.5,
       overflow: "linebreak",
     },
     headStyles: {
