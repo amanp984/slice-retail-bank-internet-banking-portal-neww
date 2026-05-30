@@ -4,7 +4,7 @@ export const CUSTOMER = {
   holderName: "Anjan",
   customerId: "356687013845",
   accountNumber: "033314526253842",
-  accountType: "SAVINGS",
+  accountType: "CURRENT",
   ifsc: "NESF0000333",
   micr: "560773002",
   phone: "+91 98XXXXXX42",
