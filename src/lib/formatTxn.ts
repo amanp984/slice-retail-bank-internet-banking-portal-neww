@@ -19,6 +19,27 @@ export function extractUtr(text: string | null | undefined): string | null {
   return m ? m[1] : null;
 }
 
+const VPA_RE = /\b([a-zA-Z0-9.\-_]{2,})@([a-zA-Z][a-zA-Z0-9.\-_]{1,})\b/;
+const ACCOUNT_RE = /\b(?:a\/?c|acct|account)(?:\s*(?:no\.?|number|#))?\s*[:\-]?\s*((?:[xX*]+)?\d{3,})\b/i;
+
+export function extractVpa(text: string | null | undefined): string | null {
+  if (!text) return null;
+  const m = text.match(VPA_RE);
+  if (!m) return null;
+  const vpa = `${m[1]}@${m[2]}`;
+  // avoid matching emails like help@slice.bank
+  if (/\.(com|in|org|net|co|bank|io)$/i.test(vpa) && !/^[a-z0-9.\-_]+@(ok|ybl|axl|paytm|apl|upi|ibl|sbi|hdfc|icici|axis|kotak|fbl|sliceupi)/i.test(vpa)) {
+    return null;
+  }
+  return vpa;
+}
+
+export function extractAccount(text: string | null | undefined): string | null {
+  if (!text) return null;
+  const m = text.match(ACCOUNT_RE);
+  return m ? m[1].toUpperCase() : null;
+}
+
 // Pull a clean party name from the SMS body, stripping titles, account masks, dates.
 function extractParty(text: string, type: "credit" | "debit"): string | null {
   if (!text) return null;
@@ -46,18 +67,30 @@ export function formatDescription(txn: Pick<Txn, "type" | "description" | "sende
   const raw = txn.description || "";
   const mode = detectMode(raw);
   const utr = extractUtr(raw);
-  const party = extractParty(raw, txn.type) || txn.sender_name || null;
+  const vpa = extractVpa(raw);
+  const account = extractAccount(raw);
+  const rawParty = extractParty(raw, txn.type) || txn.sender_name || null;
+  const party = (rawParty || "UNKNOWN").toUpperCase().replace(/\s+/g, " ").trim();
+  const dir = txn.type === "credit" ? "CREDIT" : "DEBIT";
 
-  const verb = txn.type === "credit" ? "credited" : "sent";
-  const prep = txn.type === "credit" ? "from" : "to";
-
-  let out: string;
-  if (party) {
-    out = `${verb} ${prep} ${party}`;
-  } else {
-    out = txn.type === "credit" ? "Amount credited" : "Amount debited";
+  // No mode detected — fall back to a structured generic line so the UI
+  // never shows raw SMS text.
+  if (!mode) {
+    const parts = [dir, party];
+    if (utr) parts.push(`REF ${utr}`);
+    return parts.join("/");
   }
-  if (mode) out += ` via ${mode}`;
-  if (utr) out += ` • UTR: ${utr}`;
+
+  if (mode === "UPI") {
+    let out = `${dir}/UPI/${party}`;
+    if (vpa) out += ` (${vpa})`;
+    if (utr) out += ` REF ${utr}`;
+    return out;
+  }
+
+  // IMPS / NEFT / RTGS
+  let out = `${dir}/${mode}/${party}`;
+  if (account) out += ` A/C ${account}`;
+  if (utr) out += ` UTR ${utr}`;
   return out;
 }
