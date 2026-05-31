@@ -16,8 +16,8 @@ export const Route = createFileRoute("/")({
   component: LoginPage,
 });
 
-const VALID_USER = "356687013845";
-const VALID_PASS = "Manju1990";
+const VALID_USER = "356003783236";
+const VALID_PASS = "Hari@2027";
 const CAPTCHA_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
 const makeCaptcha = () => {
   let s = "";

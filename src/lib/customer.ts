@@ -1,9 +1,9 @@
 // Centralized customer profile used by statement generation and UI.
 export const CUSTOMER = {
-  businessName: "ANJAN",
-  holderName: "Anjan",
-  customerId: "356687013845",
-  accountNumber: "033314526253842",
+  businessName: "Mr Hariram Choudhary",
+  holderName: "Hariram",
+  customerId: "356003783236",
+  accountNumber: "033311501061643",
   accountType: "CURRENT",
   ifsc: "NESF0000333",
   micr: "560773002",
