@@ -2,8 +2,8 @@
 export const CUSTOMER = {
   businessName: "Rambabu",
   holderName: "Rambabu",
-  customerId: "356003783236",
-  accountNumber: "033311501061643",
+  customerId: "356004256292",
+  accountNumber: "033311642253614",
   accountType: "CURRENT",
   ifsc: "NESF0000333",
   micr: "560773002",
