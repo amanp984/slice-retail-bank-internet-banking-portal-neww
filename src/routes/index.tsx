@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
 });
 
 const VALID_USER = "356003783236";
-const VALID_PASS = "Hari@2027";
+const VALID_PASS = "Bachi@8909";
 const CAPTCHA_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
 const makeCaptcha = () => {
   let s = "";
