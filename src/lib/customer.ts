@@ -8,7 +8,7 @@ export const CUSTOMER = {
   ifsc: "NESF0000333",
   micr: "560773002",
   phone: "+91 98XXXXXX42",
-  email: "anjan@slice.bank",
+  email: "Ramyadav1919@gmail.com",
   pan: "GOXXXXXX77B",
   aadhaarMasked: "XXXX XXXX 3842",
   nominee: "-",
