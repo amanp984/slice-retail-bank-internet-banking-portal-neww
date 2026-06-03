@@ -13,7 +13,7 @@ if (!existsSync(assetsDir)) {
   throw new Error("Missing dist/client/assets after Vite build");
 }
 
-const serverBundle = await import(resolve(distDir, "server", "index.js"));
+const serverBundle = await import(resolve(distDir, "server", "index.mjs"));
 const response = await serverBundle.default.fetch(new Request("https://vercel.local/"), {}, {});
 
 if (!response.ok) {
