@@ -13,8 +13,9 @@ if (!existsSync(assetsDir)) {
   throw new Error("Missing dist/client/assets after Vite build");
 }
 
-const serverBundle = await import(resolve(distDir, "server", "index.js"));
-const response = await serverBundle.default.fetch(new Request("https://vercel.local/"), {}, {});
+const serverBundle = await import(resolve(distDir, "server", "index.mjs"));
+const ctx = { waitUntil: () => {}, passThroughOnException: () => {} };
+const response = await serverBundle.default.fetch(new Request("https://vercel.local/"), {}, ctx);
 
 if (!response.ok) {
   throw new Error(`Unable to render production index.html: ${response.status}`);
