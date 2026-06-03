@@ -37,7 +37,7 @@ function Profile() {
 
             <h3 className="font-bold mb-4">Profile Picture</h3>
             <div className="flex items-center gap-5 pb-6 border-b border-border">
-              <div className="w-20 h-20 rounded-full bg-accent text-primary grid place-items-center text-2xl font-bold">HC</div>
+              <div className="w-20 h-20 rounded-full bg-accent text-primary grid place-items-center text-2xl font-bold">D</div>
               <div>
                 <div className="text-lg font-bold">Dharmendra</div>
                 <div className="text-sm text-muted-foreground">Customer ID: 356642873168</div>
