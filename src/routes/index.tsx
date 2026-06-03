@@ -203,7 +203,7 @@ function LoginPage() {
       </div>
 
       <footer className="bg-destructive text-destructive-foreground text-center text-xs py-2 shrink-0">
-        © 2026 North East Small Finance Bank. All Rights Reserved
+        © 2026 North East Small Finance Bank. All Rights Reserved · BUILD VERSION: V2
       </footer>
 
       {/* Error popup */}
