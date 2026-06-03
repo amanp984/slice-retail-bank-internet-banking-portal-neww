@@ -149,7 +149,7 @@ export function DashboardLayout({
           <div>
             {showGreeting && (
               <>
-                <h1 className="text-2xl font-bold text-foreground">Hello, Mr Hariram Choudhary</h1>
+                <h1 className="text-2xl font-bold text-foreground">Hello, Dharmendra</h1>
                 <p className="text-sm text-muted-foreground mt-1">Last login: {lastLogin || "—"}</p>
               </>
             )}
