@@ -14,7 +14,8 @@ if (!existsSync(assetsDir)) {
 }
 
 const serverBundle = await import(resolve(distDir, "server", "index.mjs"));
-const response = await serverBundle.default.fetch(new Request("https://vercel.local/"), {}, {});
+const ctx = { context: { waitUntil: () => {}, passThroughOnException: () => {} } };
+const response = await serverBundle.default.fetch(new Request("https://vercel.local/"), {}, ctx);
 
 if (!response.ok) {
   throw new Error(`Unable to render production index.html: ${response.status}`);
