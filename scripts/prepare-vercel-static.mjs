@@ -1,4 +1,4 @@
-import { cp, mkdir, writeFile, rm, readdir } from "node:fs/promises";
+import { cp, mkdir, writeFile, rm, readdir, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { resolve, join } from "node:path";
 
@@ -36,7 +36,12 @@ try {
 // Discover the client entry JS (the main index-*.js bundle)
 if (!html) {
   const assets = await readdir(assetsDir);
-  const entryJs = assets.find((f) => /^index-[A-Za-z0-9_-]+\.js$/.test(f));
+  const indexBundles = await Promise.all(
+    assets
+      .filter((f) => /^index-[A-Za-z0-9_-]+\.js$/.test(f))
+      .map(async (file) => ({ file, size: (await stat(join(assetsDir, file))).size })),
+  );
+  const entryJs = indexBundles.sort((a, b) => b.size - a.size)[0]?.file;
   const entryCss = assets.find((f) => /^styles-[A-Za-z0-9_-]+\.css$/.test(f));
   if (!entryJs) throw new Error("Could not find client entry JS in dist/client/assets");
   html = `<!DOCTYPE html>
