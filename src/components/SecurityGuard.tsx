@@ -12,20 +12,12 @@ function clearSession() {
 
 /**
  * Frontend-only security layer:
- *  - Auto-logout on page refresh (sessionStorage cleared via beforeunload)
  *  - Auto-logout after 3 minutes of inactivity
  *  - Disables right-click context menu
  *  - Blocks common devtools shortcuts (F12, Ctrl+Shift+I/J/C, Ctrl+U)
  */
 export function SecurityGuard() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-
-  // Logout on refresh / tab close
-  useEffect(() => {
-    const onUnload = () => clearSession();
-    window.addEventListener("beforeunload", onUnload);
-    return () => window.removeEventListener("beforeunload", onUnload);
-  }, []);
 
   // Inactivity auto-logout (only on authenticated routes)
   useEffect(() => {

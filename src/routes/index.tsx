@@ -64,21 +64,17 @@ function LoginPage() {
       refreshCaptcha();
       return;
     }
+    try {
+      sessionStorage.setItem("slice_auth", "1");
+      const now = new Date().toISOString();
+      sessionStorage.setItem("slice_login_at", now);
+      localStorage.setItem("slice_last_login_at", now);
+    } catch {}
     setLoading(true);
-    setTimeout(() => {
-      try {
-        sessionStorage.setItem("slice_auth", "1");
-        const now = new Date().toISOString();
-        sessionStorage.setItem("slice_login_at", now);
-        localStorage.setItem("slice_last_login_at", now);
-      } catch {}
-      setLoading(false);
-      setShowSuccess(true);
-      setTimeout(() => {
-        refreshCaptcha();
-        navigate({ to: "/dashboard" });
-      }, 1500);
-    }, 1100);
+    setShowSuccess(true);
+    window.setTimeout(() => {
+      navigate({ to: "/dashboard", replace: true });
+    }, 900);
   };
 
   return (
