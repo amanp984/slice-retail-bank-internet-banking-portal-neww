@@ -273,15 +273,13 @@ function FloatingBubbles() {
   return (
     <>
       {[...Array(8)].map((_, i) => (
-        <motion.div
+        <div
           key={i}
           className="absolute rounded-full bg-white/20 backdrop-blur-sm"
           style={{
             width: 40 + i * 20, height: 40 + i * 20,
             left: `${(i * 13) % 80}%`, top: `${(i * 17) % 70}%`,
           }}
-          animate={{ y: [0, -15, 0], x: [0, 10, 0] }}
-          transition={{ duration: 6 + i, repeat: Infinity, ease: "easeInOut" }}
         />
       ))}
     </>
