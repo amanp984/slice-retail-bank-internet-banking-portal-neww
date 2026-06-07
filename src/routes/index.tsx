@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   User, Lock, Keyboard, CheckCircle2, PiggyBank, Eye, EyeOff,
   RefreshCw, AlertTriangle, X, ShieldCheck, Loader2,
@@ -99,23 +98,16 @@ function LoginPage() {
         {/* Left illustration */}
         <div className="relative bg-login-gradient overflow-hidden hidden lg:flex items-center justify-center">
           <FloatingBubbles />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            className="relative z-10 text-center px-10"
-          >
+          <div className="relative z-10 text-center px-10">
             <PiggyBank className="w-64 h-64 mx-auto text-white/90 drop-shadow-2xl" strokeWidth={1} />
             <h2 className="mt-4 text-3xl font-bold text-white drop-shadow">Secure Internet Banking</h2>
             <p className="mt-2 text-white/90 text-sm max-w-sm mx-auto">Bank with confidence. Anytime, anywhere.</p>
-          </motion.div>
+          </div>
         </div>
 
         {/* Right login */}
         <div className="flex items-center justify-center px-6 py-6 overflow-y-auto">
-          <motion.div
-            initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
-            className="w-full max-w-sm"
-          >
+          <div className="w-full max-w-sm">
             <h1 className="text-3xl font-bold text-destructive mb-6 tracking-wide">LOGIN</h1>
 
             <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} autoComplete="off">
@@ -183,7 +175,7 @@ function LoginPage() {
               </Link>
               <Link to="/terms-and-conditions" className="block text-center text-sm mt-4 text-destructive font-medium underline">Terms and Conditions</Link>
             </form>
-          </motion.div>
+          </div>
         </div>
       </div>
 
@@ -192,15 +184,13 @@ function LoginPage() {
       </footer>
 
       {/* Error popup */}
-      <AnimatePresence>
-        {error && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 grid place-items-center bg-black/40 backdrop-blur-sm px-4"
-            onClick={() => setError(null)}>
-            <motion.div initial={{ scale: 0.92, y: 12, opacity: 0 }} animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }} transition={{ type: "spring", stiffness: 340, damping: 28 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-xl shadow-2xl border border-border max-w-sm w-full overflow-hidden">
+      {error && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-black/40 px-4"
+          onClick={() => setError(null)}>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-xl shadow-2xl border border-border max-w-sm w-full overflow-hidden">
               <div className="flex items-center justify-between px-5 py-3 border-b border-border bg-destructive/10">
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="w-5 h-5 text-destructive" />
@@ -219,20 +209,14 @@ function LoginPage() {
                   </button>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
 
       {/* Success toast (bottom-right, dark banking style) */}
-      <AnimatePresence>
-        {showSuccess && (
-          <motion.div
-            initial={{ opacity: 0, x: 40, y: 10 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            exit={{ opacity: 0, x: 40 }}
-            transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            className="fixed bottom-6 right-6 z-50 overflow-hidden rounded-xl flex items-center gap-3 pl-4 pr-5 py-3 min-w-[260px] max-w-xs"
+      {showSuccess && (
+        <div
+          className="fixed bottom-6 right-6 z-50 overflow-hidden rounded-xl flex items-center gap-3 pl-4 pr-5 py-3 min-w-[260px] max-w-xs"
             style={{
               background: "linear-gradient(180deg, #1a1d24 0%, #0f1115 100%)",
               boxShadow: "0 10px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05), 0 0 30px rgba(34,197,94,0.12)",
@@ -245,19 +229,16 @@ function LoginPage() {
               <CheckCircle2 className="w-5 h-5" style={{ color: "#22c55e" }} />
             </div>
             <div className="text-sm font-medium text-white tracking-tight">Login successfully</div>
-            <motion.div
-              initial={{ width: "100%" }}
-              animate={{ width: "0%" }}
-              transition={{ duration: 1.5, ease: "linear" }}
+            <div
               className="absolute bottom-0 left-0 h-[2px]"
               style={{
                 background: "linear-gradient(90deg, #22c55e 0%, #4ade80 100%)",
                 boxShadow: "0 0 8px rgba(34,197,94,0.6)",
+                width: "100%",
               }}
             />
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </div>
   );
 }
