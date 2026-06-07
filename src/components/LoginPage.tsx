@@ -1,4 +1,3 @@
-import { Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   User, Lock, Keyboard, CheckCircle2, PiggyBank, Eye, EyeOff,
@@ -16,7 +15,6 @@ const makeCaptcha = () => {
 };
 
 export function LoginPage() {
-  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -62,7 +60,7 @@ export function LoginPage() {
     setLoading(true);
     setShowSuccess(true);
     window.setTimeout(() => {
-      navigate({ to: "/dashboard", replace: true });
+      window.location.replace("/dashboard");
     }, 900);
   };
 
@@ -100,7 +98,7 @@ export function LoginPage() {
               <Field icon={<User className="w-4 h-4" />} label="User Name">
                 <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="ENTER USER NAME" autoComplete="off" className="w-full px-4 py-2.5 rounded-md border border-border bg-white focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition placeholder:text-muted-foreground/60 text-sm" />
               </Field>
-              <p className="text-xs text-right mt-1 mb-3 text-muted-foreground">Forgot Username? <Link to="/forgot-username" className="text-destructive font-semibold hover:underline">Click Here</Link></p>
+              <p className="text-xs text-right mt-1 mb-3 text-muted-foreground">Forgot Username? <a href="/forgot-username" className="text-destructive font-semibold hover:underline">Click Here</a></p>
 
               <Field icon={<Lock className="w-4 h-4" />} label="Password">
                 <div className="relative">
@@ -108,7 +106,7 @@ export function LoginPage() {
                   <button type="button" onClick={() => setShowPass((s) => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" tabIndex={-1}>{showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}</button>
                 </div>
               </Field>
-              <p className="text-xs text-right mt-1 mb-3 text-muted-foreground">Forgot password? <Link to="/forgot-password" className="text-destructive font-semibold hover:underline">Click Here</Link></p>
+              <p className="text-xs text-right mt-1 mb-3 text-muted-foreground">Forgot password? <a href="/forgot-password" className="text-destructive font-semibold hover:underline">Click Here</a></p>
 
               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2"><Keyboard className="w-4 h-4" /> Click to open the virtual keyboard</div>
               <div className="flex items-center gap-2 mb-2">
@@ -119,8 +117,8 @@ export function LoginPage() {
               </div>
               <input value={captcha} onChange={(e) => setCaptcha(e.target.value)} placeholder="Type the text shown above" autoComplete="off" className="w-full px-4 py-2.5 rounded-md border border-border focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm mb-4" />
               <button type="submit" disabled={loading} className="w-full py-2.5 rounded-md bg-destructive text-destructive-foreground font-semibold hover:brightness-110 active:scale-[0.99] transition shadow-soft mb-2.5 disabled:opacity-80 flex items-center justify-center gap-2">{loading ? (<><Loader2 className="w-4 h-4 animate-spin" /> Authenticating…</>) : "Login"}</button>
-              <Link to="/signup" className="block text-center w-full py-2.5 rounded-md bg-destructive text-destructive-foreground font-semibold hover:brightness-110 transition shadow-soft">New User Sign Up</Link>
-              <Link to="/terms-and-conditions" className="block text-center text-sm mt-4 text-destructive font-medium underline">Terms and Conditions</Link>
+              <a href="/signup" className="block text-center w-full py-2.5 rounded-md bg-destructive text-destructive-foreground font-semibold hover:brightness-110 transition shadow-soft">New User Sign Up</a>
+              <a href="/terms-and-conditions" className="block text-center text-sm mt-4 text-destructive font-medium underline">Terms and Conditions</a>
             </form>
           </div>
         </div>
