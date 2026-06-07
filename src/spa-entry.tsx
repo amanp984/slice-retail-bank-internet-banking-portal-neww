@@ -1,14 +1,28 @@
 import "./styles.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { RouterProvider } from "@tanstack/react-router";
-import { getRouter } from "./router";
 
-const router = getRouter();
 const container = document.getElementById("root");
 if (!container) throw new Error("#root element not found");
-createRoot(container).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
-);
+
+const root = createRoot(container);
+const path = window.location.pathname;
+
+if (path === "/" || path === "") {
+  const { LoginPage } = await import("./components/LoginPage");
+  root.render(
+    <StrictMode>
+      <LoginPage />
+    </StrictMode>,
+  );
+} else {
+  const [{ RouterProvider }, { getRouter }] = await Promise.all([
+    import("@tanstack/react-router"),
+    import("./router"),
+  ]);
+  root.render(
+    <StrictMode>
+      <RouterProvider router={getRouter()} />
+    </StrictMode>,
+  );
+}
