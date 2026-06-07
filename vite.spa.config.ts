@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import tanstackRouter from "@tanstack/router-plugin/vite";
 import { resolve } from "node:path";
 
 // Standalone SPA build for static hosts (e.g. Vercel) that cannot run
@@ -11,7 +11,7 @@ import { resolve } from "node:path";
 // Start's SSR hydration handshake.
 export default defineConfig({
   plugins: [
-    TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
+    tanstackRouter({ target: "react", autoCodeSplitting: true }),
     react(),
     tailwindcss(),
     tsconfigPaths(),
