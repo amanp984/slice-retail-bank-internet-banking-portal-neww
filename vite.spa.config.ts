@@ -11,7 +11,7 @@ import { resolve } from "node:path";
 // Start's SSR hydration handshake.
 export default defineConfig({
   plugins: [
-    TanStackRouterVite({ target: "react" }),
+    TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
     react(),
     tailwindcss(),
     tsconfigPaths(),
