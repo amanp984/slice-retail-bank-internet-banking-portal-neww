@@ -41,7 +41,7 @@ export function extractAccount(text: string | null | undefined): string | null {
 }
 
 // Pull a clean party name from the SMS body, stripping titles, account masks, dates.
-function extractParty(text: string, type: "credit" | "debit"): string | null {
+export function extractParty(text: string, type: "credit" | "debit"): string | null {
   if (!text) return null;
   const t = text.replace(/\s+/g, " ").trim();
   // common patterns
