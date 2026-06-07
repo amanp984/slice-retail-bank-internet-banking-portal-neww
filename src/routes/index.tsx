@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   User, Lock, Keyboard, CheckCircle2, PiggyBank, Eye, EyeOff,
   RefreshCw, AlertTriangle, X, ShieldCheck, Loader2,
@@ -255,9 +255,8 @@ function Field({ icon, label, children }: { icon: React.ReactNode; label: string
 }
 
 /**
- * Decorative animated bubbles. Only mounts on viewports >= 1024px to avoid
- * running 8 infinite framer-motion RAF loops on mobile, which previously
- * saturated the main thread and froze the UI (buttons/inputs unresponsive).
+ * Decorative bubbles. Only mounts on viewports >= 1024px, and renders as
+ * static DOM so the login page does not run animation loops before auth.
  */
 function FloatingBubbles() {
   const [enabled, setEnabled] = useState(false);
