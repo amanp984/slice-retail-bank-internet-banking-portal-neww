@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, Search, Download } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTransactions } from "@/hooks/useTransactions";
-import { formatDescription } from "@/lib/formatTxn";
+import { formatDescription, extractParty, extractUtr } from "@/lib/formatTxn";
 import { downloadStatementPdf } from "@/lib/statement";
 
 export const Route = createFileRoute("/transactions")({
@@ -15,8 +15,12 @@ export const Route = createFileRoute("/transactions")({
 const fmt = (n: number) => new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2 }).format(Math.abs(n));
 const fmtDate = (iso: string) => {
   const d = new Date(iso);
-  return d.toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
+  return d.toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 };
+
+const partyOf = (t: { description: string | null; sender_name: string | null; type: "credit" | "debit" }) =>
+  (extractParty(t.description ?? "", t.type) || t.sender_name || "—").toString();
+const utrOf = (t: { description: string | null }) => extractUtr(t.description ?? "") || "—";
 
 function TransactionsPage() {
   const [page, setPage] = useState(1);
@@ -32,6 +36,8 @@ function TransactionsPage() {
         return (
           desc.includes(s) ||
           (t.sender_name ?? "").toLowerCase().includes(s) ||
+          partyOf(t).toLowerCase().includes(s) ||
+          utrOf(t).toLowerCase().includes(s) ||
           t.type.includes(s)
         );
       }),
@@ -74,11 +80,12 @@ function TransactionsPage() {
           <table className="w-full text-sm border-separate border-spacing-0">
             <thead>
               <tr className="text-xs text-muted-foreground border-b border-border">
-                <th className="text-left font-medium py-3 pr-4 whitespace-nowrap">Date</th>
+                <th className="text-left font-medium py-3 pr-4 whitespace-nowrap">Timestamp</th>
+                <th className="text-left font-medium py-3 pr-4 whitespace-nowrap">Type</th>
+                <th className="text-left font-medium py-3 pr-4 whitespace-nowrap">Name</th>
+                <th className="text-left font-medium py-3 pr-4 whitespace-nowrap">UTR / Ref</th>
                 <th className="text-left font-medium py-3 pr-6">Description</th>
-                <th className="text-left font-medium py-3 pr-6 whitespace-nowrap">Type</th>
                 <th className="text-right font-medium py-3 pr-6 whitespace-nowrap">Amount (₹)</th>
-                <th className="text-right font-medium py-3 pr-6 whitespace-nowrap">Balance (₹)</th>
                 <th className="text-right font-medium py-3 whitespace-nowrap">Status</th>
               </tr>
             </thead>
@@ -95,12 +102,17 @@ function TransactionsPage() {
                     className="hover:bg-secondary/30"
                   >
                     <td className="py-4 pr-4 text-foreground whitespace-nowrap align-top border-b border-border/60">{fmtDate(t.created_at)}</td>
+                    <td className="py-4 pr-4 align-top border-b border-border/60">
+                      <span className={`px-2 py-0.5 rounded-md text-[11px] font-semibold ${t.type === "credit" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                        {t.type === "credit" ? "Credit" : "Debit"}
+                      </span>
+                    </td>
+                    <td className="py-4 pr-4 text-foreground align-top border-b border-border/60 whitespace-nowrap">{partyOf(t)}</td>
+                    <td className="py-4 pr-4 text-muted-foreground align-top border-b border-border/60 font-mono text-xs">{utrOf(t)}</td>
                     <td className="py-4 pr-6 text-foreground leading-relaxed align-top border-b border-border/60">{formatDescription(t)}</td>
-                    <td className="py-4 pr-6 text-muted-foreground align-top border-b border-border/60">{t.type === "credit" ? "Credit" : "Debit"}</td>
                     <td className="py-4 pr-6 text-right font-medium text-foreground tabular-nums whitespace-nowrap align-top border-b border-border/60">
                       {t.type === "debit" ? "-" : "+"}{fmt(t.amount)}
                     </td>
-                    <td className="py-4 pr-6 text-right text-foreground tabular-nums whitespace-nowrap align-top border-b border-border/60">{fmt(t.balance_after_transaction)}</td>
                     <td className="py-4 text-right align-top border-b border-border/60">
                       <span className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-green-100 text-green-700">Success</span>
                     </td>
@@ -108,10 +120,10 @@ function TransactionsPage() {
                 ))}
               </AnimatePresence>
               {!loading && slice.length === 0 && (
-                <tr><td colSpan={6} className="py-10 text-center text-sm text-muted-foreground">No transactions found</td></tr>
+                <tr><td colSpan={7} className="py-10 text-center text-sm text-muted-foreground">No transactions found</td></tr>
               )}
               {loading && slice.length === 0 && (
-                <tr><td colSpan={6} className="py-10 text-center text-sm text-muted-foreground">Loading…</td></tr>
+                <tr><td colSpan={7} className="py-10 text-center text-sm text-muted-foreground">Loading…</td></tr>
               )}
             </tbody>
           </table>
