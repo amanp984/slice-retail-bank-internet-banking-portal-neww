@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { type ReactNode, useState, useEffect, useRef } from "react";
 import { RestrictionModal } from "./RestrictionModal";
+import { CUSTOMER } from "@/lib/customer";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -149,7 +150,7 @@ export function DashboardLayout({
           <div>
             {showGreeting && (
               <>
-                <h1 className="text-2xl font-bold text-foreground">Hello, Dharmendra</h1>
+                <h1 className="text-2xl font-bold text-foreground">Hello, {CUSTOMER.holderName.split(" ")[0]}</h1>
                 <p className="text-sm text-muted-foreground mt-1">Last login: {lastLogin || "—"}</p>
               </>
             )}

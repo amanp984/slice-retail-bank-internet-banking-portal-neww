@@ -3,9 +3,8 @@ import {
   User, Lock, Keyboard, CheckCircle2, PiggyBank, Eye, EyeOff,
   RefreshCw, AlertTriangle, X, ShieldCheck, Loader2,
 } from "lucide-react";
+import { PROFILES } from "@/lib/customer";
 
-const VALID_USER = "356642873168";
-const VALID_PASS = "Bhai@1985";
 const CAPTCHA_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
 
 const makeCaptcha = () => {
@@ -35,7 +34,8 @@ export function LoginPage() {
 
   const handleLogin = () => {
     if (loading) return;
-    if (username !== VALID_USER || password !== VALID_PASS) {
+    const profile = PROFILES[username.trim()];
+    if (!profile || profile.password !== password) {
       setError({
         title: "Authentication Failed",
         msg: "Invalid User ID or Password. Please verify your banking credentials and try again.",
@@ -53,6 +53,7 @@ export function LoginPage() {
     }
     try {
       sessionStorage.setItem("slice_auth", "1");
+      sessionStorage.setItem("slice_customer_id", profile.customerId);
       const now = new Date().toISOString();
       sessionStorage.setItem("slice_login_at", now);
       localStorage.setItem("slice_last_login_at", now);

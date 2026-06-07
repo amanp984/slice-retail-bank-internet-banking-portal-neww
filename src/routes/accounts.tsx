@@ -8,6 +8,7 @@ import {
   Info, ChevronRight, ArrowRight,
 } from "lucide-react";
 import { useTransactions } from "@/hooks/useTransactions";
+import { CUSTOMER } from "@/lib/customer";
 
 const fmtINR = (n: number) =>
   "₹" + new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2 }).format(Math.abs(n));
@@ -31,16 +32,20 @@ const tabs: { key: TabKey; label: string; restricted?: "fd" | "loan" | "invest" 
   { key: "loan", label: "Loan Account", restricted: "loan" },
 ];
 
-const accountData = {
+function buildAccountData() {
+  const holder = CUSTOMER.holderName;
+  const number = CUSTOMER.accountNumber;
+  const ifsc = CUSTOMER.ifsc;
+  return {
   current: {
     name: "Slice Current Account",
     subtitle: "Your primary business account",
-    mask: "033323342867251",
+    mask: number,
     badge: "Primary Account",
     balance: "₹0.00",
-    holder: "Dharmendra",
-    number: "033323342867251",
-    ifsc: "NESF0000333",
+    holder,
+    number,
+    ifsc,
     type: "Current Account",
     branch: "Mumbai Corporate Branch",
     status: "Active",
@@ -52,9 +57,9 @@ const accountData = {
     mask: "XXXX XXXX XXXX 2341",
     badge: "Linked Account",
     balance: "₹0.00",
-    holder: "Dharmendra",
+    holder,
     number: "XXXX XXXX XXXX 2341",
-    ifsc: "NESF0000333",
+    ifsc,
     type: "Savings Account",
     branch: "Mumbai Corporate Branch",
     status: "Active",
@@ -66,15 +71,16 @@ const accountData = {
     mask: "XXXX XXXX XXXX 9087",
     badge: "OD Facility",
     balance: "₹0.00",
-    holder: "Dharmendra",
+    holder,
     number: "XXXX XXXX XXXX 9087",
-    ifsc: "NESF0000333",
+    ifsc,
     type: "Overdraft Account",
     branch: "Mumbai Corporate Branch",
     status: "Active",
     open: "25 December 2025",
   },
-};
+  };
+}
 
 const quickActions: { icon: any; label: string; to?: string }[] = [
   { icon: FileText, label: "View Account Statement" },
@@ -89,6 +95,7 @@ function AccountsPage() {
   const [toast, setToast] = useState<string | null>(null);
   const { balance } = useTransactions(50);
 
+  const accountData = buildAccountData();
   const baseData = accountData[active === "loan" || active === "savings" ? "current" : active];
   const data = active === "current" ? { ...baseData, balance: fmtINR(balance) } : baseData;
 
