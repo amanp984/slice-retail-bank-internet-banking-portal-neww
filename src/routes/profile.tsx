@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { IdCard, MapPin, Building, Mail, Phone, Clock, ShieldCheck, Eye, UserCheck, FileText, CheckCircle2 } from "lucide-react";
+import { CUSTOMER } from "@/lib/customer";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -12,17 +13,18 @@ export const Route = createFileRoute("/profile")({
   component: Profile,
 });
 
-const info = [
-  { i: IdCard, k: "Customer ID", v: "356642873168" },
-  { i: IdCard, k: "Aadhaar Card (Last 4 Digits)", v: "XXXX XXXX 3842" },
-  { i: MapPin, k: "Address", v: "Sodawala Nagar complex number 3, sector 44 Mumbai 400092" },
-  { i: IdCard, k: "PAN Card Number", v: "GOXXXXXX77B" },
-  { i: MapPin, k: "Permanent Address", v: "Sodawala Nagar complex number 3, sector 44 Mumbai 400092" },
+const buildInfo = () => [
+  { i: IdCard, k: "Customer ID", v: CUSTOMER.customerId },
+  { i: IdCard, k: "Aadhaar Card (Last 4 Digits)", v: CUSTOMER.aadhaarMasked },
+  { i: MapPin, k: "Address", v: CUSTOMER.address },
+  { i: IdCard, k: "PAN Card Number", v: CUSTOMER.pan },
+  { i: MapPin, k: "Permanent Address", v: CUSTOMER.address },
   { i: Building, k: "Bank Address", v: "Slice Bank, 6th Floor, Tower 1,\nOne World Centre, Senapati Bapat Marg,\nLower Parel, Mumbai - 400013" },
-  { i: Building, k: "Branch Address", v: "Slice Bank, Mumbai - Corporate Branch,\nTower A, BKC,\nMumbai, Maharashtra - 400051" },
+  { i: Building, k: "Branch Address", v: CUSTOMER.branch },
 ];
 
 function Profile() {
+  const info = buildInfo();
   return (
     <DashboardLayout>
       <h1 className="text-2xl font-bold">Profile & Settings</h1>
@@ -37,10 +39,10 @@ function Profile() {
 
             <h3 className="font-bold mb-4">Profile Picture</h3>
             <div className="flex items-center gap-5 pb-6 border-b border-border">
-              <div className="w-20 h-20 rounded-full bg-accent text-primary grid place-items-center text-2xl font-bold">D</div>
+              <div className="w-20 h-20 rounded-full bg-accent text-primary grid place-items-center text-2xl font-bold">{CUSTOMER.holderName.charAt(0).toUpperCase()}</div>
               <div>
-                <div className="text-lg font-bold">Dharmendra</div>
-                <div className="text-sm text-muted-foreground">Customer ID: 356642873168</div>
+                <div className="text-lg font-bold">{CUSTOMER.holderName}</div>
+                <div className="text-sm text-muted-foreground">Customer ID: {CUSTOMER.customerId}</div>
               </div>
             </div>
 

@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useTransactions } from "@/hooks/useTransactions";
 import { formatDescription } from "@/lib/formatTxn";
 import { downloadStatementPdf, downloadStatementCsv } from "@/lib/statement";
+import { CUSTOMER } from "@/lib/customer";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -59,7 +60,7 @@ function Dashboard() {
             <span className="font-medium">Current Account</span>
             <span className="px-1.5 py-0.5 rounded-full bg-white/15 text-[9px] font-semibold">Primary</span>
           </div>
-          <div className="text-[11px] opacity-80 mt-0.5">033323342867251</div>
+          <div className="text-[11px] opacity-80 mt-0.5">{CUSTOMER.accountNumber}</div>
           <div className="mt-4 text-[11px] opacity-90">Available Balance</div>
           <div className="flex items-center gap-2 mt-0.5 h-9">
             <AnimatePresence mode="wait" initial={false}>
@@ -164,7 +165,7 @@ function Dashboard() {
           <p className="text-xs text-muted-foreground mt-1 mb-4">Select account and period to download your statement</p>
           <label className="text-xs text-muted-foreground">Account</label>
           <select className="w-full mt-1 mb-3 px-3 py-2 rounded-lg border border-border text-sm bg-white">
-            <option>Current Account - 033323342867251</option>
+            <option>Current Account - {CUSTOMER.accountNumber}</option>
           </select>
           <label className="text-xs text-muted-foreground">Select Period</label>
           <select className="w-full mt-1 mb-4 px-3 py-2 rounded-lg border border-border text-sm bg-white">
@@ -194,8 +195,8 @@ function Dashboard() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             {[
               ["Account Type", "Current Account"],
-              ["Account Number", "033323342867251"],
-              ["IFSC Code", "NESF0000333"],
+              ["Account Number", CUSTOMER.accountNumber],
+              ["IFSC Code", CUSTOMER.ifsc],
               ["Branch", "Mumbai - Corporate Branch"],
             ].map(([k, v]) => (
               <div key={k}>
