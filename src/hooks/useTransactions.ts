@@ -78,10 +78,17 @@ export function useTransactions(limit = 50) {
           });
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        // eslint-disable-next-line no-console
+        console.log("[useTransactions] realtime status:", status);
+      });
+
+    // Safety-net polling in case realtime is not enabled on the table.
+    const poll = setInterval(load, 8000);
 
     return () => {
       mounted = false;
+      clearInterval(poll);
       supabase.removeChannel(channel);
     };
   }, [limit]);
