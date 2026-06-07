@@ -272,3 +272,37 @@ function Field({ icon, label, children }: { icon: React.ReactNode; label: string
     </div>
   );
 }
+
+/**
+ * Decorative animated bubbles. Only mounts on viewports >= 1024px to avoid
+ * running 8 infinite framer-motion RAF loops on mobile, which previously
+ * saturated the main thread and froze the UI (buttons/inputs unresponsive).
+ */
+function FloatingBubbles() {
+  const [enabled, setEnabled] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const apply = () => setEnabled(mq.matches);
+    apply();
+    mq.addEventListener?.("change", apply);
+    return () => mq.removeEventListener?.("change", apply);
+  }, []);
+  if (!enabled) return null;
+  return (
+    <>
+      {[...Array(8)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-white/20 backdrop-blur-sm"
+          style={{
+            width: 40 + i * 20, height: 40 + i * 20,
+            left: `${(i * 13) % 80}%`, top: `${(i * 17) % 70}%`,
+          }}
+          animate={{ y: [0, -15, 0], x: [0, 10, 0] }}
+          transition={{ duration: 6 + i, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ))}
+    </>
+  );
+}
