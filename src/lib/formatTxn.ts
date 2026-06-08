@@ -1,4 +1,4 @@
-import type { Txn } from "@/integrations/supabase/client";
+import type { Txn } from "@/lib/supabase-helpers";
 
 const MODES = ["UPI", "IMPS", "NEFT", "RTGS"] as const;
 export type PaymentMode = (typeof MODES)[number] | null;
