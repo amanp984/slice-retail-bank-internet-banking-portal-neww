@@ -16,7 +16,7 @@ const fmtShortDate = (iso: string) => {
   const day = String(d.getDate()).padStart(2, "0");
   const mon = d.toLocaleString("en-IN", { month: "short" });
   const yr = String(d.getFullYear()).slice(-2);
-  return `${day} ${mon} '${yr}`;
+  return `${day} ${mon} ${yr}`; // Changed from backtick year to single line format
 };
 
 export function todayFileStamp(): string {
@@ -178,23 +178,30 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     { label: "Total debits", value: fmtRupee(totalDebits), sym: "-" },
     { label: "Closing balance", value: fmtRupee(closingBalance), sym: "=" },
   ];
+  
   const sumColW = contentW / summaryCols.length;
+  const summaryBaselineY = y + 24; // Fixed baseline for all values
+  
   summaryCols.forEach((c, i) => {
     const cx = marginX + sumColW * i;
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     doc.setTextColor(140, 140, 140);
     doc.text(c.label, cx, y);
+    
     doc.setFont("helvetica", "bold");
     doc.setFontSize(15);
     const vc = c.valueColor ?? [20, 20, 20];
     doc.setTextColor(vc[0], vc[1], vc[2]);
-    doc.text(c.value, cx, y + 24);
+    // All values now on the same baseline
+    doc.text(c.value, cx, summaryBaselineY);
+    
+    // Operator positioned on the same baseline as values
     if (c.sym && i > 0) {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(16);
       doc.setTextColor(170, 170, 170);
-      doc.text(c.sym, cx - 10, y + 18, { align: "center" });
+      doc.text(c.sym, cx - 10, summaryBaselineY - 6, { align: "center" });
     }
   });
   y += 70; // Increased from 60 to 70 for better spacing before table
@@ -213,10 +220,10 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     ];
   });
 
-  // Table widths: Date 10% / Description 40% / Ref 22% / Amount 14% / Balance 14%
+  // Table widths: increased date width to prevent wrapping
   const tableW = contentW;
-  const dateW = tableW * 0.1;
-  const descW = tableW * 0.4;
+  const dateW = tableW * 0.12; // Increased from 0.1 to 0.12 to accommodate single-line dates
+  const descW = tableW * 0.38; // Adjusted to compensate for increased date width
   const refW = tableW * 0.22;
   const amtW = tableW * 0.14;
   const balW = tableW * 0.14;
@@ -230,7 +237,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
       fontSize: 10,
       cellPadding: { top: 12, bottom: 12, left: 8, right: 8 }, // Increased horizontal padding from 6 to 8
       textColor: [25, 25, 25],
-      valign: "top",
+      valign: "middle", // Changed from "top" to "middle" for vertical centering
       overflow: "linebreak",
       minCellHeight: 28, // Added minimum cell height to prevent overlap
     },
@@ -241,10 +248,12 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
       lineWidth: 0,
       fillColor: [255, 255, 255],
       cellPadding: { top: 8, bottom: 14, left: 8, right: 8 }, // Increased padding and adjusted from 6 to 8
+      valign: "middle",
     },
     bodyStyles: {
       lineWidth: 0,
       fillColor: [255, 255, 255],
+      valign: "middle",
     },
     didDrawCell: (data) => {
       if (data.column.index === 0) {
