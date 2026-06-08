@@ -70,7 +70,15 @@ export const PROFILES: Record<string, CustomerProfile> = {
   },
 };
 
-export const DEFAULT_CUSTOMER_ID = "356642873168";
+// Empty placeholder used before the user signs in. We intentionally do NOT
+// fall back to any real profile here — falling back to e.g. Dharmendra would
+// leak the previous customer's data during refresh / pre-redirect render.
+const EMPTY_PROFILE: CustomerProfile = {
+  username: "", password: "", businessName: "", holderName: "",
+  customerId: "", accountNumber: "", accountType: "", ifsc: "", micr: "",
+  phone: "", email: "", pan: "", aadhaarMasked: "", nominee: "",
+  address: "", branch: "", openingDate: "", udyam: "",
+};
 
 export function getActiveCustomer(): CustomerProfile {
   let id: string | null = null;
@@ -79,7 +87,8 @@ export function getActiveCustomer(): CustomerProfile {
       id = sessionStorage.getItem("slice_customer_id");
     }
   } catch {}
-  return PROFILES[id ?? ""] ?? PROFILES[DEFAULT_CUSTOMER_ID];
+  if (!id) return EMPTY_PROFILE;
+  return PROFILES[id] ?? EMPTY_PROFILE;
 }
 
 // Backwards-compatible proxy: reading CUSTOMER.<field> resolves to whichever
