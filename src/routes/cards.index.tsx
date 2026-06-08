@@ -47,10 +47,10 @@ function Cards() {
               <div className="w-10 h-7 rounded bg-gradient-to-br from-amber-300 to-amber-500" />
               <Wifi className="w-5 h-5 rotate-90 opacity-90 ml-auto" />
             </div>
-            <div className="mt-3 tracking-[0.3em] text-base font-medium">**** **** **** 5678</div>
+            <div className="mt-3 tracking-[0.3em] text-base font-medium">**** **** **** 4587</div>
             <div className="mt-4 flex justify-between text-[10px] uppercase opacity-90">
-              <div><div>Card Holder</div><div className="text-sm font-semibold tracking-wider mt-1">​AKASH TUFANI</div></div>
-              <div><div>Valid Thru</div><div className="text-sm font-semibold mt-1">12/28</div></div>
+              <div><div>Card Holder</div><div className="text-sm font-semibold tracking-wider mt-1">​SONI TELECO</div></div>
+              <div><div>Valid Thru</div><div className="text-sm font-semibold mt-1">11/18</div></div>
             </div>
           </motion.div>
           <div className="flex items-center gap-2 mt-4 text-sm">
