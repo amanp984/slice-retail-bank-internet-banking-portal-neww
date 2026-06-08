@@ -32,6 +32,8 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
   const marginX = 48;
+  const marginTop = 100; // Increased from implicit 130 for logo/header spacing
+  const marginBottom = 60;
 
   // Sort chronologically (oldest -> newest) so running balance grows.
   const sorted = [...txns].sort(
@@ -84,12 +86,12 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
   drawChrome();
 
   // ---------- Customer header section ----------
-  let y = 130;
+  let y = marginTop; // Use marginTop constant instead of hardcoded 130
   doc.setTextColor(20, 20, 20);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
   doc.text(CUSTOMER.businessName.toUpperCase(), marginX, y);
-  y += 24;
+  y += 30; // Increased from 24 to provide better spacing after business name
 
   // Two equal columns: left and right, each with [label, value]
   const leftRows: Array<[string, string]> = [
@@ -112,10 +114,10 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
   ];
 
   const contentW = pageW - marginX * 2;
-  const colGap = 24;
+  const colGap = 36; // Increased from 24 to 36 for better column separation
   const colW = (contentW - colGap) / 2;
-  const labelW = 100;
-  const valueW = colW - labelW - 8;
+  const labelW = 120; // Increased from 100 to accommodate longer labels like "Account Opening Date"
+  const valueW = colW - labelW - 12; // Increased padding from 8 to 12
 
   const renderCol = (
     rows: Array<[string, string]>,
@@ -123,7 +125,21 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     startY: number
   ) => {
     let cy = startY;
+    const rowHeights: number[] = [];
+
+    // First pass: calculate all row heights to ensure proper spacing
     rows.forEach(([label, value]) => {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10.5);
+      const wrapped = doc.splitTextToSize(value || "-", valueW);
+      const lines = Array.isArray(wrapped) ? wrapped.length : 1;
+      // Increased minimum row height from 20 to 24, and line spacing multiplier from 14 to 16
+      const rowHeight = Math.max(24, lines * 16 + 8);
+      rowHeights.push(rowHeight);
+    });
+
+    // Second pass: render with calculated heights
+    rows.forEach(([label, value], idx) => {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10.5);
       doc.setTextColor(130, 130, 130);
@@ -135,15 +151,14 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
       const wrapped = doc.splitTextToSize(value || "-", valueW);
       doc.text(wrapped, startX + labelW, cy);
 
-      const lines = Array.isArray(wrapped) ? wrapped.length : 1;
-      cy += Math.max(20, lines * 14 + 6);
+      cy += rowHeights[idx];
     });
     return cy;
   };
 
   const leftEndY = renderCol(leftRows, marginX, y);
   const rightEndY = renderCol(rightRows, marginX + colW + colGap, y);
-  y = Math.max(leftEndY, rightEndY) + 24;
+  y = Math.max(leftEndY, rightEndY) + 36; // Increased spacing from 24 to 36 before summary
 
   // ---------- Summary row ----------
   const summaryCols: Array<{
@@ -182,7 +197,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
       doc.text(c.sym, cx - 10, y + 18, { align: "center" });
     }
   });
-  y += 60;
+  y += 70; // Increased from 60 to 70 for better spacing before table
 
   // ---------- Transactions table ----------
   let running = openingBalance;
@@ -213,10 +228,11 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     theme: "plain",
     styles: {
       fontSize: 10,
-      cellPadding: { top: 16, bottom: 16, left: 6, right: 6 },
+      cellPadding: { top: 12, bottom: 12, left: 8, right: 8 }, // Increased horizontal padding from 6 to 8
       textColor: [25, 25, 25],
       valign: "top",
       overflow: "linebreak",
+      minCellHeight: 28, // Added minimum cell height to prevent overlap
     },
     headStyles: {
       fontStyle: "bold",
@@ -224,7 +240,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
       fontSize: 9,
       lineWidth: 0,
       fillColor: [255, 255, 255],
-      cellPadding: { top: 6, bottom: 12, left: 6, right: 6 },
+      cellPadding: { top: 8, bottom: 14, left: 8, right: 8 }, // Increased padding and adjusted from 6 to 8
     },
     bodyStyles: {
       lineWidth: 0,
@@ -251,7 +267,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
       3: { cellWidth: amtW, halign: "right" },
       4: { cellWidth: balW, halign: "right" },
     },
-    margin: { left: marginX, right: marginX, top: 100, bottom: 60 },
+    margin: { left: marginX, right: marginX, top: 100, bottom: marginBottom },
     didDrawPage: () => {
       drawChrome();
     },
@@ -262,7 +278,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(150, 150, 150);
-  if (finalY < pageH - 70) {
+  if (finalY < pageH - marginBottom) {
     doc.text(
       `Generated on ${fmtShortDate(new Date().toISOString())}`,
       marginX,
