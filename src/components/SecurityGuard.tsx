@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useRouterState } from "@tanstack/react-router";
 
 const INACTIVITY_MS = 3 * 60 * 1000;
-const AUTH_KEYS = ["slice_auth", "slice_login_at"];
+const AUTH_KEYS = ["slice_auth", "slice_login_at", "slice_customer_id"];
 
 function clearSession() {
   try {
@@ -18,6 +18,21 @@ function clearSession() {
  */
 export function SecurityGuard() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  // Browser refresh / hard reload → force logout and bounce to login.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const navEntries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
+      const navType = navEntries[0]?.type;
+      if (navType === "reload") {
+        clearSession();
+        if (window.location.pathname !== "/") {
+          window.location.replace("/");
+        }
+      }
+    } catch {}
+  }, []);
 
   // Inactivity auto-logout (only on authenticated routes)
   useEffect(() => {
