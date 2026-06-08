@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { supabase, isSupabaseConfigured, type Txn } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
+import { isSupabaseConfigured, type Txn } from "@/lib/supabase-helpers";
 
 type State = {
   txns: Txn[];
@@ -30,7 +31,7 @@ export function useTransactions(limit = 50) {
       [...rows].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     const load = async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("transactions")
         .select("*")
         .order("created_at", { ascending: false })

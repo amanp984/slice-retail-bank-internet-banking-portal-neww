@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import type { Txn } from "@/integrations/supabase/client";
+import type { Txn } from "@/lib/supabase-helpers";
 import { formatDescription } from "./formatTxn";
 import { CUSTOMER } from "./customer";
 
