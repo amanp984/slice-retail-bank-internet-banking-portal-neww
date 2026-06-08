@@ -50,7 +50,7 @@ function Cards() {
             <div className="mt-3 tracking-[0.3em] text-base font-medium">**** **** **** 4587</div>
             <div className="mt-4 flex justify-between text-[10px] uppercase opacity-90">
               <div><div>Card Holder</div><div className="text-sm font-semibold tracking-wider mt-1">​SONI TELECO</div></div>
-              <div><div>Valid Thru</div><div className="text-sm font-semibold mt-1">11/18</div></div>
+              <div><div>Valid Thru</div><div className="text-sm font-semibold mt-1">11/31</div></div>
             </div>
           </motion.div>
           <div className="flex items-center gap-2 mt-4 text-sm">
