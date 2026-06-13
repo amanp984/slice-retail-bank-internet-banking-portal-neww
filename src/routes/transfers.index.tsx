@@ -8,9 +8,16 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useTransactions } from "@/hooks/useTransactions";
+import { CUSTOMER } from "@/lib/customer";
 
 const fmtINR = (n: number) =>
   "₹" + new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2 }).format(Math.abs(n));
+
+const maskAcct = (n: string) => {
+  if (!n) return "";
+  const last4 = n.slice(-4);
+  return `XXXX XXXX ${last4}`;
+};
 
 export const Route = createFileRoute("/transfers/")({
   head: () => ({
@@ -81,7 +88,7 @@ function TransfersPage() {
                 </div>
                 <div className="flex-1">
                   <div className="font-semibold text-sm">Current Account</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">XXXX XXXX 0313</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">{maskAcct(CUSTOMER.accountNumber)}</div>
                 </div>
                 <div className="text-right">
                   <div className="text-xs text-muted-foreground">Available Balance</div>
