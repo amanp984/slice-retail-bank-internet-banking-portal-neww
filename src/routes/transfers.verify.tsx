@@ -5,6 +5,12 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { ShieldCheck, ArrowLeft, Landmark, User, Info } from "lucide-react";
 import { z } from "zod";
+import { CUSTOMER } from "@/lib/customer";
+
+const maskAcct = (n: string) => {
+  if (!n) return "";
+  return `XXXX XXXX ${n.slice(-4)}`;
+};
 
 const searchSchema = z.object({
   name: z.string().optional().default("Beneficiary"),
@@ -91,7 +97,7 @@ function VerifyPage() {
               <div className="flex-1">
                 <div className="text-xs text-muted-foreground">From Account</div>
                 <div className="font-semibold text-sm">Current Account</div>
-                <div className="text-xs text-muted-foreground">XXXX XXXX 3842</div>
+                <div className="text-xs text-muted-foreground">{maskAcct(CUSTOMER.accountNumber)}</div>
               </div>
             </div>
 
