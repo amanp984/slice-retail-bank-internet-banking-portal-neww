@@ -11,8 +11,6 @@ export type Txn = {
 
 export const LIVE_SUPABASE_PROJECT_ID = "grnuuhoxpnezzmfovrxx";
 export const LIVE_SUPABASE_URL = `https://${LIVE_SUPABASE_PROJECT_ID}.supabase.co`;
-export const LIVE_SUPABASE_PUBLISHABLE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJncm51dWhveHBuZXp6bWZvdnJ4eCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzc5MjU1MDMwLCJleHAiOjIwOTQ4MzEwMzB9.kFisDt3vaZPfYwDi5MLhykMwIiWcaYytdbKxB1Tb9P4";
 
 export function validateLiveSupabaseProject(context = "startup") {
   const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
