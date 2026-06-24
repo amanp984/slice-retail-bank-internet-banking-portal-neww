@@ -7,6 +7,9 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { existsSync, readFileSync } from "node:fs";
 
+const LIVE_SUPABASE_PROJECT_ID = "grnuuhoxpnezzmfovrxx";
+const LIVE_SUPABASE_URL = `https://${LIVE_SUPABASE_PROJECT_ID}.supabase.co`;
+
 const readDotEnv = () => {
   if (!existsSync(".env")) return {} as Record<string, string>;
   return Object.fromEntries(
@@ -22,6 +25,35 @@ const readDotEnv = () => {
 };
 
 const dotEnv = readDotEnv();
+
+const assertLiveSupabaseProject = () => {
+  const projectId = dotEnv.VITE_SUPABASE_PROJECT_ID || dotEnv.SUPABASE_PROJECT_ID;
+  const browserUrl = dotEnv.VITE_SUPABASE_URL;
+  const serverUrl = dotEnv.SUPABASE_URL;
+
+  const mismatches = [
+    projectId && projectId !== LIVE_SUPABASE_PROJECT_ID
+      ? `project id ${projectId}`
+      : null,
+    browserUrl && browserUrl !== LIVE_SUPABASE_URL
+      ? "browser Supabase URL does not match the live project"
+      : null,
+    serverUrl && serverUrl !== LIVE_SUPABASE_URL
+      ? "server Supabase URL does not match the live project"
+      : null,
+  ].filter(Boolean);
+
+  if (mismatches.length) {
+    throw new Error(
+      `[Supabase Guard] Refusing to start with non-live Supabase configuration: ${mismatches.join(
+        ", "
+      )}. Expected project ${LIVE_SUPABASE_PROJECT_ID}.`
+    );
+  }
+};
+
+assertLiveSupabaseProject();
+
 const browserSupabaseEnv = Object.fromEntries(
   ["VITE_SUPABASE_URL", "VITE_SUPABASE_PUBLISHABLE_KEY", "VITE_SUPABASE_ANON_KEY", "VITE_SUPABASE_PROJECT_ID"]
     .filter((key) => dotEnv[key])

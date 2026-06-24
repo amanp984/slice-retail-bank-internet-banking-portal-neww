@@ -2,6 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { parseSms } from "@/lib/parseSms";
 
+const LIVE_SUPABASE_PROJECT_ID = "grnuuhoxpnezzmfovrxx";
+const LIVE_SUPABASE_URL = `https://${LIVE_SUPABASE_PROJECT_ID}.supabase.co`;
+
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
@@ -34,6 +37,9 @@ function getAdmin() {
     process.env.VITE_SUPABASE_ANON_KEY ||
     process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !key) throw new Error("Missing Supabase URL or key in Vercel environment variables");
+  if (url !== LIVE_SUPABASE_URL) {
+    throw new Error(`[Supabase Guard] SMS webhook refused non-live Supabase project. Expected ${LIVE_SUPABASE_PROJECT_ID}.`);
+  }
   return createClient(url, key, { auth: { persistSession: false } });
 }
 

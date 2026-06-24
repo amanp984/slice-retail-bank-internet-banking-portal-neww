@@ -1,17 +1,13 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import type { Txn } from "@/lib/supabase-helpers";
+import { formatINR, formatSignedTransactionINR } from "@/lib/supabase-helpers";
 import { formatDescription } from "./formatTxn";
 import { CUSTOMER } from "./customer";
 
-const fmtRupee = (n: number) =>
-  "Rs " +
-  new Intl.NumberFormat("en-IN", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Math.abs(Number(n)));
+const fmtRupee = (n: number) => formatINR(n);
 const fmtRupeeSigned = (n: number, type: "credit" | "debit") =>
-  (type === "debit" ? "-" : "") + fmtRupee(n);
+  formatSignedTransactionINR(n, type);
 const fmtShortDate = (iso: string) => {
   const d = new Date(iso);
   const day = String(d.getDate()).padStart(2, "0");
@@ -316,7 +312,7 @@ export function downloadStatementCsv(txns: Txn[]) {
     fmtShortDate(t.created_at),
     formatDescription(t).replace(/"/g, '""'),
     t.type,
-    (t.type === "debit" ? "-" : "+") + fmtRupee(t.amount),
+    formatSignedTransactionINR(t.amount, t.type),
     fmtRupee(t.balance_after_transaction),
   ]);
   const csv = [header, ...rows]
