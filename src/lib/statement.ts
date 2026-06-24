@@ -6,9 +6,10 @@ import { CUSTOMER } from "./customer";
 
 const fmtRupee = (n: number) =>
   "Rs " +
-  new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(
-    Math.round(Math.abs(n))
-  );
+  new Intl.NumberFormat("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Math.abs(Number(n)));
 const fmtRupeeSigned = (n: number, type: "credit" | "debit") =>
   (type === "debit" ? "-" : "") + fmtRupee(n);
 const fmtShortDate = (iso: string) => {
