@@ -10,6 +10,7 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { formatDescription } from "@/lib/formatTxn";
 import { downloadStatementPdf, downloadStatementCsv } from "@/lib/statement";
 import { CUSTOMER } from "@/lib/customer";
+import { formatINR, formatSignedTransactionINR } from "@/lib/supabase-helpers";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -36,7 +37,6 @@ const quick: Quick[] = [
   { icon: Download, title: "Download Statement", desc: "View and download your account statements", cta: "Download", action: "download-statement" },
 ];
 
-const fmt = (n: number) => new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2 }).format(Math.abs(n));
 const fmtDate = (iso: string) => {
   const d = new Date(iso);
   return d.toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
@@ -48,8 +48,6 @@ function Dashboard() {
   const navigate = useNavigate();
   const { txns, balance, loading } = useTransactions(50);
   const recent = txns.slice(0, 5);
-  const balanceInt = Math.floor(balance);
-  const balanceDec = (Math.abs(balance) % 1).toFixed(2).slice(1); // ".50"
   return (
     <DashboardLayout showGreeting>
       <div className="grid grid-cols-12 gap-5">
@@ -66,7 +64,7 @@ function Dashboard() {
             <AnimatePresence mode="wait" initial={false}>
               {show ? (
                 <motion.span key={`v-${balance}`} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18 }}
-                  className="text-2xl font-bold tabular-nums">₹{new Intl.NumberFormat("en-IN").format(balanceInt)}<span className="text-sm">{balanceDec}</span></motion.span>
+                  className="text-2xl font-bold tabular-nums">{formatINR(balance)}</motion.span>
               ) : (
                 <motion.span key="h" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18 }}
                   className="text-2xl font-bold tracking-widest">₹ ••••••••</motion.span>
@@ -78,7 +76,7 @@ function Dashboard() {
             </button>
           </div>
           <div className="grid grid-cols-2 gap-3 mt-3 text-[11px]">
-            <div><div className="opacity-80">Total Balance</div><div className="font-semibold text-sm">{show ? `₹${fmt(balance)}` : "₹ ••••••"}</div></div>
+            <div><div className="opacity-80">Total Balance</div><div className="font-semibold text-sm">{show ? formatINR(balance) : "₹ ••••••"}</div></div>
             <div><div className="opacity-80">Uncleared</div><div className="font-semibold text-sm">{show ? "₹0.00" : "₹ ••••"}</div></div>
           </div>
           <Link to="/accounts" className="inline-block mt-4 px-3.5 py-1.5 rounded-lg bg-white text-primary text-xs font-semibold hover:bg-white/90 transition active:scale-[0.98] shadow-sm">View Account Details</Link>
@@ -140,9 +138,9 @@ function Dashboard() {
                     <td className="py-4 pr-6 text-foreground leading-relaxed align-top border-b border-border/60">{formatDescription(t)}</td>
                     <td className="py-4 pr-6 text-muted-foreground align-top border-b border-border/60">{labelType(t.type)}</td>
                     <td className="py-4 pr-6 text-right font-medium text-foreground tabular-nums whitespace-nowrap align-top border-b border-border/60">
-                      {t.type === "debit" ? "-" : "+"}{fmt(t.amount)}
+                      {formatSignedTransactionINR(t.amount, t.type)}
                     </td>
-                    <td className="py-4 text-right text-foreground tabular-nums whitespace-nowrap align-top border-b border-border/60">{fmt(t.balance_after_transaction)}</td>
+                    <td className="py-4 text-right text-foreground tabular-nums whitespace-nowrap align-top border-b border-border/60">{formatINR(t.balance_after_transaction)}</td>
                   </motion.tr>
                 ))}
               </AnimatePresence>

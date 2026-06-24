@@ -6,13 +6,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useTransactions } from "@/hooks/useTransactions";
 import { formatDescription, extractParty, extractUtr } from "@/lib/formatTxn";
 import { downloadStatementPdf } from "@/lib/statement";
+import { formatSignedTransactionINR } from "@/lib/supabase-helpers";
 
 export const Route = createFileRoute("/transactions")({
   head: () => ({ meta: [{ title: "Transaction History — Slice Bank" }] }),
   component: TransactionsPage,
 });
 
-const fmt = (n: number) => new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2 }).format(Math.abs(n));
 const fmtDate = (iso: string) => {
   const d = new Date(iso);
   return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
@@ -111,7 +111,7 @@ function TransactionsPage() {
                     <td className="py-4 pr-4 text-muted-foreground align-top border-b border-border/60 font-mono text-xs">{utrOf(t)}</td>
                     <td className="py-4 pr-6 text-foreground leading-relaxed align-top border-b border-border/60">{formatDescription(t)}</td>
                     <td className="py-4 pr-6 text-right font-medium text-foreground tabular-nums whitespace-nowrap align-top border-b border-border/60">
-                      {t.type === "debit" ? "-" : "+"}{fmt(t.amount)}
+                      {formatSignedTransactionINR(t.amount, t.type)}
                     </td>
                     <td className="py-4 text-right align-top border-b border-border/60">
                       <span className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-green-100 text-green-700">Success</span>

@@ -1,5 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
+const LIVE_SUPABASE_PROJECT_ID = "grnuuhoxpnezzmfovrxx";
+const LIVE_SUPABASE_URL = `https://${LIVE_SUPABASE_PROJECT_ID}.supabase.co`;
+
 // Native Vercel serverless function (Node runtime).
 // Path: POST /api/sms
 
@@ -40,14 +43,14 @@ function parseSms(raw: string) {
 }
 
 function getAdmin() {
-  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const url = LIVE_SUPABASE_URL;
   const key =
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
     process.env.SUPABASE_ANON_KEY ||
     process.env.SUPABASE_PUBLISHABLE_KEY ||
     process.env.VITE_SUPABASE_ANON_KEY ||
     process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) throw new Error("Missing Supabase URL or key in Vercel env");
+  if (!key) throw new Error("Missing Supabase key in Vercel env");
   return createClient(url, key, { auth: { persistSession: false } });
 }
 

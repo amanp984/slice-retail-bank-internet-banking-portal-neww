@@ -10,6 +10,9 @@ import {
 
 import appCss from "../styles.css?url";
 import { SecurityGuard } from "../components/SecurityGuard";
+import { validateLiveSupabaseProject } from "@/lib/supabase-helpers";
+
+validateLiveSupabaseProject("startup");
 
 function NotFoundComponent() {
   return (

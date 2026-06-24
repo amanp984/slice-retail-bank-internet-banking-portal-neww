@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { isSupabaseConfigured, type Txn } from "@/lib/supabase-helpers";
+import { isSupabaseConfigured, validateLiveSupabaseProject, type Txn } from "@/lib/supabase-helpers";
 
 type State = {
   txns: Txn[];
@@ -20,6 +20,8 @@ export function useTransactions(limit = 50) {
   });
 
   useEffect(() => {
+    validateLiveSupabaseProject("useTransactions");
+
     if (!isSupabaseConfigured) {
       setState((s) => ({ ...s, loading: false }));
       return;
