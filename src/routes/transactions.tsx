@@ -19,7 +19,7 @@ const fmtDate = (iso: string) => {
 };
 
 const partyOf = (t: { description: string | null; sender_name: string | null; type: "credit" | "debit" }) =>
-  (extractParty(t.description ?? "", t.type) || t.sender_name || "—").toString();
+  (extractParty(t.description ?? "", t.type) || t.sender_name || "—").toString().toUpperCase();
 const utrOf = (t: { description: string | null }) => extractUtr(t.description ?? "") || "—";
 
 function TransactionsPage() {
