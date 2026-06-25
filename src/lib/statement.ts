@@ -339,7 +339,7 @@ export function downloadStatementCsv(txns: Txn[]) {
     fmtShortDate(t.created_at),
     formatDescription(t).replace(/"/g, '""'),
     t.type,
-    formatSignedTransactionINR(t.amount, t.type),
+    fmtRupeeSigned(t.amount, t.type),
     fmtRupee(t.balance_after_transaction),
   ]);
   const csv = [header, ...rows]
