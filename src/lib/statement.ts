@@ -5,9 +5,24 @@ import { formatINR, formatSignedTransactionINR } from "@/lib/supabase-helpers";
 import { formatDescription } from "./formatTxn";
 import { CUSTOMER } from "./customer";
 
-const fmtRupee = (n: number) => formatINR(n);
-const fmtRupeeSigned = (n: number, type: "credit" | "debit") =>
-  formatSignedTransactionINR(n, type);
+// PDF-local money formatters. We deliberately avoid the ₹ glyph because
+// jsPDF's built-in Helvetica does not include U+20B9 and renders it with
+// broken character widths (e.g. "1 2 , 0 0 8 . 0 0"). Using "Rs " matches
+// the reference bank statement and renders with normal kerning.
+const fmtAmountIN = (n: number) =>
+  new Intl.NumberFormat("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Math.abs(Number(n) || 0));
+
+const fmtRupee = (n: number) => {
+  const v = Number(n) || 0;
+  return `${v < 0 ? "-" : ""}Rs ${fmtAmountIN(v)}`;
+};
+const fmtRupeeSigned = (n: number, type: "credit" | "debit") => {
+  const v = Math.abs(Number(n) || 0);
+  return type === "debit" ? `-Rs ${fmtAmountIN(v)}` : `Rs ${fmtAmountIN(v)}`;
+};
 const fmtShortDate = (iso: string) => {
   const d = new Date(iso);
   const day = String(d.getDate()).padStart(2, "0");
