@@ -176,32 +176,44 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     { label: "Closing balance", value: fmtRupee(closingBalance), sym: "=" },
   ];
   
+  // 5-column responsive summary. Each column has dedicated width.
+  // Operator drawn between columns; label + value rendered inside each
+  // column padded so amounts never collide with neighbours.
+  const sumColGap = 8;           // visual gap between columns reserved for operator
+  const sumPadX = 6;             // inner horizontal padding inside each column
   const sumColW = contentW / summaryCols.length;
-  const summaryBaselineY = y + 24; // Fixed baseline for all values
-  
+  const labelY = y;
+  const summaryBaselineY = y + 22;
+
   summaryCols.forEach((c, i) => {
-    const cx = marginX + sumColW * i;
+    const cxLeft = marginX + sumColW * i + sumPadX;
+    const cxRight = marginX + sumColW * (i + 1) - sumPadX;
+
+    // Label (left aligned, wraps if long)
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setTextColor(140, 140, 140);
-    doc.text(c.label, cx, y);
-    
+    const labelLines = doc.splitTextToSize(c.label, sumColW - sumPadX * 2);
+    doc.text(labelLines, cxLeft, labelY);
+
+    // Value (right aligned within column, single line, slightly smaller
+    // so large amounts like ₹143,000.00 always fit)
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(15);
+    doc.setFontSize(11);
     const vc = c.valueColor ?? [20, 20, 20];
     doc.setTextColor(vc[0], vc[1], vc[2]);
-    // All values now on the same baseline
-    doc.text(c.value, cx, summaryBaselineY);
-    
-    // Operator positioned on the same baseline as values
+    doc.text(c.value, cxRight, summaryBaselineY, { align: "right" });
+
+    // Operator drawn in the gap between this column and the previous one
     if (c.sym && i > 0) {
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(16);
+      doc.setFontSize(12);
       doc.setTextColor(170, 170, 170);
-      doc.text(c.sym, cx - 10, summaryBaselineY - 6, { align: "center" });
+      const opX = marginX + sumColW * i - sumColGap / 2;
+      doc.text(c.sym, opX, summaryBaselineY, { align: "center" });
     }
   });
-  y += 70; // Increased from 60 to 70 for better spacing before table
+  y += 60;
 
   // ---------- Transactions table ----------
   let running = openingBalance;
@@ -217,13 +229,14 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     ];
   });
 
-  // Table widths: increased date width to prevent wrapping
+  // Table widths: give Amount + Balance enough room so values like
+  // -₹19,999.78 and ₹143,000.00 never wrap or overlap the ref column.
   const tableW = contentW;
-  const dateW = tableW * 0.12; // Increased from 0.1 to 0.12 to accommodate single-line dates
-  const descW = tableW * 0.38; // Adjusted to compensate for increased date width
-  const refW = tableW * 0.22;
-  const amtW = tableW * 0.14;
-  const balW = tableW * 0.14;
+  const dateW = tableW * 0.11;
+  const descW = tableW * 0.32;
+  const refW = tableW * 0.17;
+  const amtW = tableW * 0.18;
+  const balW = tableW * 0.22;
 
   autoTable(doc, {
     startY: y,
