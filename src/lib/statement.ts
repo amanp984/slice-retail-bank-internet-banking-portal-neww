@@ -4,24 +4,29 @@ import type { Txn } from "@/lib/supabase-helpers";
 import { formatDescription } from "./formatTxn";
 import { CUSTOMER } from "./customer";
 
-// PDF-local money formatters. We deliberately avoid the ₹ glyph because
-// jsPDF's built-in Helvetica does not include U+20B9 and renders it with
-// broken character widths (e.g. "1 2 , 0 0 8 . 0 0"). Using "Rs " matches
-// the reference bank statement and renders with normal kerning.
-const fmtAmountIN = (n: number) =>
-  new Intl.NumberFormat("en-IN", {
+// Shared PDF money formatter. Built-in jsPDF Helvetica does NOT include the
+// ₹ glyph (U+20B9) — using it produces the "1 2 , 0 0 8 . 0 0" letter-spacing
+// artifact and stray characters like ¹. We render "Rs " as plain ASCII, which
+// the built-in font handles with normal kerning. Indian comma grouping is
+// preserved via en-IN locale.
+export const formatCurrencyINR = (n: number): string => {
+  const v = Number(n) || 0;
+  const abs = new Intl.NumberFormat("en-IN", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(Math.abs(Number(n) || 0));
+  }).format(Math.abs(v));
+  return `${v < 0 ? "-" : ""}Rs ${abs}`;
+};
 
-const fmtRupee = (n: number) => {
-  const v = Number(n) || 0;
-  return `${v < 0 ? "-" : ""}Rs ${fmtAmountIN(v)}`;
-};
-const fmtRupeeSigned = (n: number, type: "credit" | "debit") => {
-  const v = Math.abs(Number(n) || 0);
-  return type === "debit" ? `-Rs ${fmtAmountIN(v)}` : `Rs ${fmtAmountIN(v)}`;
-};
+const fmtRupee = (n: number) => formatCurrencyINR(n);
+const fmtRupeeSigned = (n: number, type: "credit" | "debit") =>
+  formatCurrencyINR(type === "debit" ? -Math.abs(Number(n) || 0) : Math.abs(Number(n) || 0));
+
+// Strip any non-ASCII glyphs (e.g. ₹) from strings passed into jsPDF, so a
+// stray ₹ inside a transaction description cannot re-introduce the broken
+// letter-spacing artifact next to numbers.
+const sanitize = (s: string): string =>
+  (s || "").replace(/₹/g, "Rs ").replace(/[^\x20-\x7E]/g, "");
 const fmtShortDate = (iso: string) => {
   const d = new Date(iso);
   const day = String(d.getDate()).padStart(2, "0");
@@ -236,8 +241,8 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     running += t.type === "credit" ? amt : -amt;
     return [
       fmtShortDate(t.created_at),
-      formatDescription(t),
-      String(t.id).slice(0, 18),
+      sanitize(formatDescription(t)),
+      sanitize(String(t.id).slice(0, 18)),
       fmtRupeeSigned(amt, t.type),
       fmtRupee(running),
     ];
