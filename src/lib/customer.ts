@@ -24,20 +24,20 @@ export type CustomerProfile = {
 };
 
 export const PROFILES: Record<string, CustomerProfile> = {
-  "356642873168": {
-    username: "356642873168",
-    password: "Bhai@1985",
-    businessName: "Dharmendra",
-    holderName: "Dharmendra",
-    customerId: "356642873168",
-    accountNumber: "033323342867251",
+  "32538876234": {
+    username: "32538876234",
+    password: "Baby@1985",
+    businessName: "AMAN",
+    holderName: "AMAN",
+    customerId: "32538876234",
+    accountNumber: "64738290938572",
     accountType: "CURRENT",
     ifsc: "NESF0000333",
-    micr: "6642873394",
+    micr: "6473829057",
     phone: "+91 98XXXXXX42",
-    email: "Dharm9826615@gmail.com",
-    pan: "GOXXXXXX77B",
-    aadhaarMasked: "XXXX XXXX 3842",
+    email: "aman@example.com",
+    pan: "AMXXXXXX34B",
+    aadhaarMasked: "XXXX XXXX 8234",
     nominee: "-",
     address:
       "Sodawala Nagar complex number 3, sector 44, Borivli (West), Mumbai, Maharashtra, INDIA, 400092",
@@ -46,33 +46,11 @@ export const PROFILES: Record<string, CustomerProfile> = {
     openingDate: "16 May '26",
     udyam: "UDYAM-MH-17-0237772",
   },
-  "253362485627": {
-    username: "253362485627",
-    password: "Ram@2099",
-    businessName: "Rambabu",
-    holderName: "Rambabu",
-    customerId: "253362485627",
-    accountNumber: "3352145866247",
-    accountType: "CURRENT",
-    ifsc: "NESF0000333",
-    micr: "33436255866",
-    phone: "+91 64XXXXXX85",
-    email: "Ramprey7719@gmail.com",
-    pan: "RAXXXXXX27B",
-    aadhaarMasked: "XXXX XXXX 5627",
-    nominee: "-",
-    address:
-      "Shiv Krupsha Building, Hanuman Nagar Road, Badagaon Block, Mumbai - 400096",
-    branch:
-      "Slice Bank, Mumbai - Corporate Branch, Tower A, BKC, Mumbai, Maharashtra - 400051",
-    openingDate: "02 Jun '22",
-    udyam: "UDYAM-MH-17-0237773",
-  },
 };
 
 // Empty placeholder used before the user signs in. We intentionally do NOT
-// fall back to any real profile here — falling back to e.g. Dharmendra would
-// leak the previous customer's data during refresh / pre-redirect render.
+// fall back to any real profile here — falling back would leak the previous
+// customer's data during refresh / pre-redirect render.
 const EMPTY_PROFILE: CustomerProfile = {
   username: "", password: "", businessName: "", holderName: "",
   customerId: "", accountNumber: "", accountType: "", ifsc: "", micr: "",
