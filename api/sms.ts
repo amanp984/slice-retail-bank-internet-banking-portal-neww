@@ -8,37 +8,42 @@ const LIVE_SUPABASE_URL = `https://${LIVE_SUPABASE_PROJECT_ID}.supabase.co`;
 
 type AnyRecord = Record<string, any>;
 
-const AMOUNT_RE = /(?:rs\.?|inr|₹|\bINR\b)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)/i;
-const AMOUNT_RE_LOOSE = /\b([0-9]{1,3}(?:,[0-9]{2,3})+(?:\.[0-9]{1,2})?|[0-9]+\.[0-9]{2})\b/;
-const CREDIT_RE = /\b(credited|credit|received|deposited|cr|recd|receiv?ed)\b/i;
-const DEBIT_RE = /\b(debited|debit|withdrawn|paid|spent|sent|dr|purchase|txn|transferred)\b/i;
-const SENDER_RE = /(?:from|by|to)\s+([A-Z][A-Za-z0-9 ._-]{1,40})/;
+const AMOUNT_RE = /(?:rs\.?|inr|₹)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)/i;
+const CREDIT_RE = /\b(credited|credit|received|deposited|recd|receiv?ed|\bcr\b)\b/i;
+const DEBIT_RE = /\b(debited|debit|withdrawn|paid|spent|sent|purchase|txn|transferred|\bdr\b)\b/i;
+const MODE_RE = /\b(UPI|IMPS|NEFT|RTGS)\b/i;
+const REF_RE = /(?:ref(?:erence)?\s*(?:no\.?|id|#)?|utr(?:\s*no\.?)?|txn\s*id)\s*[:\-.]?\s*([A-Za-z0-9]{6,})/i;
+const ACCOUNT_RE = /\ba\/?c(?:\s*(?:no\.?|number|#))?\s*[:\-]?\s*((?:[xX*]+)?\d{3,})\b/i;
+const PARTY_FROM_RE = /\b(?:from|by)\s+((?:[A-Za-z][A-Za-z.'&\- ]{0,60}?))\s*(?=\.?\s*(?:ref|utr|on|via|through|using|a\/?c|account|dt|avl|bal|\d{1,2}[-/])|[.,(\n]|$)/i;
+const PARTY_TO_RE = /\bto\s+((?:[A-Za-z][A-Za-z.'&\- ]{0,60}?))\s*(?=\.?\s*(?:ref|utr|on|via|through|using|a\/?c|account|dt|avl|bal|\d{1,2}[-/])|[.,(\n]|$)/i;
+const REJECT_RE = /\b(otp|one\s*time\s*password|verification\s*code|do\s*not\s*share|cashback|offer|discount|loan|emi\s*offer|pre[-\s]*approved|kyc|recharge|coupon|reward\s*points?|apply\s*now|congratulations|welcome|thank\s*you\s*for|activated|will\s*expire|balance\s*enquiry|min\s*bal|new\s*plan)\b/i;
 
 function parseSms(raw: string) {
   const text = (raw || "").replace(/\s+/g, " ").trim();
-  let amount = NaN;
-  const m = text.match(AMOUNT_RE);
-  if (m) amount = Number(m[1].replace(/,/g, ""));
-  else {
-    const m2 = text.match(AMOUNT_RE_LOOSE);
-    if (m2) amount = Number(m2[1].replace(/,/g, ""));
-  }
+  if (!text) return null;
+  if (REJECT_RE.test(text)) return null;
+  const amtMatch = text.match(AMOUNT_RE);
+  if (!amtMatch) return null;
+  const amount = Number(amtMatch[1].replace(/,/g, ""));
+  if (!isFinite(amount) || amount <= 0) return null;
   const isCredit = CREDIT_RE.test(text);
   const isDebit = DEBIT_RE.test(text);
-  const type: "credit" | "debit" = isCredit && !isDebit ? "credit" : "debit";
-  let fallback = false;
-  if (!isFinite(amount) || amount <= 0) {
-    amount = 0;
-    fallback = true;
-  }
-  if (!isCredit && !isDebit) fallback = true;
-  const s = text.match(SENDER_RE);
+  if (!isCredit && !isDebit) return null;
+  const type: "credit" | "debit" = isCredit && !isDebit ? "credit" : isDebit && !isCredit ? "debit" : isCredit ? "credit" : "debit";
+  const mode = text.match(MODE_RE);
+  const ref = text.match(REF_RE);
+  const acct = text.match(ACCOUNT_RE);
+  if (!mode || !ref || !acct) return null;
+  const partyMatch = type === "credit" ? text.match(PARTY_FROM_RE) : (text.match(PARTY_TO_RE) || text.match(PARTY_FROM_RE));
+  const sender_name = partyMatch
+    ? partyMatch[1].replace(/\s+/g, " ").replace(/\s*\.\s*$/, "").trim() || null
+    : null;
   return {
     amount,
     type,
-    sender_name: s?.[1]?.trim() ?? null,
+    sender_name,
     description: text.slice(0, 240),
-    fallback,
+    fallback: false,
   };
 }
 
@@ -120,6 +125,11 @@ export default async function handler(req: any, res: any) {
     }
 
     const parsed = parseSms(raw);
+    if (!parsed) {
+      console.warn("[api/sms] rejected non-transactional message");
+      res.status(200).json({ ok: true, inserted: false, skipped: "not a transaction sms" });
+      return;
+    }
     if (!parsed.sender_name && sender) parsed.sender_name = sender;
     console.log("[api/sms] parsed:", parsed);
 
