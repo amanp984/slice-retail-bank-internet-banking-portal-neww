@@ -1,4 +1,6 @@
 -- Run this once in your Supabase SQL editor.
+-- For an existing table with BIGINT money columns, also run
+-- supabase-migrations/2026-07-04-money-numeric.sql to convert them safely.
 
 create table if not exists public.transactions (
   id uuid primary key default gen_random_uuid(),
