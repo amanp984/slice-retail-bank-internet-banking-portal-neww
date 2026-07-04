@@ -188,6 +188,12 @@ async function handle(request: Request) {
     );
 
     if (error) {
+      // 23505 = unique_violation. Treat as duplicate, return 200 so the
+      // SMS forwarder doesn't retry.
+      if ((error as any).code === "23505") {
+        console.log(`Duplicate transaction skipped: ${externalId}`);
+        return json({ ok: true, inserted: false, deduped: true });
+      }
       console.error("[sms] Supabase insert error:", error);
       return json({ ok: true, inserted: false, error: "insert failed" });
     }
