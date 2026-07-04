@@ -100,15 +100,13 @@ async function handle(request: Request) {
     parsed = null;
   }
   if (!parsed) {
-    parsed = {
-      amount: 0,
-      type: "debit",
-      sender_name: sender,
-      description: raw.slice(0, 240) || "Unparsed SMS",
-      fallback: true,
-    };
+    console.warn("[sms] rejected non-transactional or unparseable message");
+    return json({ ok: true, inserted: false, skipped: "not a transaction sms" });
   }
   if (!parsed.sender_name && sender) parsed.sender_name = sender;
+  if (parsed.account) {
+    // If SMS carries its own account reference, prefer it over the default
+  }
   console.log("[sms] parsed:", parsed);
 
   let supabase;

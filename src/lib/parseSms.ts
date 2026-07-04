@@ -3,54 +3,67 @@ export type ParsedSms = {
   type: "credit" | "debit";
   sender_name: string | null;
   description: string;
+  mode?: "UPI" | "IMPS" | "NEFT" | "RTGS" | null;
+  reference?: string | null;
+  account?: string | null;
   fallback?: boolean;
 };
 
-const AMOUNT_RE = /(?:rs\.?|inr|₹|\bINR\b)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)/i;
-const AMOUNT_RE_LOOSE = /\b([0-9]{1,3}(?:,[0-9]{2,3})+(?:\.[0-9]{1,2})?|[0-9]+\.[0-9]{2})\b/;
-const CREDIT_RE = /\b(credited|credit|received|deposited|cr|recd|receiv?ed)\b/i;
-const DEBIT_RE = /\b(debited|debit|withdrawn|paid|spent|sent|dr|purchase|txn|transferred)\b/i;
-const SENDER_RE = /(?:from|by|to)\s+([A-Z][A-Za-z0-9 ._-]{1,40})/;
+// Flexible currency amount: Rs / INR / ₹ followed by number (with commas + optional decimals)
+const AMOUNT_RE = /(?:rs\.?|inr|₹)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)/i;
+const CREDIT_RE = /\b(credited|credit|received|deposited|recd|receiv?ed|\bcr\b)\b/i;
+const DEBIT_RE = /\b(debited|debit|withdrawn|paid|spent|sent|purchase|txn|transferred|\bdr\b)\b/i;
+const MODE_RE = /\b(UPI|IMPS|NEFT|RTGS)\b/i;
+const REF_RE = /(?:ref(?:erence)?\s*(?:no\.?|id|#)?|utr(?:\s*no\.?)?|txn\s*id)\s*[:\-.]?\s*([A-Za-z0-9]{6,})/i;
+const ACCOUNT_RE = /\ba\/?c(?:\s*(?:no\.?|number|#))?\s*[:\-]?\s*((?:[xX*]+)?\d{3,})\b/i;
+// Party name: allow dots, spaces, apostrophes, hyphens, ampersands, initials, trailing period
+const PARTY_FROM_RE = /\b(?:from|by)\s+((?:[A-Za-z][A-Za-z.'&\- ]{0,60}?))\s*(?=\.?\s*(?:ref|utr|on|via|through|using|a\/?c|account|dt|avl|bal|\d{1,2}[-/])|[.,(\n]|$)/i;
+const PARTY_TO_RE = /\bto\s+((?:[A-Za-z][A-Za-z.'&\- ]{0,60}?))\s*(?=\.?\s*(?:ref|utr|on|via|through|using|a\/?c|account|dt|avl|bal|\d{1,2}[-/])|[.,(\n]|$)/i;
+
+// Reject junk / non-transactional messages
+const REJECT_RE = /\b(otp|one\s*time\s*password|verification\s*code|do\s*not\s*share|cashback|offer|discount|loan|emi\s*offer|pre[-\s]*approved|kyc|recharge|coupon|reward\s*points?|apply\s*now|congratulations|welcome|thank\s*you\s*for|activated|will\s*expire|balance\s*enquiry|min\s*bal|new\s*plan)\b/i;
 
 export function parseSms(raw: string): ParsedSms | null {
   if (!raw || typeof raw !== "string") return null;
   const text = raw.replace(/\s+/g, " ").trim();
   if (!text) return null;
 
-  let amount = NaN;
-  const m = text.match(AMOUNT_RE);
-  if (m) {
-    amount = Number(m[1].replace(/,/g, ""));
-  } else {
-    const m2 = text.match(AMOUNT_RE_LOOSE);
-    if (m2) amount = Number(m2[1].replace(/,/g, ""));
-  }
+  // Reject promotional / OTP / non-transactional messages outright
+  if (REJECT_RE.test(text)) return null;
+
+  const amtMatch = text.match(AMOUNT_RE);
+  if (!amtMatch) return null;
+  const amount = Number(amtMatch[1].replace(/,/g, ""));
+  if (!isFinite(amount) || amount <= 0) return null;
 
   const isCredit = CREDIT_RE.test(text);
   const isDebit = DEBIT_RE.test(text);
+  if (!isCredit && !isDebit) return null;
+  const type: "credit" | "debit" = isCredit && !isDebit ? "credit" : isDebit && !isCredit ? "debit" : isCredit ? "credit" : "debit";
 
-  let type: "credit" | "debit";
-  if (isCredit && !isDebit) type = "credit";
-  else if (isDebit && !isCredit) type = "debit";
-  else if (isCredit) type = "credit";
-  else if (isDebit) type = "debit";
-  else type = "debit"; // safe default fallback
+  const modeMatch = text.match(MODE_RE);
+  const refMatch = text.match(REF_RE);
+  const acctMatch = text.match(ACCOUNT_RE);
 
-  let fallback = false;
-  if (!isFinite(amount) || amount <= 0) {
-    amount = 0;
-    fallback = true;
-  }
-  if (!isCredit && !isDebit) fallback = true;
+  // Require all four to accept
+  if (!modeMatch || !refMatch || !acctMatch) return null;
 
-  const s = text.match(SENDER_RE);
-  const sender_name = s?.[1]?.trim() ?? null;
+  const partyMatch = type === "credit"
+    ? text.match(PARTY_FROM_RE)
+    : (text.match(PARTY_TO_RE) || text.match(PARTY_FROM_RE));
+
+  const sender_name = partyMatch
+    ? partyMatch[1].replace(/\s+/g, " ").replace(/\s*\.\s*$/, "").trim() || null
+    : null;
 
   return {
     amount,
     type,
     sender_name,
     description: text.slice(0, 240),
-    fallback,
+    mode: modeMatch[1].toUpperCase() as ParsedSms["mode"],
+    reference: refMatch[1].trim(),
+    account: acctMatch[1].toUpperCase(),
+    fallback: false,
   };
 }
