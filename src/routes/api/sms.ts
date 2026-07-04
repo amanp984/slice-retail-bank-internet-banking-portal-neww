@@ -81,7 +81,8 @@ async function handle(request: Request) {
     body.message || body.text || body.sms || body.body || body.content || "";
   const sender: string | null =
     body.sender || body.from || body.address || null;
-  const externalId: string | undefined = body.id || body.external_id || body.messageId;
+  const bodyExternalId: string | undefined =
+    body.id || body.external_id || body.messageId || body.utr || body.ref || body.reference;
   const accountRef: string =
     body.account_reference ||
     process.env.DEFAULT_ACCOUNT_REFERENCE ||
@@ -104,10 +105,16 @@ async function handle(request: Request) {
     return json({ ok: true, inserted: false, skipped: "not a transaction sms" });
   }
   if (!parsed.sender_name && sender) parsed.sender_name = sender;
-  if (parsed.account) {
-    // If SMS carries its own account reference, prefer it over the default
-  }
   console.log("[sms] parsed:", parsed);
+
+  // Normalize the transaction reference for dedupe (trim + uppercase).
+  // Prefer webhook body id, otherwise fall back to the UTR/Ref parsed from the SMS.
+  const externalId: string | null = (() => {
+    const raw = bodyExternalId ?? parsed.reference ?? null;
+    if (!raw) return null;
+    const norm = String(raw).trim().toUpperCase();
+    return norm.length ? norm : null;
+  })();
 
   let supabase;
   try {
@@ -117,20 +124,20 @@ async function handle(request: Request) {
     return json({ ok: true, inserted: false, error: "database client unavailable" });
   }
 
-  // Dedupe
+  // Dedupe by UTR/Ref (case-insensitive, trimmed)
   if (externalId) {
     try {
       const { data: dup, error } = await withTimeout(
         "sms dedupe lookup",
         supabase
           .from("transactions")
-          .select("id")
-          .eq("external_id", externalId)
+          .select("id, external_id")
+          .ilike("external_id", externalId)
           .maybeSingle(),
       );
       if (error) console.error("[sms] dedupe lookup error:", error);
       if (dup) {
-        console.log("[sms] duplicate ignored:", dup.id);
+        console.log(`Duplicate transaction skipped: ${externalId}`);
         return json({ ok: true, inserted: false, deduped: true, id: dup.id });
       }
     } catch (error) {
@@ -167,7 +174,7 @@ async function handle(request: Request) {
     description: parsed.description,
     balance_after_transaction,
     account_reference: accountRef,
-    external_id: externalId ?? null,
+    external_id: externalId,
   };
 
   try {
@@ -181,6 +188,12 @@ async function handle(request: Request) {
     );
 
     if (error) {
+      // 23505 = unique_violation. Treat as duplicate, return 200 so the
+      // SMS forwarder doesn't retry.
+      if ((error as any).code === "23505") {
+        console.log(`Duplicate transaction skipped: ${externalId}`);
+        return json({ ok: true, inserted: false, deduped: true });
+      }
       console.error("[sms] Supabase insert error:", error);
       return json({ ok: true, inserted: false, error: "insert failed" });
     }
