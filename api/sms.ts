@@ -43,6 +43,7 @@ function parseSms(raw: string) {
     type,
     sender_name,
     description: text.slice(0, 240),
+    reference: ref[1].trim(),
     fallback: false,
   };
 }
@@ -112,7 +113,8 @@ export default async function handler(req: any, res: any) {
     const raw: string =
       body.message || body.text || body.sms || body.body || body.content || "";
     const sender: string | null = body.sender || body.from || body.address || null;
-    const externalId: string | undefined = body.id || body.external_id || body.messageId;
+    const bodyExternalId: string | undefined =
+      body.id || body.external_id || body.messageId || body.utr || body.ref || body.reference;
     const accountRef: string =
       body.account_reference ||
       process.env.DEFAULT_ACCOUNT_REFERENCE ||
@@ -133,6 +135,13 @@ export default async function handler(req: any, res: any) {
     if (!parsed.sender_name && sender) parsed.sender_name = sender;
     console.log("[api/sms] parsed:", parsed);
 
+    const externalId: string | null = (() => {
+      const r = bodyExternalId ?? (parsed as any).reference ?? null;
+      if (!r) return null;
+      const n = String(r).trim().toUpperCase();
+      return n.length ? n : null;
+    })();
+
     let supabase;
     try {
       supabase = getAdmin();
@@ -148,10 +157,10 @@ export default async function handler(req: any, res: any) {
         const { data: dup } = await supabase
           .from("transactions")
           .select("id")
-          .eq("external_id", externalId)
+          .ilike("external_id", externalId)
           .maybeSingle();
         if (dup) {
-          console.log("[api/sms] duplicate:", dup.id);
+          console.log(`Duplicate transaction skipped: ${externalId}`);
           res.status(200).json({ ok: true, inserted: false, deduped: true, id: dup.id });
           return;
         }
@@ -185,7 +194,7 @@ export default async function handler(req: any, res: any) {
       description: parsed.description,
       balance_after_transaction,
       account_reference: accountRef,
-      external_id: externalId ?? null,
+      external_id: externalId,
     };
 
     const { data, error } = await supabase
@@ -195,6 +204,11 @@ export default async function handler(req: any, res: any) {
       .single();
 
     if (error) {
+      if ((error as any).code === "23505") {
+        console.log(`Duplicate transaction skipped: ${externalId}`);
+        res.status(200).json({ ok: true, inserted: false, deduped: true });
+        return;
+      }
       console.error("[api/sms] insert error:", error);
       res.status(200).json({ ok: true, inserted: false, error: "insert failed" });
       return;
