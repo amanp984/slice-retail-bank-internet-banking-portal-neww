@@ -24,27 +24,27 @@ export type CustomerProfile = {
 };
 
 export const PROFILES: Record<string, CustomerProfile> = {
-  "32538876234": {
-    username: "32538876234",
-    password: "Baby@1985",
-    businessName: "AMAN",
-    holderName: "AMAN",
-    customerId: "32538876234",
-    accountNumber: "64738290938572",
+  "38560237398": {
+    username: "38560237398",
+    password: "ARUNJUICE1010",
+    businessName: "ANJAN PRAJAPATI",
+    holderName: "ANJAN PRAJAPATI",
+    customerId: "38560237398",
+    accountNumber: "33348761342878",
     accountType: "CURRENT",
     ifsc: "NESF0000333",
-    micr: "6473829057",
-    phone: "+91 98XXXXXX42",
-    email: "aman@example.com",
-    pan: "AMXXXXXX34B",
-    aadhaarMasked: "XXXX XXXX 8234",
+    micr: "76438427786",
+    phone: "+91 64XXXXXX34",
+    email: "arun027654@gmail.com",
+    pan: "-",
+    aadhaarMasked: "-",
     nominee: "-",
     address:
-      "Sodawala Nagar complex number 3, sector 44, Borivli (West), Mumbai, Maharashtra, INDIA, 400092",
+      "Shiv Krupsha Building, Hanuman Nagar Road, Badagaon Block, Mumbai - 400098",
     branch:
       "Slice Bank, Mumbai - Corporate Branch, Tower A, BKC, Mumbai, Maharashtra - 400051",
     openingDate: "16 May '26",
-    udyam: "UDYAM-MH-17-0237772",
+    udyam: "-",
   },
 };
 
