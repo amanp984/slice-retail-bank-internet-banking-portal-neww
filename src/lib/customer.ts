@@ -24,18 +24,18 @@ export type CustomerProfile = {
 };
 
 export const PROFILES: Record<string, CustomerProfile> = {
-  "38560237398": {
-    username: "38560237398",
-    password: "ARUNJUICE1010",
-    businessName: "ANJAN PRAJAPATI",
-    holderName: "ANJAN PRAJAPATI",
-    customerId: "38560237398",
-    accountNumber: "33348761342878",
+  "38266205739": {
+    username: "38266205739",
+    password: "Jairam@1992",
+    businessName: "JAIRAM TRADERS",
+    holderName: "JAIRAM TRADERS",
+    customerId: "38266205739",
+    accountNumber: "45239146116834",
     accountType: "CURRENT",
     ifsc: "NESF0000333",
-    micr: "76438427786",
-    phone: "+91 64XXXXXX34",
-    email: "arun027654@gmail.com",
+    micr: "702983933563",
+    phone: "+91 63XXXXXX67",
+    email: "jairamtraders8208@gmail.com",
     pan: "-",
     aadhaarMasked: "-",
     nominee: "-",
