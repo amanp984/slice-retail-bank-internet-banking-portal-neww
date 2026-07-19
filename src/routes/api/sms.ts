@@ -175,6 +175,7 @@ async function handle(request: Request) {
     balance_after_transaction,
     account_reference: accountRef,
     external_id: externalId,
+    upi_id: parsed.upi_id ?? null,
   };
 
   try {

@@ -6,6 +6,7 @@ export type ParsedSms = {
   mode?: "UPI" | "IMPS" | "NEFT" | "RTGS" | null;
   reference?: string | null;
   account?: string | null;
+  upi_id?: string | null;
   fallback?: boolean;
 };
 
@@ -16,6 +17,8 @@ const DEBIT_RE = /\b(debited|debit|withdrawn|paid|spent|sent|purchase|txn|transf
 const MODE_RE = /\b(UPI|IMPS|NEFT|RTGS)\b/i;
 const REF_RE = /(?:ref(?:erence)?\s*(?:no\.?|id|#)?|utr(?:\s*no\.?)?|txn\s*id)\s*[:\-.]?\s*([A-Za-z0-9]{6,})/i;
 const ACCOUNT_RE = /\ba\/?c(?:\s*(?:no\.?|number|#))?\s*[:\-]?\s*((?:[xX*]+)?\d{3,})\b/i;
+// UPI VPA: user@handle. Supports digits, letters, dots, hyphens, underscores in the user part.
+const UPI_ID_RE = /\b([a-zA-Z0-9][a-zA-Z0-9._-]{1,63})@([a-zA-Z][a-zA-Z0-9.-]{1,63})\b/;
 // Party name: allow dots, spaces, apostrophes, hyphens, ampersands, initials, trailing period
 const PARTY_FROM_RE = /\b(?:from|by)\s+((?:[A-Za-z][A-Za-z.'&\- ]{0,60}?))\s*(?=\.?\s*(?:ref|utr|on|via|through|using|a\/?c|account|dt|avl|bal|\d{1,2}[-/])|[.,(\n]|$)/i;
 const PARTY_TO_RE = /\bto\s+((?:[A-Za-z][A-Za-z.'&\- ]{0,60}?))\s*(?=\.?\s*(?:ref|utr|on|via|through|using|a\/?c|account|dt|avl|bal|\d{1,2}[-/])|[.,(\n]|$)/i;
@@ -56,14 +59,22 @@ export function parseSms(raw: string): ParsedSms | null {
     ? partyMatch[1].replace(/\s+/g, " ").replace(/\s*\.\s*$/, "").trim() || null
     : null;
 
+  const mode = modeMatch[1].toUpperCase() as ParsedSms["mode"];
+  let upi_id: string | null = null;
+  if (mode === "UPI") {
+    const upiMatch = text.match(UPI_ID_RE);
+    if (upiMatch) upi_id = `${upiMatch[1]}@${upiMatch[2]}`.toLowerCase();
+  }
+
   return {
     amount,
     type,
     sender_name,
     description: text.slice(0, 240),
-    mode: modeMatch[1].toUpperCase() as ParsedSms["mode"],
+    mode,
     reference: refMatch[1].trim(),
     account: acctMatch[1].toUpperCase(),
+    upi_id,
     fallback: false,
   };
 }
