@@ -14,6 +14,7 @@ const DEBIT_RE = /\b(debited|debit|withdrawn|paid|spent|sent|purchase|txn|transf
 const MODE_RE = /\b(UPI|IMPS|NEFT|RTGS)\b/i;
 const REF_RE = /(?:ref(?:erence)?\s*(?:no\.?|id|#)?|utr(?:\s*no\.?)?|txn\s*id)\s*[:\-.]?\s*([A-Za-z0-9]{6,})/i;
 const ACCOUNT_RE = /\ba\/?c(?:\s*(?:no\.?|number|#))?\s*[:\-]?\s*((?:[xX*]+)?\d{3,})\b/i;
+const UPI_ID_RE = /\b([a-zA-Z0-9][a-zA-Z0-9._-]{1,63})@([a-zA-Z][a-zA-Z0-9.-]{1,63})\b/;
 const PARTY_FROM_RE = /\b(?:from|by)\s+((?:[A-Za-z][A-Za-z.'&\- ]{0,60}?))\s*(?=\.?\s*(?:ref|utr|on|via|through|using|a\/?c|account|dt|avl|bal|\d{1,2}[-/])|[.,(\n]|$)/i;
 const PARTY_TO_RE = /\bto\s+((?:[A-Za-z][A-Za-z.'&\- ]{0,60}?))\s*(?=\.?\s*(?:ref|utr|on|via|through|using|a\/?c|account|dt|avl|bal|\d{1,2}[-/])|[.,(\n]|$)/i;
 const REJECT_RE = /\b(otp|one\s*time\s*password|verification\s*code|do\s*not\s*share|cashback|offer|discount|loan|emi\s*offer|pre[-\s]*approved|kyc|recharge|coupon|reward\s*points?|apply\s*now|congratulations|welcome|thank\s*you\s*for|activated|will\s*expire|balance\s*enquiry|min\s*bal|new\s*plan)\b/i;
@@ -38,12 +39,19 @@ function parseSms(raw: string) {
   const sender_name = partyMatch
     ? partyMatch[1].replace(/\s+/g, " ").replace(/\s*\.\s*$/, "").trim() || null
     : null;
+  const modeStr = mode[1].toUpperCase();
+  let upi_id: string | null = null;
+  if (modeStr === "UPI") {
+    const u = text.match(UPI_ID_RE);
+    if (u) upi_id = `${u[1]}@${u[2]}`.toLowerCase();
+  }
   return {
     amount,
     type,
     sender_name,
     description: text.slice(0, 240),
     reference: ref[1].trim(),
+    upi_id,
     fallback: false,
   };
 }
@@ -195,6 +203,7 @@ export default async function handler(req: any, res: any) {
       balance_after_transaction,
       account_reference: accountRef,
       external_id: externalId,
+      upi_id: (parsed as any).upi_id ?? null,
     };
 
     const { data, error } = await supabase
