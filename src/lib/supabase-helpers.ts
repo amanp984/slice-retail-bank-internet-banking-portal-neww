@@ -7,6 +7,7 @@ export type Txn = {
   description: string | null;
   balance_after_transaction: number;
   account_reference: string | null;
+  upi_id?: string | null;
 };
 
 export const LIVE_SUPABASE_PROJECT_ID = "grnuuhoxpnezzmfovrxx";
