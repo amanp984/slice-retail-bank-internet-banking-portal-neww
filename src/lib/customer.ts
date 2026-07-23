@@ -24,25 +24,25 @@ export type CustomerProfile = {
 };
 
 export const PROFILES: Record<string, CustomerProfile> = {
-  "643873148437": {
-    username: "643873148437",
-    password: "Yasmin@2026",
-    businessName: "YASMIN TRADERS",
-    holderName: "YASMIN TRADERS",
-    customerId: "643873148437",
-    accountNumber: "43128761437806",
+  "642877614378": {
+    username: "642877614378",
+    password: "Hari@2286",
+    businessName: "HK ENTERPRISES",
+    holderName: "HK ENTERPRISES",
+    customerId: "642877614378",
+    accountNumber: "34887143728164",
     accountType: "CURRENT",
     ifsc: "NESF0000333",
-    micr: "6421876458",
-    phone: "+91 76XXXXXX58",
-    email: "jairamtraders8208@gmail.com",
+    micr: "7811781346",
+    phone: "+91 74XXXXXX80",
+    email: "hkenterprises8908@gmail.com",
     pan: "-",
     aadhaarMasked: "-",
     nominee: "-",
     address:
-      "Girnar Tower, Shantivan, Sector 34, Rajasthan - 62",
+      "Hanuman Nagar Road, Badagaon, Koramangala",
     branch:
-      "Slice Bank, Rajasthan - Corporate Branch, Tower A, Girnar, Rajasthan, Rajasthan - 62",
+      "Charkop, Kandivali GK Road, Flat No. 7, Bahawalpur",
     openingDate: "16 May '26",
     udyam: "-",
   },
