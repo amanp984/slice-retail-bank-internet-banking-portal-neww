@@ -177,62 +177,49 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
   y = Math.max(leftEndY, rightEndY) + 36; // Increased spacing from 24 to 36 before summary
 
   // ---------- Summary row ----------
+  // 5 equal, centered columns (grid-like). Label centered above value,
+  // every value sharing one baseline. Sign is suffixed to the amount so
+  // nothing is drawn in the inter-column gutters.
   const summaryCols: Array<{
     label: string;
     value: string;
-    sym?: string;
     valueColor?: [number, number, number];
   }> = [
     { label: "Opening balance", value: fmtRupee(openingBalance) },
-    { label: "Total credits", value: fmtRupee(totalCredits), sym: "+" },
+    { label: "Total credits", value: `${fmtRupee(totalCredits)}+` },
     {
       label: "Redeemed coin value",
-      value: fmtRupee(0),
-      sym: "+",
-      valueColor: [22, 163, 74],
+      value: `${fmtRupee(0)}-`,
+      valueColor: [24, 169, 87],
     },
-    { label: "Total debits", value: fmtRupee(totalDebits), sym: "-" },
-    { label: "Closing balance", value: fmtRupee(closingBalance), sym: "=" },
+    { label: "Total debits", value: `${fmtRupee(totalDebits)}-` },
+    { label: "Closing balance", value: fmtRupee(closingBalance) },
   ];
-  
-  // 5-column responsive summary. Each column has dedicated width.
-  // Operator drawn between columns; label + value rendered inside each
-  // column padded so amounts never collide with neighbours.
-  const sumColGap = 8;           // visual gap between columns reserved for operator
-  const sumPadX = 6;             // inner horizontal padding inside each column
+
   const sumColW = contentW / summaryCols.length;
-  const labelY = y;
-  const summaryBaselineY = y + 22;
+  const sumGutter = 20;                       // equal gap between columns
+  const sumInnerW = sumColW - sumGutter;      // usable width per cell
+  const labelBaselineY = y;
+  const summaryBaselineY = y + 24;            // identical top offset for all values
 
   summaryCols.forEach((c, i) => {
-    const cxLeft = marginX + sumColW * i + sumPadX;
-    const cxRight = marginX + sumColW * (i + 1) - sumPadX;
+    const cx = marginX + sumColW * i + sumColW / 2; // centre of the cell
 
-    // Label (left aligned, wraps if long)
+    // Label — uniform size/colour, centered, single line where possible
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(140, 140, 140);
-    const labelLines = doc.splitTextToSize(c.label, sumColW - sumPadX * 2);
-    doc.text(labelLines, cxLeft, labelY);
+    doc.setFontSize(8.5);
+    doc.setTextColor(138, 138, 138);
+    const labelLines = doc.splitTextToSize(c.label, sumInnerW);
+    doc.text(labelLines, cx, labelBaselineY, { align: "center" });
 
-    // Value (right aligned within column, single line, slightly smaller
-    // so large amounts like ₹143,000.00 always fit)
+    // Value — same font, same baseline, centered in the cell
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
+    doc.setFontSize(12);
     const vc = c.valueColor ?? [20, 20, 20];
     doc.setTextColor(vc[0], vc[1], vc[2]);
-    doc.text(c.value, cxRight, summaryBaselineY, { align: "right" });
-
-    // Operator drawn in the gap between this column and the previous one
-    if (c.sym && i > 0) {
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(12);
-      doc.setTextColor(170, 170, 170);
-      const opX = marginX + sumColW * i - sumColGap / 2;
-      doc.text(c.sym, opX, summaryBaselineY, { align: "center" });
-    }
+    doc.text(c.value, cx, summaryBaselineY, { align: "center" });
   });
-  y += 60;
+  y += 62;
 
   // ---------- Transactions table ----------
   let running = openingBalance;
