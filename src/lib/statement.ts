@@ -47,7 +47,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
-  const marginX = 48;
+  const marginX = 56;
   const marginTop = 100; // Increased from implicit 130 for logo/header spacing
   const marginBottom = 60;
 
@@ -237,7 +237,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     doc.setTextColor(vc[0], vc[1], vc[2]);
     doc.text(c.value, cx, summaryBaselineY, { align: "center" });
   });
-  y = summaryBaselineY + 21; // 28px bottom margin before the table
+  y = summaryBaselineY + 42; // extra whitespace separating summary from table
 
   // ---------- Transactions table ----------
   let running = openingBalance;
@@ -257,31 +257,34 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
   // -₹19,999.78 and ₹143,000.00 never wrap or overlap the ref column.
   const tableW = contentW;
   const dateW = tableW * 0.11;
-  const descW = tableW * 0.32;
-  const refW = tableW * 0.17;
-  const amtW = tableW * 0.18;
-  const balW = tableW * 0.22;
+  const descW = tableW * 0.40;
+  const refW = tableW * 0.22;
+  const amtW = tableW * 0.13;
+  const balW = tableW * 0.14;
 
   autoTable(doc, {
     startY: y,
     head: [["DATE", "DETAILS", "REF NO.", "AMOUNT", "BALANCE"]],
     body,
     theme: "plain",
+    tableWidth: tableW,
     styles: {
-      fontSize: 10,
-      cellPadding: { top: 12, bottom: 12, left: 8, right: 8 }, // Increased horizontal padding from 6 to 8
-      textColor: [25, 25, 25],
-      valign: "middle", // Changed from "top" to "middle" for vertical centering
+      font: "helvetica",
+      fontStyle: "normal",
+      fontSize: 9.5,
+      cellPadding: { top: 14, bottom: 14, left: 6, right: 6 },
+      textColor: [40, 40, 40],
+      valign: "middle",
       overflow: "linebreak",
-      minCellHeight: 28, // Added minimum cell height to prevent overlap
+      minCellHeight: 34,
     },
     headStyles: {
       fontStyle: "bold",
-      textColor: [120, 120, 120],
-      fontSize: 9,
+      textColor: [150, 150, 150],
+      fontSize: 8,
       lineWidth: 0,
       fillColor: [255, 255, 255],
-      cellPadding: { top: 8, bottom: 14, left: 8, right: 8 }, // Increased padding and adjusted from 6 to 8
+      cellPadding: { top: 8, bottom: 16, left: 6, right: 6 },
       valign: "middle",
     },
     bodyStyles: {
@@ -307,10 +310,20 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
       0: { cellWidth: dateW, halign: "left" },
       1: { cellWidth: descW, halign: "left" },
       2: { cellWidth: refW, halign: "left" },
-      3: { cellWidth: amtW, halign: "right" },
-      4: { cellWidth: balW, halign: "right" },
+      3: {
+        cellWidth: amtW,
+        halign: "right",
+        fontStyle: "bold",
+        cellPadding: { top: 14, bottom: 14, left: 4, right: 0 },
+      },
+      4: {
+        cellWidth: balW,
+        halign: "right",
+        fontStyle: "bold",
+        cellPadding: { top: 14, bottom: 14, left: 4, right: 0 },
+      },
     },
-    margin: { left: marginX, right: marginX, top: 100, bottom: marginBottom },
+    margin: { left: marginX, right: marginX, top: 110, bottom: marginBottom },
     didDrawPage: () => {
       drawChrome();
     },
