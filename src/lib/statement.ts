@@ -198,7 +198,18 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
   const sumColW = contentW / summaryCols.length; // identical 1fr columns
   const sumInnerW = sumColW;                     // horizontal gap 0
   const LABEL_SIZE = 8.25;                       // 11px
-  const VALUE_SIZE = 18;                         // 24px
+  // 24px target, shrunk uniformly (never per-column) if the longest amount
+  // would not fit a 1fr cell, so every value keeps one identical type size.
+  doc.setFont("helvetica", "bold");
+  let VALUE_SIZE = 18;
+  const widestValue = summaryCols.reduce(
+    (w, c) => Math.max(w, doc.getStringUnitWidth(c.value)),
+    0
+  );
+  const maxValueW = sumColW - 8;
+  if (widestValue * VALUE_SIZE > maxValueW) {
+    VALUE_SIZE = Math.floor((maxValueW / widestValue) * 10) / 10;
+  }
   const LABEL_LINE = 10;                         // label line height
   const LABEL_ROWS = 1;                          // reserved label height (equal for all)
   const labelBaselineY = y + LABEL_LINE;
