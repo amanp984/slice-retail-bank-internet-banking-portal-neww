@@ -174,52 +174,59 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
 
   const leftEndY = renderCol(leftRows, marginX, y);
   const rightEndY = renderCol(rightRows, marginX + colW + colGap, y);
-  y = Math.max(leftEndY, rightEndY) + 36; // Increased spacing from 24 to 36 before summary
+  y = Math.max(leftEndY, rightEndY) + 24; // 32px top margin from customer details
 
   // ---------- Summary row ----------
-  // 5 equal, centered columns (grid-like). Label centered above value,
-  // every value sharing one baseline. Sign is suffixed to the amount so
-  // nothing is drawn in the inter-column gutters.
+  // 5 equal, centered columns (grid: repeat(5, 1fr)). Labels share one
+  // baseline, values share one baseline, no per-column offsets.
   const summaryCols: Array<{
     label: string;
     value: string;
     valueColor?: [number, number, number];
   }> = [
-    { label: "Opening balance", value: fmtRupee(openingBalance) },
+    { label: "Opening balance", value: `${fmtRupee(openingBalance)}+` },
     { label: "Total credits", value: `${fmtRupee(totalCredits)}+` },
     {
       label: "Redeemed coin value",
       value: `${fmtRupee(0)}-`,
-      valueColor: [24, 169, 87],
+      valueColor: [30, 155, 71],
     },
     { label: "Total debits", value: `${fmtRupee(totalDebits)}-` },
     { label: "Closing balance", value: fmtRupee(closingBalance) },
   ];
 
-  const sumColW = contentW / summaryCols.length;
-  const sumGutter = 20;                       // equal gap between columns
-  const sumInnerW = sumColW - sumGutter;      // usable width per cell
-  const labelBaselineY = y;
-  const summaryBaselineY = y + 24;            // identical top offset for all values
+  const sumColW = contentW / summaryCols.length; // identical 1fr columns
+  const sumInnerW = sumColW;                     // horizontal gap 0
+  const LABEL_SIZE = 8.25;                       // 11px
+  const VALUE_SIZE = 18;                         // 24px
+  const LABEL_LINE = 10;                         // label line height
+  const LABEL_ROWS = 1;                          // reserved label height (equal for all)
+  const labelBaselineY = y + LABEL_LINE;
+  // gap between label block and amount = 8px (6pt); value baseline is uniform
+  const summaryBaselineY =
+    labelBaselineY + (LABEL_ROWS - 1) * LABEL_LINE + 6 + VALUE_SIZE;
 
   summaryCols.forEach((c, i) => {
     const cx = marginX + sumColW * i + sumColW / 2; // centre of the cell
 
-    // Label — uniform size/colour, centered, single line where possible
+    // Label — 11px / 500 / #8B8B8B, centered, single shared baseline
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(8.5);
-    doc.setTextColor(138, 138, 138);
-    const labelLines = doc.splitTextToSize(c.label, sumInnerW);
-    doc.text(labelLines, cx, labelBaselineY, { align: "center" });
+    doc.setFontSize(LABEL_SIZE);
+    doc.setTextColor(139, 139, 139);
+    doc.text(c.label, cx, labelBaselineY, {
+      align: "center",
+      maxWidth: sumInnerW,
+    });
 
-    // Value — same font, same baseline, centered in the cell
+    // Amount — 24px / 700 / line-height 1, same baseline for every column
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    const vc = c.valueColor ?? [20, 20, 20];
+    doc.setFontSize(VALUE_SIZE);
+    doc.setCharSpace(0);
+    const vc = c.valueColor ?? [17, 17, 17];
     doc.setTextColor(vc[0], vc[1], vc[2]);
     doc.text(c.value, cx, summaryBaselineY, { align: "center" });
   });
-  y += 62;
+  y = summaryBaselineY + 21; // 28px bottom margin before the table
 
   // ---------- Transactions table ----------
   let running = openingBalance;
