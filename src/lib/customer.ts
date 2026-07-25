@@ -27,8 +27,8 @@ export const PROFILES: Record<string, CustomerProfile> = {
   "642877614378": {
     username: "642877614378",
     password: "Hari@2286",
-    businessName: "HK ENTERPRISES",
-    holderName: "HK ENTERPRISES",
+    businessName: "DHARMENDRA",
+    holderName: "DHARMENDRA",
     customerId: "642877614378",
     accountNumber: "34887143728164",
     accountType: "CURRENT",
