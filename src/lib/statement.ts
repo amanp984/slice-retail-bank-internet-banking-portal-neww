@@ -277,7 +277,6 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
       valign: "middle",
       overflow: "linebreak",
       minCellHeight: 34,
-      lineHeight: 1.35,
     },
     headStyles: {
       fontStyle: "bold",
