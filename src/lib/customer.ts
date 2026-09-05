@@ -24,25 +24,23 @@ export type CustomerProfile = {
 };
 
 export const PROFILES: Record<string, CustomerProfile> = {
-  "642877614378": {
-    username: "642877614378",
-    password: "Hari@2286",
-    businessName: "DHARMENDRA",
-    holderName: "DHARMENDRA",
-    customerId: "642877614378",
-    accountNumber: "34887143728164",
+  "3466788764": {
+    username: "3466788764",
+    password: "Annirudh@18926",
+    businessName: "ANJAN PRAJAPATI",
+    holderName: "ANJAN PRAJAPATI",
+    customerId: "3466788764",
+    accountNumber: "437811648731",
     accountType: "CURRENT",
-    ifsc: "NESF0000333",
-    micr: "7811781346",
-    phone: "+91 74XXXXXX80",
-    email: "hkenterprises8908@gmail.com",
+    ifsc: "NESF0000405",
+    micr: "-",
+    phone: "6488731789",
+    email: "-",
     pan: "-",
     aadhaarMasked: "-",
     nominee: "-",
-    address:
-      "Hanuman Nagar Road, Badagaon, Koramangala",
-    branch:
-      "Charkop, Kandivali GK Road, Flat No. 7, Bahawalpur",
+    address: "-",
+    branch: "-",
     openingDate: "16 May '26",
     udyam: "-",
   },
