@@ -43,6 +43,7 @@ const savedBeneficiaries = [
 ];
 
 function TransfersPage() {
+  useCustomer();
   const navigate = useNavigate();
   const [mode, setMode] = useState("IMPS");
   const [amount, setAmount] = useState("");

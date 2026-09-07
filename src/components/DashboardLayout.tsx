@@ -84,6 +84,7 @@ function HeaderPanel({
 export function DashboardLayout({
   children, showGreeting = false,
 }: { children: ReactNode; showGreeting?: boolean }) {
+  useCustomer();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [modal, setModal] = useState<ModalKind>(null);

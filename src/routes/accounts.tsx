@@ -90,6 +90,7 @@ const quickActions: { icon: any; label: string; to?: string }[] = [
 ];
 
 function AccountsPage() {
+  useCustomer();
   const [active, setActive] = useState<TabKey>("current");
   const [modal, setModal] = useState<null | "fd" | "loan" | "invest">(null);
   const [toast, setToast] = useState<string | null>(null);

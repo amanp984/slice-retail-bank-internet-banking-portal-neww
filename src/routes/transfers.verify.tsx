@@ -28,6 +28,7 @@ export const Route = createFileRoute("/transfers/verify")({
 });
 
 function VerifyPage() {
+  useCustomer();
   const navigate = useNavigate();
   const search = Route.useSearch();
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);

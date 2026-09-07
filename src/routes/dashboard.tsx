@@ -44,6 +44,7 @@ const fmtDate = (iso: string) => {
 const labelType = (t: "credit" | "debit") => (t === "credit" ? "Credit" : "Debit");
 
 function Dashboard() {
+  useCustomer();
   const [show, setShow] = useState(true);
   const navigate = useNavigate();
   const { txns, balance, loading } = useTransactions(50);
