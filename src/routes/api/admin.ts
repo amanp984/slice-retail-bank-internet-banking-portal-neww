@@ -91,8 +91,15 @@ async function handle(request: Request) {
   }
 
   if (body.action === "save_profile") {
-    const row = { id: "primary", ...pick(body.profile, PROFILE_COLUMNS) };
-    const { error } = await supabase.from("app_profile").upsert(row, { onConflict: "id" });
+    const patch = pick(body.profile, PROFILE_COLUMNS);
+    const { data: existing } = await supabase
+      .from("app_profile")
+      .select("id")
+      .eq("id", "primary")
+      .maybeSingle();
+    const { error } = existing
+      ? await supabase.from("app_profile").update(patch).eq("id", "primary")
+      : await supabase.from("app_profile").insert({ id: "primary", ...patch });
     if (error) return json({ ok: false, error: error.message }, 400);
     return json({ ok: true });
   }
