@@ -34,6 +34,7 @@ import { Route as TransfersManagebeneficiariesRouteImport } from './routes/trans
 import { Route as PaymentsCategoryRouteImport } from './routes/payments.$category'
 import { Route as CardsBlockCardRouteImport } from './routes/cards.block-card'
 import { Route as ApiSmsRouteImport } from './routes/api/sms'
+import { Route as ApiAdminRouteImport } from './routes/api/admin'
 
 const TransfersRoute = TransfersRouteImport.update({
   id: '/transfers',
@@ -161,6 +162,11 @@ const ApiSmsRoute = ApiSmsRouteImport.update({
   path: '/api/sms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminRoute = ApiAdminRouteImport.update({
+  id: '/api/admin',
+  path: '/api/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -179,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/transactions': typeof TransactionsRoute
   '/transfers': typeof TransfersRouteWithChildren
+  '/api/admin': typeof ApiAdminRoute
   '/api/sms': typeof ApiSmsRoute
   '/cards/block-card': typeof CardsBlockCardRoute
   '/payments/$category': typeof PaymentsCategoryRoute
@@ -203,6 +210,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/transactions': typeof TransactionsRoute
+  '/api/admin': typeof ApiAdminRoute
   '/api/sms': typeof ApiSmsRoute
   '/cards/block-card': typeof CardsBlockCardRoute
   '/payments/$category': typeof PaymentsCategoryRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/transactions': typeof TransactionsRoute
   '/transfers': typeof TransfersRouteWithChildren
+  '/api/admin': typeof ApiAdminRoute
   '/api/sms': typeof ApiSmsRoute
   '/cards/block-card': typeof CardsBlockCardRoute
   '/payments/$category': typeof PaymentsCategoryRoute
@@ -260,6 +269,7 @@ export interface FileRouteTypes {
     | '/terms-and-conditions'
     | '/transactions'
     | '/transfers'
+    | '/api/admin'
     | '/api/sms'
     | '/cards/block-card'
     | '/payments/$category'
@@ -284,6 +294,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/terms-and-conditions'
     | '/transactions'
+    | '/api/admin'
     | '/api/sms'
     | '/cards/block-card'
     | '/payments/$category'
@@ -311,6 +322,7 @@ export interface FileRouteTypes {
     | '/terms-and-conditions'
     | '/transactions'
     | '/transfers'
+    | '/api/admin'
     | '/api/sms'
     | '/cards/block-card'
     | '/payments/$category'
@@ -339,6 +351,7 @@ export interface RootRouteChildren {
   TermsAndConditionsRoute: typeof TermsAndConditionsRoute
   TransactionsRoute: typeof TransactionsRoute
   TransfersRoute: typeof TransfersRouteWithChildren
+  ApiAdminRoute: typeof ApiAdminRoute
   ApiSmsRoute: typeof ApiSmsRoute
 }
 
@@ -519,6 +532,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSmsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin': {
+      id: '/api/admin'
+      path: '/api/admin'
+      fullPath: '/api/admin'
+      preLoaderRoute: typeof ApiAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -583,6 +603,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsAndConditionsRoute: TermsAndConditionsRoute,
   TransactionsRoute: TransactionsRoute,
   TransfersRoute: TransfersRouteWithChildren,
+  ApiAdminRoute: ApiAdminRoute,
   ApiSmsRoute: ApiSmsRoute,
 }
 export const routeTree = rootRouteImport
