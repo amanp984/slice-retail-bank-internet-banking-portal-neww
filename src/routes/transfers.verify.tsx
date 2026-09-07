@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { ShieldCheck, ArrowLeft, Landmark, User, Info } from "lucide-react";
 import { z } from "zod";
-import { CUSTOMER } from "@/lib/customer";
+import { CUSTOMER, useCustomer } from "@/lib/customer";
 
 const maskAcct = (n: string) => {
   if (!n) return "";
@@ -28,6 +28,7 @@ export const Route = createFileRoute("/transfers/verify")({
 });
 
 function VerifyPage() {
+  useCustomer();
   const navigate = useNavigate();
   const search = Route.useSearch();
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);

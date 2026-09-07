@@ -11,8 +11,10 @@ import {
 import appCss from "../styles.css?url";
 import { SecurityGuard } from "../components/SecurityGuard";
 import { validateLiveSupabaseProject } from "@/lib/supabase-helpers";
+import { startProfileSync } from "@/lib/customer";
 
 validateLiveSupabaseProject("startup");
+startProfileSync();
 
 function NotFoundComponent() {
   return (

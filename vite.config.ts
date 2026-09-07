@@ -7,10 +7,10 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { existsSync, readFileSync } from "node:fs";
 
-const LIVE_SUPABASE_PROJECT_ID = "grnuuhoxpnezzmfovrxx";
+const LIVE_SUPABASE_PROJECT_ID = "usjynnxdtmghgznfcrjf";
 const LIVE_SUPABASE_URL = `https://${LIVE_SUPABASE_PROJECT_ID}.supabase.co`;
 const LIVE_SUPABASE_PUBLISHABLE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdybnV1aG94cG5lenptZm92cnh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyNTUwMzAsImV4cCI6MjA5NDgzMTAzMH0.kFisDt3vaZPfYwDi5MLhykMwIiWcaYytdbKxB1Tb9P4";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzanlubnhkdG1naGd6bmZjcmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4OTYzMDYsImV4cCI6MjA5NjQ3MjMwNn0.ykYjSED6gfNRDQi41Jdbt1yEQ-d3nzKTNM_D5sNy6sA";
 
 const readDotEnv = () => {
   if (!existsSync(".env")) return {} as Record<string, string>;

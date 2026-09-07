@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-const LIVE_SUPABASE_PROJECT_ID = "grnuuhoxpnezzmfovrxx";
+const LIVE_SUPABASE_PROJECT_ID = "usjynnxdtmghgznfcrjf";
 const LIVE_SUPABASE_URL = `https://${LIVE_SUPABASE_PROJECT_ID}.supabase.co`;
 
 // Native Vercel serverless function (Node runtime).

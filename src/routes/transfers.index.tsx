@@ -8,7 +8,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useTransactions } from "@/hooks/useTransactions";
-import { CUSTOMER } from "@/lib/customer";
+import { CUSTOMER, useCustomer } from "@/lib/customer";
 
 const fmtINR = (n: number) =>
   "₹" + new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2 }).format(Math.abs(n));
@@ -43,6 +43,7 @@ const savedBeneficiaries = [
 ];
 
 function TransfersPage() {
+  useCustomer();
   const navigate = useNavigate();
   const [mode, setMode] = useState("IMPS");
   const [amount, setAmount] = useState("");

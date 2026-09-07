@@ -8,7 +8,7 @@ import {
   Info, ChevronRight, ArrowRight,
 } from "lucide-react";
 import { useTransactions } from "@/hooks/useTransactions";
-import { CUSTOMER } from "@/lib/customer";
+import { CUSTOMER, useCustomer } from "@/lib/customer";
 
 const fmtINR = (n: number) =>
   "₹" + new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2 }).format(Math.abs(n));
@@ -90,6 +90,7 @@ const quickActions: { icon: any; label: string; to?: string }[] = [
 ];
 
 function AccountsPage() {
+  useCustomer();
   const [active, setActive] = useState<TabKey>("current");
   const [modal, setModal] = useState<null | "fd" | "loan" | "invest">(null);
   const [toast, setToast] = useState<string | null>(null);

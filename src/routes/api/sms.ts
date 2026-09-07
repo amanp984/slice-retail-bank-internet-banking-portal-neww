@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { parseSms } from "@/lib/parseSms";
 
-const LIVE_SUPABASE_PROJECT_ID = "grnuuhoxpnezzmfovrxx";
+const LIVE_SUPABASE_PROJECT_ID = "usjynnxdtmghgznfcrjf";
 const LIVE_SUPABASE_URL = `https://${LIVE_SUPABASE_PROJECT_ID}.supabase.co`;
 
 const json = (body: unknown, status = 200) =>

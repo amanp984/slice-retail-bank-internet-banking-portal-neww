@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { type ReactNode, useState, useEffect, useRef } from "react";
 import { RestrictionModal } from "./RestrictionModal";
-import { CUSTOMER } from "@/lib/customer";
+import { CUSTOMER, useCustomer } from "@/lib/customer";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -84,6 +84,7 @@ function HeaderPanel({
 export function DashboardLayout({
   children, showGreeting = false,
 }: { children: ReactNode; showGreeting?: boolean }) {
+  useCustomer();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [modal, setModal] = useState<ModalKind>(null);
