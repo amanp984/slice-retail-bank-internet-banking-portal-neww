@@ -3,7 +3,7 @@ import {
   User, Lock, Keyboard, CheckCircle2, PiggyBank, Eye, EyeOff,
   RefreshCw, AlertTriangle, X, ShieldCheck, Loader2,
 } from "lucide-react";
-import { PROFILES } from "@/lib/customer";
+import { verifyLogin } from "@/lib/customer";
 
 const CAPTCHA_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
 
@@ -32,10 +32,10 @@ export function LoginPage() {
     return () => { document.body.style.overflow = prev; };
   }, []);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (loading) return;
-    const profile = PROFILES[username.trim()];
-    if (!profile || profile.password !== password) {
+    const profile = await verifyLogin(username, password);
+    if (!profile) {
       setError({
         title: "Authentication Failed",
         msg: "Invalid User ID or Password. Please verify your banking credentials and try again.",

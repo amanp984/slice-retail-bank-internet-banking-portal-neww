@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { type ReactNode, useState, useEffect, useRef } from "react";
 import { RestrictionModal } from "./RestrictionModal";
-import { CUSTOMER } from "@/lib/customer";
+import { CUSTOMER, useCustomer } from "@/lib/customer";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },

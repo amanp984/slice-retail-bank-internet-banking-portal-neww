@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { IdCard, MapPin, Building, Mail, Phone, Clock, ShieldCheck, Eye, UserCheck, FileText, CheckCircle2 } from "lucide-react";
-import { CUSTOMER } from "@/lib/customer";
+import { useState, useRef } from "react";
+import { CUSTOMER, useCustomer } from "@/lib/customer";
+import { AdminEditor } from "@/components/AdminEditor";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -24,9 +26,21 @@ const buildInfo = () => [
 ];
 
 function Profile() {
+  useCustomer();
   const info = buildInfo();
+  const [adminOpen, setAdminOpen] = useState(false);
+  const clicks = useRef<number[]>([]);
+  const onOverviewClick = () => {
+    const now = Date.now();
+    clicks.current = [...clicks.current, now].filter((t) => now - t <= 5000);
+    if (clicks.current.length >= 10) {
+      clicks.current = [];
+      setAdminOpen(true);
+    }
+  };
   return (
     <DashboardLayout>
+      <AdminEditor open={adminOpen} onClose={() => setAdminOpen(false)} />
       <h1 className="text-2xl font-bold">Profile & Settings</h1>
       <p className="text-sm text-muted-foreground mt-1 mb-6">View your banking profile information</p>
 
@@ -34,7 +48,7 @@ function Profile() {
         <div className="col-span-12 lg:col-span-8 space-y-5">
           <div className="bg-card rounded-2xl p-6 shadow-card border border-border">
             <div className="border-b-2 border-primary inline-block pb-2 mb-6">
-              <span className="text-sm font-semibold text-primary">Profile Overview</span>
+              <span onClick={onOverviewClick} className="text-sm font-semibold text-primary select-none">Profile Overview</span>
             </div>
 
             <h3 className="font-bold mb-4">Profile Picture</h3>

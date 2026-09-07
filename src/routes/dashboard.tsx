@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useTransactions } from "@/hooks/useTransactions";
 import { formatDescription } from "@/lib/formatTxn";
 import { downloadStatementPdf, downloadStatementCsv } from "@/lib/statement";
-import { CUSTOMER } from "@/lib/customer";
+import { CUSTOMER, useCustomer } from "@/lib/customer";
 import { formatINR, formatSignedTransactionINR } from "@/lib/supabase-helpers";
 
 export const Route = createFileRoute("/dashboard")({
