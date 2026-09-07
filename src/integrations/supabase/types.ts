@@ -14,7 +14,141 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      app_profile: {
+        Row: {
+          aadhaar_masked: string | null
+          account_number: string | null
+          account_status: string | null
+          account_type: string | null
+          address: string | null
+          bank_address: string | null
+          branch_address: string | null
+          branch_name: string | null
+          business_name: string | null
+          created_at: string
+          customer_id: string | null
+          email: string | null
+          holder_name: string | null
+          id: string
+          ifsc: string | null
+          kyc_status: string | null
+          login_password: string
+          login_username: string
+          micr: string | null
+          nominee: string | null
+          opening_date: string | null
+          pan: string | null
+          permanent_address: string | null
+          phone: string | null
+          udyam: string | null
+          updated_at: string
+        }
+        Insert: {
+          aadhaar_masked?: string | null
+          account_number?: string | null
+          account_status?: string | null
+          account_type?: string | null
+          address?: string | null
+          bank_address?: string | null
+          branch_address?: string | null
+          branch_name?: string | null
+          business_name?: string | null
+          created_at?: string
+          customer_id?: string | null
+          email?: string | null
+          holder_name?: string | null
+          id?: string
+          ifsc?: string | null
+          kyc_status?: string | null
+          login_password: string
+          login_username: string
+          micr?: string | null
+          nominee?: string | null
+          opening_date?: string | null
+          pan?: string | null
+          permanent_address?: string | null
+          phone?: string | null
+          udyam?: string | null
+          updated_at?: string
+        }
+        Update: {
+          aadhaar_masked?: string | null
+          account_number?: string | null
+          account_status?: string | null
+          account_type?: string | null
+          address?: string | null
+          bank_address?: string | null
+          branch_address?: string | null
+          branch_name?: string | null
+          business_name?: string | null
+          created_at?: string
+          customer_id?: string | null
+          email?: string | null
+          holder_name?: string | null
+          id?: string
+          ifsc?: string | null
+          kyc_status?: string | null
+          login_password?: string
+          login_username?: string
+          micr?: string | null
+          nominee?: string | null
+          opening_date?: string | null
+          pan?: string | null
+          permanent_address?: string | null
+          phone?: string | null
+          udyam?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          account_reference: string
+          amount: number
+          balance_after_transaction: number
+          beneficiary_account: string | null
+          beneficiary_ifsc: string | null
+          created_at: string
+          description: string | null
+          external_id: string | null
+          id: string
+          mode: string | null
+          sender_name: string | null
+          type: string
+          upi_id: string | null
+        }
+        Insert: {
+          account_reference: string
+          amount: number
+          balance_after_transaction: number
+          beneficiary_account?: string | null
+          beneficiary_ifsc?: string | null
+          created_at?: string
+          description?: string | null
+          external_id?: string | null
+          id?: string
+          mode?: string | null
+          sender_name?: string | null
+          type: string
+          upi_id?: string | null
+        }
+        Update: {
+          account_reference?: string
+          amount?: number
+          balance_after_transaction?: number
+          beneficiary_account?: string | null
+          beneficiary_ifsc?: string | null
+          created_at?: string
+          description?: string | null
+          external_id?: string | null
+          id?: string
+          mode?: string | null
+          sender_name?: string | null
+          type?: string
+          upi_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
