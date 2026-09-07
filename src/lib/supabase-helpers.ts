@@ -10,7 +10,7 @@ export type Txn = {
   upi_id?: string | null;
 };
 
-export const LIVE_SUPABASE_PROJECT_ID = "grnuuhoxpnezzmfovrxx";
+export const LIVE_SUPABASE_PROJECT_ID = "usjynnxdtmghgznfcrjf";
 export const LIVE_SUPABASE_URL = `https://${LIVE_SUPABASE_PROJECT_ID}.supabase.co`;
 
 export function validateLiveSupabaseProject(context = "startup") {
