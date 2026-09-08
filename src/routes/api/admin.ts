@@ -104,6 +104,42 @@ async function handle(request: Request) {
     return json({ ok: true });
   }
 
+  if (body.action === "create_transaction") {
+    const patch: any = pick(body.transaction, TXN_COLUMNS);
+    patch.amount = Number(patch.amount) || 0;
+    patch.type = patch.type === "debit" ? "debit" : "credit";
+    if (!patch.created_at) patch.created_at = new Date().toISOString();
+
+    let accountRef: string | null = body.account_reference ?? null;
+    if (!accountRef) {
+      const { data: last } = await supabase
+        .from("transactions")
+        .select("account_reference")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      accountRef = last?.account_reference ?? null;
+    }
+    if (!accountRef) {
+      const { data: prof } = await supabase
+        .from("app_profile")
+        .select("account_number")
+        .eq("id", "primary")
+        .maybeSingle();
+      accountRef = prof?.account_number ?? null;
+    }
+    if (!accountRef) return json({ ok: false, error: "no account reference available" }, 400);
+
+    const { data, error } = await supabase
+      .from("transactions")
+      .insert({ ...patch, account_reference: accountRef, balance_after_transaction: 0 })
+      .select("id, account_reference")
+      .maybeSingle();
+    if (error) return json({ ok: false, error: error.message }, 400);
+    await recomputeBalances(supabase, accountRef);
+    return json({ ok: true, id: data?.id });
+  }
+
   if (body.action === "save_transaction") {
     const id = body.id;
     if (!id) return json({ ok: false, error: "missing transaction id" }, 400);
