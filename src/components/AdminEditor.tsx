@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { verifyAdmin, saveProfileRow, saveTransactionRow } from "@/lib/admin-api";
 import { getProfileRecord, profileToRow, loadProfile } from "@/lib/customer";
+import { generateDemoDescription } from "@/lib/demoDescription";
 
 type Props = { open: boolean; onClose: () => void };
 
@@ -31,17 +32,18 @@ const PROFILE_FIELDS: { key: string; label: string }[] = [
   { key: "udyam", label: "Udyam" },
 ];
 
-const TXN_FIELDS: { key: string; label: string; type?: string }[] = [
-  { key: "amount", label: "Amount", type: "number" },
-  { key: "type", label: "Credit / Debit" },
-  { key: "mode", label: "Mode (UPI/IMPS/NEFT/RTGS)" },
+type TxnField = { key: string; label: string; type?: string; options?: string[]; modes?: string[] };
+
+const TXN_FIELDS: TxnField[] = [
+  { key: "type", label: "Credit / Debit", options: ["credit", "debit"] },
+  { key: "mode", label: "Payment Mode", options: ["UPI", "IMPS", "NEFT", "RTGS"] },
   { key: "sender_name", label: "Beneficiary / Sender Name" },
-  { key: "beneficiary_account", label: "Beneficiary Account" },
-  { key: "upi_id", label: "Beneficiary UPI ID" },
-  { key: "beneficiary_ifsc", label: "Beneficiary IFSC" },
+  { key: "amount", label: "Amount", type: "number" },
   { key: "external_id", label: "Reference / UTR" },
-  { key: "description", label: "Description" },
   { key: "created_at", label: "Transaction Date/Time (ISO)" },
+  { key: "upi_id", label: "UPI ID (VPA)", modes: ["UPI"] },
+  { key: "beneficiary_account", label: "Beneficiary Account", modes: ["IMPS", "NEFT", "RTGS"] },
+  { key: "beneficiary_ifsc", label: "Beneficiary IFSC", modes: ["IMPS", "NEFT", "RTGS"] },
 ];
 
 const input =
@@ -111,7 +113,10 @@ export function AdminEditor({ open, onClose }: Props) {
     setBusy(true);
     setMsg(null);
     try {
-      await saveTransactionRow(selected, txn);
+      await saveTransactionRow(selected, {
+        ...txn,
+        description: generateDemoDescription(txn as any),
+      });
       setMsg({ ok: true, text: "Transaction saved and balances recalculated." });
     } catch (e: any) {
       setMsg({ ok: false, text: e?.message || "Save failed" });
@@ -186,19 +191,46 @@ export function AdminEditor({ open, onClose }: Props) {
                   </select>
                 </div>
                 {selected && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {TXN_FIELDS.map((f) => (
-                      <div key={f.key}>
-                        <label className="text-xs text-muted-foreground">{f.label}</label>
-                        <input
-                          className={input}
-                          type={f.type ?? "text"}
-                          value={txn[f.key] ?? ""}
-                          onChange={(e) => setTxn({ ...txn, [f.key]: e.target.value })}
-                        />
-                      </div>
-                    ))}
-                  </div>
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {TXN_FIELDS.filter(
+                        (f) => !f.modes || f.modes.includes(String(txn.mode ?? "").toUpperCase()),
+                      ).map((f) => (
+                        <div key={f.key}>
+                          <label className="text-xs text-muted-foreground">{f.label}</label>
+                          {f.options ? (
+                            <select
+                              className={input}
+                              value={txn[f.key] ?? ""}
+                              onChange={(e) => setTxn({ ...txn, [f.key]: e.target.value })}
+                            >
+                              <option value="">—</option>
+                              {f.options.map((o) => (
+                                <option key={o} value={o}>
+                                  {o.toUpperCase()}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input
+                              className={input}
+                              type={f.type ?? "text"}
+                              value={txn[f.key] ?? ""}
+                              onChange={(e) => setTxn({ ...txn, [f.key]: e.target.value })}
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="rounded-lg border border-border bg-secondary/40 p-3">
+                      <p className="text-xs font-medium text-muted-foreground mb-1">
+                        Live generated description preview (DEMO/TEST)
+                      </p>
+                      <p className="text-xs leading-relaxed break-words font-mono">
+                        {generateDemoDescription(txn as any)}
+                      </p>
+                    </div>
+                  </>
                 )}
               </div>
             )}
