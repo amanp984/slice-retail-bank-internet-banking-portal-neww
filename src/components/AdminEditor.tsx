@@ -59,6 +59,36 @@ export function AdminEditor({ open, onClose }: Props) {
   const [txn, setTxn] = useState<Record<string, any>>({});
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [newMode, setNewMode] = useState<string>("");
+  const [newTxn, setNewTxn] = useState<Record<string, any>>({});
+  const [liveNow, setLiveNow] = useState(true);
+
+  // Keep the date/time pinned to "now" while the real-time toggle is on.
+  useEffect(() => {
+    if (!adding || !liveNow) return;
+    const tick = () => setNewTxn((t) => ({ ...t, created_at: new Date().toISOString() }));
+    tick();
+    const i = setInterval(tick, 1000);
+    return () => clearInterval(i);
+  }, [adding, liveNow, newMode]);
+
+  const refreshTxns = async (selectId?: string) => {
+    const { data } = await (supabase as any)
+      .from("transactions")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    const rows = data ?? [];
+    setTxns(rows);
+    if (selectId) {
+      const row = rows.find((r: any) => r.id === selectId);
+      if (row) {
+        setSelected(selectId);
+        setTxn({ ...row });
+      }
+    }
+  };
 
   useEffect(() => {
     if (!open) {
