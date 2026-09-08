@@ -112,7 +112,10 @@ export function AdminEditor({ open, onClose }: Props) {
     setBusy(true);
     setMsg(null);
     try {
-      await saveTransactionRow(selected, txn);
+      await saveTransactionRow(selected, {
+        ...txn,
+        description: generateDemoDescription(txn as any),
+      });
       setMsg({ ok: true, text: "Transaction saved and balances recalculated." });
     } catch (e: any) {
       setMsg({ ok: false, text: e?.message || "Save failed" });
