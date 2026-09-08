@@ -55,3 +55,6 @@ export const saveProfileRow = (profile: Record<string, unknown>) =>
 
 export const saveTransactionRow = (id: string, transaction: Record<string, unknown>) =>
   call({ action: "save_transaction", id, transaction });
+
+export const createTransactionRow = (transaction: Record<string, unknown>) =>
+  call({ action: "create_transaction", transaction });

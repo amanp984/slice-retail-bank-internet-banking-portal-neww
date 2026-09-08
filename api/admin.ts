@@ -90,6 +90,49 @@ export default async function handler(req: any, res: any) {
       return;
     }
 
+    if (body.action === "create_transaction") {
+      const patch: any = pick(body.transaction, TXN_COLUMNS);
+      patch.amount = Number(patch.amount) || 0;
+      patch.type = patch.type === "debit" ? "debit" : "credit";
+      if (!patch.created_at) patch.created_at = new Date().toISOString();
+
+      let accountRef: string | null = body.account_reference ?? null;
+      if (!accountRef) {
+        const { data: last } = await supabase
+          .from("transactions")
+          .select("account_reference")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        accountRef = last?.account_reference ?? null;
+      }
+      if (!accountRef) {
+        const { data: prof } = await supabase
+          .from("app_profile")
+          .select("account_number")
+          .eq("id", "primary")
+          .maybeSingle();
+        accountRef = prof?.account_number ?? null;
+      }
+      if (!accountRef) {
+        res.status(400).json({ ok: false, error: "no account reference available" });
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("transactions")
+        .insert({ ...patch, account_reference: accountRef, balance_after_transaction: 0 })
+        .select("id")
+        .maybeSingle();
+      if (error) {
+        res.status(400).json({ ok: false, error: error.message });
+        return;
+      }
+      await recomputeBalances(supabase, accountRef);
+      res.status(200).json({ ok: true, id: data?.id });
+      return;
+    }
+
     if (body.action === "save_transaction") {
       if (!body.id) {
         res.status(400).json({ ok: false, error: "missing transaction id" });
