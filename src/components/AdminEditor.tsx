@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { verifyAdmin, saveProfileRow, saveTransactionRow } from "@/lib/admin-api";
+import { verifyAdmin, saveProfileRow, saveTransactionRow, createTransactionRow } from "@/lib/admin-api";
 import { getProfileRecord, profileToRow, loadProfile } from "@/lib/customer";
 import { generateDemoDescription } from "@/lib/demoDescription";
 
