@@ -187,19 +187,46 @@ export function AdminEditor({ open, onClose }: Props) {
                   </select>
                 </div>
                 {selected && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {TXN_FIELDS.map((f) => (
-                      <div key={f.key}>
-                        <label className="text-xs text-muted-foreground">{f.label}</label>
-                        <input
-                          className={input}
-                          type={f.type ?? "text"}
-                          value={txn[f.key] ?? ""}
-                          onChange={(e) => setTxn({ ...txn, [f.key]: e.target.value })}
-                        />
-                      </div>
-                    ))}
-                  </div>
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {TXN_FIELDS.filter(
+                        (f) => !f.modes || f.modes.includes(String(txn.mode ?? "").toUpperCase()),
+                      ).map((f) => (
+                        <div key={f.key}>
+                          <label className="text-xs text-muted-foreground">{f.label}</label>
+                          {f.options ? (
+                            <select
+                              className={input}
+                              value={txn[f.key] ?? ""}
+                              onChange={(e) => setTxn({ ...txn, [f.key]: e.target.value })}
+                            >
+                              <option value="">—</option>
+                              {f.options.map((o) => (
+                                <option key={o} value={o}>
+                                  {o.toUpperCase()}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input
+                              className={input}
+                              type={f.type ?? "text"}
+                              value={txn[f.key] ?? ""}
+                              onChange={(e) => setTxn({ ...txn, [f.key]: e.target.value })}
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="rounded-lg border border-border bg-secondary/40 p-3">
+                      <p className="text-xs font-medium text-muted-foreground mb-1">
+                        Live generated description preview (DEMO/TEST)
+                      </p>
+                      <p className="text-xs leading-relaxed break-words font-mono">
+                        {generateDemoDescription(txn as any)}
+                      </p>
+                    </div>
+                  </>
                 )}
               </div>
             )}
