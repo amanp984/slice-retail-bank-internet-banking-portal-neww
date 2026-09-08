@@ -31,17 +31,18 @@ const PROFILE_FIELDS: { key: string; label: string }[] = [
   { key: "udyam", label: "Udyam" },
 ];
 
-const TXN_FIELDS: { key: string; label: string; type?: string }[] = [
-  { key: "amount", label: "Amount", type: "number" },
-  { key: "type", label: "Credit / Debit" },
-  { key: "mode", label: "Mode (UPI/IMPS/NEFT/RTGS)" },
+type TxnField = { key: string; label: string; type?: string; options?: string[]; modes?: string[] };
+
+const TXN_FIELDS: TxnField[] = [
+  { key: "type", label: "Credit / Debit", options: ["credit", "debit"] },
+  { key: "mode", label: "Payment Mode", options: ["UPI", "IMPS", "NEFT", "RTGS"] },
   { key: "sender_name", label: "Beneficiary / Sender Name" },
-  { key: "beneficiary_account", label: "Beneficiary Account" },
-  { key: "upi_id", label: "Beneficiary UPI ID" },
-  { key: "beneficiary_ifsc", label: "Beneficiary IFSC" },
+  { key: "amount", label: "Amount", type: "number" },
   { key: "external_id", label: "Reference / UTR" },
-  { key: "description", label: "Description" },
   { key: "created_at", label: "Transaction Date/Time (ISO)" },
+  { key: "upi_id", label: "UPI ID (VPA)", modes: ["UPI"] },
+  { key: "beneficiary_account", label: "Beneficiary Account", modes: ["IMPS", "NEFT", "RTGS"] },
+  { key: "beneficiary_ifsc", label: "Beneficiary IFSC", modes: ["IMPS", "NEFT", "RTGS"] },
 ];
 
 const input =
