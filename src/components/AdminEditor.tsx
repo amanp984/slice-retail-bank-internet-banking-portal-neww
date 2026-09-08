@@ -155,6 +155,58 @@ export function AdminEditor({ open, onClose }: Props) {
     }
   };
 
+  const startAdd = () => {
+    setAdding(true);
+    setNewMode("");
+    setLiveNow(true);
+    setNewTxn({ type: "credit", created_at: new Date().toISOString() });
+    setMsg(null);
+  };
+
+  const doCreateTxn = async () => {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const payload = {
+        ...newTxn,
+        mode: newMode === "Refund" ? "REFUND" : newMode,
+        description: generateDemoDescription({ ...newTxn, mode: newMode } as any),
+      };
+      const res: any = await createTransactionRow(payload);
+      await refreshTxns(res?.id);
+      setTab("txn");
+      setAdding(false);
+      setMsg({ ok: true, text: "New transaction created and balances recalculated." });
+    } catch (e: any) {
+      setMsg({ ok: false, text: e?.message || "Could not create transaction" });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const addFields = (mode: string): TxnField[] => {
+    const base: TxnField[] = [
+      { key: "type", label: "Credit / Debit", options: ["credit", "debit"] },
+      { key: "sender_name", label: "Beneficiary / Sender Name" },
+      { key: "amount", label: "Amount", type: "number" },
+      { key: "external_id", label: "UTR / Reference" },
+    ];
+    if (mode === "UPI") base.push({ key: "upi_id", label: "UPI ID (VPA)" });
+    if (["IMPS", "NEFT", "RTGS"].includes(mode)) {
+      base.push({ key: "beneficiary_account", label: "Beneficiary Account" });
+      base.push({ key: "beneficiary_ifsc", label: "Beneficiary IFSC" });
+    }
+    if (mode === "Refund") base.push({ key: "beneficiary_account", label: "Original Account (optional)" });
+    return base;
+  };
+
+  const toLocalInput = (iso?: string) => {
+    const d = iso ? new Date(iso) : new Date();
+    if (Number.isNaN(d.getTime())) return "";
+    const p = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-black/50 grid place-items-center p-4">
       <div className="bg-card w-full max-w-3xl max-h-[85vh] overflow-auto rounded-2xl border border-border p-6 shadow-card">
