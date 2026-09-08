@@ -340,6 +340,119 @@ export function AdminEditor({ open, onClose }: Props) {
           </>
         )}
       </div>
+
+      {authed && adding && (
+        <div className="fixed inset-0 z-[60] bg-black/60 grid place-items-center p-4">
+          <div className="bg-card w-full max-w-2xl max-h-[85vh] overflow-auto rounded-2xl border border-border p-6 shadow-card">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold">Add Transaction (DEMO/TEST)</h2>
+              <button onClick={() => setAdding(false)} className="text-sm text-muted-foreground hover:text-foreground">
+                Close
+              </button>
+            </div>
+
+            {!newMode ? (
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">Choose the transaction type</p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {["UPI", "IMPS", "NEFT", "RTGS", "Refund"].map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => {
+                        setNewMode(m);
+                        setNewTxn((t) => ({ ...t, mode: m, type: m === "Refund" ? "credit" : t.type ?? "credit" }));
+                      }}
+                      className="rounded-xl border border-border bg-secondary/40 px-4 py-6 text-sm font-semibold hover:border-primary"
+                    >
+                      {m.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold">{newMode.toUpperCase()} transaction</p>
+                  <button onClick={() => setNewMode("")} className="text-xs text-muted-foreground hover:text-foreground">
+                    Change type
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {addFields(newMode).map((f) => (
+                    <div key={f.key}>
+                      <label className="text-xs text-muted-foreground">{f.label}</label>
+                      {f.options ? (
+                        <select
+                          className={input}
+                          value={newTxn[f.key] ?? ""}
+                          onChange={(e) => setNewTxn({ ...newTxn, [f.key]: e.target.value })}
+                        >
+                          {f.options.map((o) => (
+                            <option key={o} value={o}>
+                              {o.toUpperCase()}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          className={input}
+                          type={f.type ?? "text"}
+                          value={newTxn[f.key] ?? ""}
+                          onChange={(e) => setNewTxn({ ...newTxn, [f.key]: e.target.value })}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="rounded-lg border border-border p-3 space-y-2">
+                  <label className="flex items-center gap-2 text-sm">
+                    <input type="checkbox" checked={liveNow} onChange={(e) => setLiveNow(e.target.checked)} />
+                    Today / Real-time (uses the current date and time until saved)
+                  </label>
+                  <div>
+                    <label className="text-xs text-muted-foreground">Transaction Date/Time</label>
+                    <input
+                      className={input}
+                      type="datetime-local"
+                      disabled={liveNow}
+                      value={toLocalInput(newTxn.created_at)}
+                      onChange={(e) =>
+                        setNewTxn({ ...newTxn, created_at: new Date(e.target.value).toISOString() })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-border bg-secondary/40 p-3">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">
+                    Live generated description preview (DEMO/TEST)
+                  </p>
+                  <p className="text-xs leading-relaxed break-words font-mono">
+                    {generateDemoDescription({ ...newTxn, mode: newMode } as any)}
+                  </p>
+                </div>
+
+                {msg && !msg.ok && <p className="text-sm text-destructive">{msg.text}</p>}
+
+                <div className="flex gap-2 pt-1">
+                  <button
+                    disabled={busy}
+                    onClick={doCreateTxn}
+                    className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+                  >
+                    {busy ? "Saving…" : "Save transaction"}
+                  </button>
+                  <button onClick={() => setAdding(false)} className="rounded-md bg-secondary px-4 py-2 text-sm">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
