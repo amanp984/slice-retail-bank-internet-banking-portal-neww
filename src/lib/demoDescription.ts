@@ -1,10 +1,12 @@
 // Demo/Test transaction description generator.
-// Builds a detailed, mode-specific narrative from the admin's inputs.
-// Nothing here is an official bank record — every output is marked DEMO/TEST.
+// Builds a detailed, mode-specific structured description from the admin's
+// essential inputs. Nothing here is an official bank record — every output is
+// marked DEMO/TEST and contains only the values the admin entered (no
+// invented bank codes, IFSCs or UPI IDs).
 
 export type DemoTxnInput = {
   type?: string | null; // credit | debit
-  mode?: string | null; // UPI | IMPS | NEFT | RTGS
+  mode?: string | null; // UPI | IMPS | NEFT | RTGS | REFUND
   sender_name?: string | null; // beneficiary / sender name
   amount?: string | number | null;
   external_id?: string | null; // UTR / reference
@@ -20,6 +22,13 @@ export const maskAccount = (acc?: string | null) => {
   if (s.length <= 4) return `XXXX${s}`;
   return `${"X".repeat(Math.max(4, s.length - 4))}${s.slice(-4)}`;
 };
+
+const clean = (v?: string | number | null) =>
+  String(v ?? "").replace(/\s+/g, " ").trim();
+
+const upper = (v?: string | number | null) => clean(v).toUpperCase();
+
+const compact = (v?: string | number | null) => upper(v).replace(/[^A-Z0-9]/g, "");
 
 const formatAmount = (amount?: string | number | null) => {
   const n = Number(amount);
@@ -44,45 +53,73 @@ const formatDate = (iso?: string | null) => {
   });
 };
 
+// Extracts the bank/handle part of a UPI ID (the part after "@").
+// Only uses the handle the admin actually entered — nothing is invented.
+const upiHandle = (vpa?: string | null) => {
+  const s = clean(vpa);
+  const at = s.indexOf("@");
+  return at >= 0 ? s.slice(at + 1).toUpperCase() : "";
+};
+
 const CHANNEL: Record<string, string> = {
-  UPI: "UPI P2P PUSH VIA NPCI UNIFIED PAYMENTS INTERFACE",
-  IMPS: "IMPS P2A VIA NPCI IMMEDIATE PAYMENT SERVICE (24x7)",
+  UPI: "UPI P2P TRANSFER VIA NPCI UNIFIED PAYMENTS INTERFACE",
+  IMPS: "IMPS P2A IMMEDIATE PAYMENT SERVICE VIA NPCI (AVAILABLE 24X7)",
   NEFT: "NEFT BATCH SETTLEMENT VIA RBI NATIONAL ELECTRONIC FUNDS TRANSFER",
-  RTGS: "RTGS REAL-TIME GROSS SETTLEMENT VIA RBI (HIGH VALUE)",
-  REFUND: "REFUND REVERSAL PROCESSED BY MERCHANT / ACQUIRING BANK",
+  RTGS: "RTGS REAL-TIME GROSS SETTLEMENT VIA RBI (HIGH VALUE TRANSFER)",
+  REFUND: "REFUND / REVERSAL PROCESSED BY ORIGINATING PARTY",
 };
 
 export function generateDemoDescription(input: DemoTxnInput): string {
-  const type = (input.type || "").toLowerCase() === "debit" ? "DEBIT" : "CREDIT";
-  const mode = (input.mode || "").toUpperCase();
-  const party = (input.sender_name || "UNKNOWN PARTY").toUpperCase().replace(/\s+/g, " ").trim();
+  const isDebit = (input.type || "").toLowerCase() === "debit";
+  const type = isDebit ? "DEBIT" : "CREDIT";
+  const mode = upper(input.mode);
+  const name = compact(input.sender_name) || "DEMOPARTY";
   const amt = formatAmount(input.amount);
-  const ref = (input.external_id || "").toUpperCase().trim();
+  const ref = compact(input.external_id);
   const when = formatDate(input.created_at);
-  const partyRole = type === "CREDIT" ? "REMITTER" : "BENEFICIARY";
 
   const parts: string[] = [];
-  parts.push(`[DEMO/TEST] ${type}/${mode || "TRANSFER"}/${party}`);
 
-  const seg: string[] = [];
-  if (amt) seg.push(`AMT INR ${amt}`);
-  seg.push(`${partyRole} ${party}`);
-
-  if (mode === "UPI") {
-    if (input.upi_id) seg.push(`VPA ${String(input.upi_id).trim()}`);
-    seg.push("HANDLE UPI");
+  if (mode === "REFUND") {
+    // DEMO-REFUND-[REF]-[NAME]-...
+    parts.push("DEMO", "REFUND", ref || "DEMOREF", name);
+    if (amt) parts.push(`AMT-INR${compact(amt)}`);
+    if (input.beneficiary_account) parts.push(`ORIG-AC-${maskAccount(input.beneficiary_account)}`);
+    parts.push("REFUND-REVERSAL-PROCESSED-BY-ORIGINATING-PARTY");
+    if (when) parts.push(`ON-${compact(when)}`);
+  } else if (mode === "UPI") {
+    // DEMO-UPI-[CREDIT/DEBIT]-[UTR]-[NAME]-[HANDLE]-[UPI ID]-[CHANNEL]
+    parts.push("DEMO", "UPI", type);
+    parts.push(ref || "DEMOREF");
+    parts.push(name);
+    const handle = upiHandle(input.upi_id);
+    if (handle) parts.push(handle);
+    if (clean(input.upi_id)) parts.push(`VPA-${compact(input.upi_id)}`);
+    if (amt) parts.push(`AMT-INR${compact(amt)}`);
+    parts.push(compact(CHANNEL.UPI));
+    if (when) parts.push(`ON-${compact(when)}`);
   } else if (mode === "IMPS" || mode === "NEFT" || mode === "RTGS") {
-    if (input.beneficiary_account) seg.push(`A/C ${maskAccount(input.beneficiary_account)}`);
-    if (input.beneficiary_ifsc) seg.push(`IFSC ${String(input.beneficiary_ifsc).toUpperCase().trim()}`);
+    // DEMO-[MODE]-[CREDIT/DEBIT]-[UTR]-[NAME]-[MASKED AC]-[IFSC]-[AMT]-[CHANNEL]
+    parts.push("DEMO", mode, type);
+    parts.push(ref || "DEMOREF");
+    parts.push(name);
+    if (input.beneficiary_account) parts.push(`AC-${maskAccount(input.beneficiary_account)}`);
+    if (clean(input.beneficiary_ifsc)) parts.push(`IFSC-${compact(input.beneficiary_ifsc)}`);
+    if (amt) parts.push(`AMT-INR${compact(amt)}`);
+    parts.push(compact(CHANNEL[mode]));
+    if (when) parts.push(`ON-${compact(when)}`);
+  } else {
+    // Fallback for unknown / unset modes — still clearly DEMO.
+    parts.push("DEMO", mode || "TRANSFER", type);
+    parts.push(ref || "DEMOREF");
+    parts.push(name);
+    if (amt) parts.push(`AMT-INR${compact(amt)}`);
+    parts.push(type === "CREDIT" ? "FUNDS-CREDITED-TO-ACCOUNT" : "FUNDS-DEBITED-FROM-ACCOUNT");
+    if (when) parts.push(`ON-${compact(when)}`);
   }
 
-  if (ref) seg.push(`${mode === "UPI" ? "REF" : "UTR"} ${ref}`);
-  if (when) seg.push(`ON ${when}`);
-  if (mode && CHANNEL[mode]) seg.push(`CHANNEL ${CHANNEL[mode]}`);
-  seg.push(type === "CREDIT" ? "FUNDS CREDITED TO ACCOUNT" : "FUNDS DEBITED FROM ACCOUNT");
-
-  parts.push(seg.join(" | "));
-  parts.push("NOTE: SIMULATED DEMO ENTRY FOR TESTING — NOT AN OFFICIAL BANK-GENERATED RECORD.");
-
-  return parts.join(" | ");
+  return (
+    parts.filter(Boolean).join("-") +
+    " | NOTE: SIMULATED DEMO/TEST ENTRY — NOT AN OFFICIAL BANK-GENERATED RECORD."
+  );
 }
