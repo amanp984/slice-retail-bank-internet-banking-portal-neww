@@ -44,7 +44,7 @@ export function generateDemoDescription(input: DemoTxnInput): string {
   const isDebit = (input.type || "").toLowerCase() === "debit";
   const type = isDebit ? "DEBIT" : "CREDIT";
   const mode = upper(input.mode);
-  const name = compact(input.sender_name) || "DEMOPARTY";
+  const name = upper(input.sender_name) || "DEMO PARTY";
   const ref = compact(input.external_id);
 
   const parts: string[] = ["DEMO"];

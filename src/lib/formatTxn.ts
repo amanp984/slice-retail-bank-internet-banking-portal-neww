@@ -65,6 +65,9 @@ export function extractParty(text: string, type: "credit" | "debit"): string | n
 
 export function formatDescription(txn: Pick<Txn, "type" | "description" | "sender_name">): string {
   const raw = txn.description || "";
+  // Generated DEMO/TEST descriptions are already in their final structured
+  // form — display the saved text exactly, never reconstruct a shorter one.
+  if (/^DEMO-/i.test(raw.trim())) return raw.trim();
   const mode = detectMode(raw);
   const utr = extractUtr(raw);
   const vpa = extractVpa(raw);
