@@ -48,9 +48,6 @@ export function generateDemoDescription(input: DemoTxnInput): string {
   const ref = compact(input.external_id);
 
   const parts: string[] = ["DEMO"];
-  // Party name keeps its spaces (per the structured DEMO format), just
-  // normalised to single-spacing uppercase.
-  const nameSpaced = upper(input.sender_name) || "DEMO PARTY";
 
   if (mode === "UPI") {
     // DEMO-UPI-[DEBIT/CREDIT]-[REFERENCE]-[PARTY NAME]-[UPI ID]-[PAYMENT CHANNEL]
