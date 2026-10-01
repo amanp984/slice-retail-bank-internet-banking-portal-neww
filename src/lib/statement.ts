@@ -81,6 +81,9 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8.5);
     doc.text("BUSINESS", marginX, 76);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text("Simulation / Test Environment - Not an official bank record", marginX, 88);
 
     // Right side: period
     doc.setTextColor(20, 20, 20);

@@ -125,7 +125,7 @@ export function LoginPage() {
         </div>
       </div>
 
-      <footer className="bg-destructive text-destructive-foreground text-center text-xs py-2 shrink-0">© 2026 North East Small Finance Bank. All Rights Reserved · BUILD VERSION: V2</footer>
+      <footer className="bg-destructive text-destructive-foreground text-center text-xs py-2 shrink-0">Simulation / Test Environment — Not an official bank record</footer>
 
       {error && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 px-4" onClick={() => setError(null)}>

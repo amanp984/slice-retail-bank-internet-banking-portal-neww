@@ -1,0 +1,4 @@
+- [x] Generate clean mode-specific transaction descriptions using only entered values.
+- [x] Display saved descriptions unchanged across app and exports.
+- [x] Identify the simulation outside transaction descriptions in the application and statement.
+- [ ] Verify representative outputs and visible indicator.
