@@ -147,6 +147,9 @@ export function DashboardLayout({
       </aside>
 
       <main className="flex-1 ml-[220px]">
+        <div role="status" className="border-b border-border bg-secondary px-8 py-2 text-xs font-semibold text-foreground">
+          Simulation / Test Environment — Not an official bank record
+        </div>
         <header className="px-8 pt-7 pb-4 flex items-start justify-between gap-6">
           <div>
             {showGreeting && (

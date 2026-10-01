@@ -38,7 +38,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: { error: unknown; reset: () => void }) {
   console.error(error);
   const router = useRouter();
 
@@ -80,16 +80,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Slice" },
       { name: "description", content: "Professional Digital Services | Smooth • Fast • Trusted" },
-      { name: "author", content: "Lovable" },
       { property: "og:title", content: "Slice" },
       { property: "og:description", content: "Professional Digital Services | Smooth • Fast • Trusted" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Slice" },
       { name: "twitter:description", content: "Professional Digital Services | Smooth • Fast • Trusted" },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d9e767c0-18df-4060-bfd0-f7d45d15d952" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d9e767c0-18df-4060-bfd0-f7d45d15d952" },
     ],
     links: [
       {

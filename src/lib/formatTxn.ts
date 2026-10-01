@@ -64,36 +64,6 @@ export function extractParty(text: string, type: "credit" | "debit"): string | n
 }
 
 export function formatDescription(txn: Pick<Txn, "type" | "description" | "sender_name">): string {
-  const raw = txn.description || "";
-  // Generated DEMO/TEST descriptions are already in their final structured
-  // form — display the saved text exactly, never reconstruct a shorter one.
-  if (/^DEMO-/i.test(raw.trim())) return raw.trim();
-  const mode = detectMode(raw);
-  const utr = extractUtr(raw);
-  const vpa = extractVpa(raw);
-  const account = extractAccount(raw);
-  const rawParty = extractParty(raw, txn.type) || txn.sender_name || null;
-  const party = (rawParty || "UNKNOWN").toUpperCase().replace(/\s+/g, " ").trim();
-  const dir = txn.type === "credit" ? "CREDIT" : "DEBIT";
-
-  // No mode detected — fall back to a structured generic line so the UI
-  // never shows raw SMS text.
-  if (!mode) {
-    const parts = [dir, party];
-    if (utr) parts.push(`REF ${utr}`);
-    return parts.join("/");
-  }
-
-  if (mode === "UPI") {
-    let out = `${dir}/UPI/${party}`;
-    if (vpa) out += ` (${vpa})`;
-    if (utr) out += ` REF ${utr}`;
-    return out;
-  }
-
-  // IMPS / NEFT / RTGS
-  let out = `${dir}/${mode}/${party}`;
-  if (account) out += ` A/C ${account}`;
-  if (utr) out += ` UTR ${utr}`;
-  return out;
+  // Always use the description stored with the transaction, including legacy rows.
+  return txn.description ?? "";
 }

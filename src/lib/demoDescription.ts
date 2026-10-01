@@ -1,7 +1,5 @@
-// Demo/Test transaction description generator.
-// Builds a structured, mode-specific DEMO description from only the fields
-// the admin enters. Nothing here is an official bank record — every output is
-// clearly marked DEMO/TEST and no real banking identifiers are invented.
+// Transaction description generator for the simulation environment.
+// Only entered values appear in descriptions; the test notice belongs in the UI.
 
 export type DemoTxnInput = {
   type?: string | null; // credit | debit
@@ -25,63 +23,31 @@ export const maskAccount = (acc?: string | null) => {
 const clean = (v?: string | number | null) =>
   String(v ?? "").replace(/\s+/g, " ").trim();
 
-const upper = (v?: string | number | null) => clean(v).toUpperCase();
-
-const compact = (v?: string | number | null) => upper(v).replace(/[^A-Z0-9]/g, "");
-
-const CHANNEL: Record<string, string> = {
-  UPI: "UPI P2P TRANSFER VIA NPCI UNIFIED PAYMENTS INTERFACE",
-  IMPS: "IMPS P2A IMMEDIATE PAYMENT SERVICE VIA NPCI (AVAILABLE 24X7)",
-  NEFT: "NEFT BATCH SETTLEMENT VIA RBI NATIONAL ELECTRONIC FUNDS TRANSFER",
-  RTGS: "RTGS REAL-TIME GROSS SETTLEMENT VIA RBI (HIGH VALUE TRANSFER)",
-  REFUND: "REFUND / REVERSAL PROCESSED BY ORIGINATING PARTY",
-};
-
-const suffix =
-  " | DEMO/TEST ENTRY — NOT AN OFFICIAL BANK-GENERATED RECORD.";
-
 export function generateDemoDescription(input: DemoTxnInput): string {
   const isDebit = (input.type || "").toLowerCase() === "debit";
-  const type = isDebit ? "DEBIT" : "CREDIT";
-  const mode = upper(input.mode);
-  const name = upper(input.sender_name) || "DEMO PARTY";
-  const ref = compact(input.external_id);
-
-  const parts: string[] = ["DEMO"];
+  const type = isDebit ? "Debit" : "Credit";
+  const mode = clean(input.mode).toUpperCase();
+  const name = clean(input.sender_name);
+  const ref = clean(input.external_id);
+  const parts: string[] = [mode || "Transfer", type, ref, name];
 
   if (mode === "UPI") {
-    // DEMO-UPI-[DEBIT/CREDIT]-[REFERENCE]-[PARTY NAME]-[UPI ID]-[PAYMENT CHANNEL]
-    parts.push("UPI", type);
-    if (ref) parts.push(ref);
-    parts.push(name);
     const upi = clean(input.upi_id);
     if (upi) parts.push(upi);
-    parts.push(CHANNEL.UPI);
+    parts.push(isDebit ? "Sent using UPI" : "Received via UPI");
   } else if (mode === "IMPS" || mode === "NEFT" || mode === "RTGS") {
-    // DEMO-[MODE]-[DEBIT/CREDIT]-[REFERENCE]-[PARTY NAME]-A/C [MASKED ACCOUNT]-[IFSC]-[TRANSFER CHANNEL]
-    parts.push(mode, type);
-    if (ref) parts.push(ref);
-    parts.push(name);
     const masked = maskAccount(input.beneficiary_account);
     if (masked) parts.push(`A/C ${masked}`);
-    const ifsc = compact(input.beneficiary_ifsc);
+    const ifsc = clean(input.beneficiary_ifsc).toUpperCase();
     if (ifsc) parts.push(ifsc);
-    parts.push(CHANNEL[mode]);
+    parts.push(isDebit ? `Sent via ${mode}` : `Received via ${mode}`);
   } else if (mode === "REFUND") {
-    // DEMO-REFUND-[REFERENCE]-[PARTY NAME]-[REFUND CHANNEL]
-    parts.push("REFUND");
-    if (ref) parts.push(ref);
-    parts.push(name);
     const masked = maskAccount(input.beneficiary_account);
     if (masked) parts.push(`ORIG A/C ${masked}`);
-    parts.push(CHANNEL.REFUND);
+    parts.push(isDebit ? "Refund sent" : "Refund received");
   } else {
-    // Fallback for unknown / unset modes — still clearly DEMO.
-    parts.push(mode || "TRANSFER", type);
-    if (ref) parts.push(ref);
-    parts.push(name);
-    parts.push(type === "CREDIT" ? "FUNDS-CREDITED-TO-ACCOUNT" : "FUNDS-DEBITED-FROM-ACCOUNT");
+    parts.push(isDebit ? "Sent" : "Received");
   }
 
-  return parts.filter(Boolean).join("-") + suffix;
+  return parts.filter(Boolean).join("-");
 }

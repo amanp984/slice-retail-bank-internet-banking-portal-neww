@@ -1,0 +1,2 @@
+Display saved transaction descriptions without reconstructing them; the stored text is authoritative across the app and exports.
+Keep simulation disclaimers at the view or document level, not in generated transaction descriptions; this separates context from data.
