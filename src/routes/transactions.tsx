@@ -9,7 +9,14 @@ import { downloadStatementPdf } from "@/lib/statement";
 import { formatSignedTransactionINR } from "@/lib/supabase-helpers";
 
 export const Route = createFileRoute("/transactions")({
-  head: () => ({ meta: [{ title: "Transaction History — Slice Bank" }] }),
+  head: () => ({ meta: [
+    { title: "Transaction History — Slice Bank" },
+    { name: "description", content: "View account transactions and their saved descriptions in the Slice Bank test environment." },
+    { property: "og:title", content: "Transaction History — Slice Bank" },
+    { property: "og:description", content: "View account transactions and their saved descriptions in the Slice Bank test environment." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: TransactionsPage,
 });
 

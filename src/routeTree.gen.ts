@@ -9,101 +9,36 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TransfersRouteImport } from './routes/transfers'
-import { Route as TransactionsRouteImport } from './routes/transactions'
-import { Route as TermsAndConditionsRouteImport } from './routes/terms-and-conditions'
-import { Route as SignupRouteImport } from './routes/signup'
-import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as PaymentsRouteImport } from './routes/payments'
-import { Route as OffersRouteImport } from './routes/offers'
-import { Route as LoansRouteImport } from './routes/loans'
-import { Route as HelpRouteImport } from './routes/help'
-import { Route as ForgotUsernameRouteImport } from './routes/forgot-username'
-import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
-import { Route as FixeddepositsRouteImport } from './routes/fixeddeposits'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as CardsRouteImport } from './routes/cards'
-import { Route as AccountsRouteImport } from './routes/accounts'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TransfersIndexRouteImport } from './routes/transfers.index'
-import { Route as PaymentsIndexRouteImport } from './routes/payments.index'
-import { Route as CardsIndexRouteImport } from './routes/cards.index'
-import { Route as TransfersVerifyRouteImport } from './routes/transfers.verify'
-import { Route as TransfersTransferlimitRouteImport } from './routes/transfers.transferlimit'
-import { Route as TransfersManagebeneficiariesRouteImport } from './routes/transfers.managebeneficiaries'
-import { Route as PaymentsCategoryRouteImport } from './routes/payments.$category'
-import { Route as CardsBlockCardRouteImport } from './routes/cards.block-card'
-import { Route as ApiSmsRouteImport } from './routes/api/sms'
+import { Route as AccountsRouteImport } from './routes/accounts'
+import { Route as CardsRouteImport } from './routes/cards'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as FixeddepositsRouteImport } from './routes/fixeddeposits'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as ForgotUsernameRouteImport } from './routes/forgot-username'
+import { Route as HelpRouteImport } from './routes/help'
+import { Route as LoansRouteImport } from './routes/loans'
+import { Route as OffersRouteImport } from './routes/offers'
+import { Route as PaymentsRouteImport } from './routes/payments'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as TermsAndConditionsRouteImport } from './routes/terms-and-conditions'
+import { Route as TransactionsRouteImport } from './routes/transactions'
+import { Route as TransfersRouteImport } from './routes/transfers'
 import { Route as ApiAdminRouteImport } from './routes/api/admin'
+import { Route as ApiSmsRouteImport } from './routes/api/sms'
+import { Route as CardsIndexRouteImport } from './routes/cards.index'
+import { Route as CardsBlockCardRouteImport } from './routes/cards.block-card'
+import { Route as PaymentsIndexRouteImport } from './routes/payments.index'
+import { Route as PaymentsCategoryRouteImport } from './routes/payments.$category'
+import { Route as TransfersIndexRouteImport } from './routes/transfers.index'
+import { Route as TransfersManagebeneficiariesRouteImport } from './routes/transfers.managebeneficiaries'
+import { Route as TransfersTransferlimitRouteImport } from './routes/transfers.transferlimit'
+import { Route as TransfersVerifyRouteImport } from './routes/transfers.verify'
 
-const TransfersRoute = TransfersRouteImport.update({
-  id: '/transfers',
-  path: '/transfers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TransactionsRoute = TransactionsRouteImport.update({
-  id: '/transactions',
-  path: '/transactions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TermsAndConditionsRoute = TermsAndConditionsRouteImport.update({
-  id: '/terms-and-conditions',
-  path: '/terms-and-conditions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PaymentsRoute = PaymentsRouteImport.update({
-  id: '/payments',
-  path: '/payments',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OffersRoute = OffersRouteImport.update({
-  id: '/offers',
-  path: '/offers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoansRoute = LoansRouteImport.update({
-  id: '/loans',
-  path: '/loans',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HelpRoute = HelpRouteImport.update({
-  id: '/help',
-  path: '/help',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForgotUsernameRoute = ForgotUsernameRouteImport.update({
-  id: '/forgot-username',
-  path: '/forgot-username',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FixeddepositsRoute = FixeddepositsRouteImport.update({
-  id: '/fixeddeposits',
-  path: '/fixeddeposits',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CardsRoute = CardsRouteImport.update({
-  id: '/cards',
-  path: '/cards',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountsRoute = AccountsRouteImport.update({
@@ -111,34 +46,109 @@ const AccountsRoute = AccountsRouteImport.update({
   path: '/accounts',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const CardsRoute = CardsRouteImport.update({
+  id: '/cards',
+  path: '/cards',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TransfersIndexRoute = TransfersIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => TransfersRoute,
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const PaymentsIndexRoute = PaymentsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PaymentsRoute,
+const FixeddepositsRoute = FixeddepositsRouteImport.update({
+  id: '/fixeddeposits',
+  path: '/fixeddeposits',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotUsernameRoute = ForgotUsernameRouteImport.update({
+  id: '/forgot-username',
+  path: '/forgot-username',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoansRoute = LoansRouteImport.update({
+  id: '/loans',
+  path: '/loans',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OffersRoute = OffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentsRoute = PaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsAndConditionsRoute = TermsAndConditionsRouteImport.update({
+  id: '/terms-and-conditions',
+  path: '/terms-and-conditions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TransactionsRoute = TransactionsRouteImport.update({
+  id: '/transactions',
+  path: '/transactions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TransfersRoute = TransfersRouteImport.update({
+  id: '/transfers',
+  path: '/transfers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminRoute = ApiAdminRouteImport.update({
+  id: '/api/admin',
+  path: '/api/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSmsRoute = ApiSmsRouteImport.update({
+  id: '/api/sms',
+  path: '/api/sms',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CardsIndexRoute = CardsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => CardsRoute,
 } as any)
-const TransfersVerifyRoute = TransfersVerifyRouteImport.update({
-  id: '/verify',
-  path: '/verify',
-  getParentRoute: () => TransfersRoute,
+const CardsBlockCardRoute = CardsBlockCardRouteImport.update({
+  id: '/block-card',
+  path: '/block-card',
+  getParentRoute: () => CardsRoute,
 } as any)
-const TransfersTransferlimitRoute = TransfersTransferlimitRouteImport.update({
-  id: '/transferlimit',
-  path: '/transferlimit',
+const PaymentsIndexRoute = PaymentsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PaymentsRoute,
+} as any)
+const PaymentsCategoryRoute = PaymentsCategoryRouteImport.update({
+  id: '/$category',
+  path: '/$category',
+  getParentRoute: () => PaymentsRoute,
+} as any)
+const TransfersIndexRoute = TransfersIndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => TransfersRoute,
 } as any)
 const TransfersManagebeneficiariesRoute =
@@ -147,25 +157,15 @@ const TransfersManagebeneficiariesRoute =
     path: '/managebeneficiaries',
     getParentRoute: () => TransfersRoute,
   } as any)
-const PaymentsCategoryRoute = PaymentsCategoryRouteImport.update({
-  id: '/$category',
-  path: '/$category',
-  getParentRoute: () => PaymentsRoute,
+const TransfersTransferlimitRoute = TransfersTransferlimitRouteImport.update({
+  id: '/transferlimit',
+  path: '/transferlimit',
+  getParentRoute: () => TransfersRoute,
 } as any)
-const CardsBlockCardRoute = CardsBlockCardRouteImport.update({
-  id: '/block-card',
-  path: '/block-card',
-  getParentRoute: () => CardsRoute,
-} as any)
-const ApiSmsRoute = ApiSmsRouteImport.update({
-  id: '/api/sms',
-  path: '/api/sms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminRoute = ApiAdminRouteImport.update({
-  id: '/api/admin',
-  path: '/api/admin',
-  getParentRoute: () => rootRouteImport,
+const TransfersVerifyRoute = TransfersVerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => TransfersRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -357,102 +357,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/transfers': {
-      id: '/transfers'
-      path: '/transfers'
-      fullPath: '/transfers'
-      preLoaderRoute: typeof TransfersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/transactions': {
-      id: '/transactions'
-      path: '/transactions'
-      fullPath: '/transactions'
-      preLoaderRoute: typeof TransactionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/terms-and-conditions': {
-      id: '/terms-and-conditions'
-      path: '/terms-and-conditions'
-      fullPath: '/terms-and-conditions'
-      preLoaderRoute: typeof TermsAndConditionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/payments': {
-      id: '/payments'
-      path: '/payments'
-      fullPath: '/payments'
-      preLoaderRoute: typeof PaymentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/offers': {
-      id: '/offers'
-      path: '/offers'
-      fullPath: '/offers'
-      preLoaderRoute: typeof OffersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/loans': {
-      id: '/loans'
-      path: '/loans'
-      fullPath: '/loans'
-      preLoaderRoute: typeof LoansRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/help': {
-      id: '/help'
-      path: '/help'
-      fullPath: '/help'
-      preLoaderRoute: typeof HelpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forgot-username': {
-      id: '/forgot-username'
-      path: '/forgot-username'
-      fullPath: '/forgot-username'
-      preLoaderRoute: typeof ForgotUsernameRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forgot-password': {
-      id: '/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof ForgotPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/fixeddeposits': {
-      id: '/fixeddeposits'
-      path: '/fixeddeposits'
-      fullPath: '/fixeddeposits'
-      preLoaderRoute: typeof FixeddepositsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cards': {
-      id: '/cards'
-      path: '/cards'
-      fullPath: '/cards'
-      preLoaderRoute: typeof CardsRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/accounts': {
@@ -462,26 +371,117 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/cards': {
+      id: '/cards'
+      path: '/cards'
+      fullPath: '/cards'
+      preLoaderRoute: typeof CardsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/transfers/': {
-      id: '/transfers/'
-      path: '/'
-      fullPath: '/transfers/'
-      preLoaderRoute: typeof TransfersIndexRouteImport
-      parentRoute: typeof TransfersRoute
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/payments/': {
-      id: '/payments/'
-      path: '/'
-      fullPath: '/payments/'
-      preLoaderRoute: typeof PaymentsIndexRouteImport
-      parentRoute: typeof PaymentsRoute
+    '/fixeddeposits': {
+      id: '/fixeddeposits'
+      path: '/fixeddeposits'
+      fullPath: '/fixeddeposits'
+      preLoaderRoute: typeof FixeddepositsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-username': {
+      id: '/forgot-username'
+      path: '/forgot-username'
+      fullPath: '/forgot-username'
+      preLoaderRoute: typeof ForgotUsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/loans': {
+      id: '/loans'
+      path: '/loans'
+      fullPath: '/loans'
+      preLoaderRoute: typeof LoansRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offers': {
+      id: '/offers'
+      path: '/offers'
+      fullPath: '/offers'
+      preLoaderRoute: typeof OffersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payments': {
+      id: '/payments'
+      path: '/payments'
+      fullPath: '/payments'
+      preLoaderRoute: typeof PaymentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms-and-conditions': {
+      id: '/terms-and-conditions'
+      path: '/terms-and-conditions'
+      fullPath: '/terms-and-conditions'
+      preLoaderRoute: typeof TermsAndConditionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/transactions': {
+      id: '/transactions'
+      path: '/transactions'
+      fullPath: '/transactions'
+      preLoaderRoute: typeof TransactionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/transfers': {
+      id: '/transfers'
+      path: '/transfers'
+      fullPath: '/transfers'
+      preLoaderRoute: typeof TransfersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin': {
+      id: '/api/admin'
+      path: '/api/admin'
+      fullPath: '/api/admin'
+      preLoaderRoute: typeof ApiAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/sms': {
+      id: '/api/sms'
+      path: '/api/sms'
+      fullPath: '/api/sms'
+      preLoaderRoute: typeof ApiSmsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/cards/': {
       id: '/cards/'
@@ -490,18 +490,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CardsIndexRouteImport
       parentRoute: typeof CardsRoute
     }
-    '/transfers/verify': {
-      id: '/transfers/verify'
-      path: '/verify'
-      fullPath: '/transfers/verify'
-      preLoaderRoute: typeof TransfersVerifyRouteImport
-      parentRoute: typeof TransfersRoute
+    '/cards/block-card': {
+      id: '/cards/block-card'
+      path: '/block-card'
+      fullPath: '/cards/block-card'
+      preLoaderRoute: typeof CardsBlockCardRouteImport
+      parentRoute: typeof CardsRoute
     }
-    '/transfers/transferlimit': {
-      id: '/transfers/transferlimit'
-      path: '/transferlimit'
-      fullPath: '/transfers/transferlimit'
-      preLoaderRoute: typeof TransfersTransferlimitRouteImport
+    '/payments/': {
+      id: '/payments/'
+      path: '/'
+      fullPath: '/payments/'
+      preLoaderRoute: typeof PaymentsIndexRouteImport
+      parentRoute: typeof PaymentsRoute
+    }
+    '/payments/$category': {
+      id: '/payments/$category'
+      path: '/$category'
+      fullPath: '/payments/$category'
+      preLoaderRoute: typeof PaymentsCategoryRouteImport
+      parentRoute: typeof PaymentsRoute
+    }
+    '/transfers/': {
+      id: '/transfers/'
+      path: '/'
+      fullPath: '/transfers/'
+      preLoaderRoute: typeof TransfersIndexRouteImport
       parentRoute: typeof TransfersRoute
     }
     '/transfers/managebeneficiaries': {
@@ -511,33 +525,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TransfersManagebeneficiariesRouteImport
       parentRoute: typeof TransfersRoute
     }
-    '/payments/$category': {
-      id: '/payments/$category'
-      path: '/$category'
-      fullPath: '/payments/$category'
-      preLoaderRoute: typeof PaymentsCategoryRouteImport
-      parentRoute: typeof PaymentsRoute
+    '/transfers/transferlimit': {
+      id: '/transfers/transferlimit'
+      path: '/transferlimit'
+      fullPath: '/transfers/transferlimit'
+      preLoaderRoute: typeof TransfersTransferlimitRouteImport
+      parentRoute: typeof TransfersRoute
     }
-    '/cards/block-card': {
-      id: '/cards/block-card'
-      path: '/block-card'
-      fullPath: '/cards/block-card'
-      preLoaderRoute: typeof CardsBlockCardRouteImport
-      parentRoute: typeof CardsRoute
-    }
-    '/api/sms': {
-      id: '/api/sms'
-      path: '/api/sms'
-      fullPath: '/api/sms'
-      preLoaderRoute: typeof ApiSmsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin': {
-      id: '/api/admin'
-      path: '/api/admin'
-      fullPath: '/api/admin'
-      preLoaderRoute: typeof ApiAdminRouteImport
-      parentRoute: typeof rootRouteImport
+    '/transfers/verify': {
+      id: '/transfers/verify'
+      path: '/verify'
+      fullPath: '/transfers/verify'
+      preLoaderRoute: typeof TransfersVerifyRouteImport
+      parentRoute: typeof TransfersRoute
     }
   }
 }
