@@ -7,6 +7,7 @@ export type Txn = {
   description: string | null;
   balance_after_transaction: number;
   account_reference: string | null;
+  external_id: string | null;
   upi_id?: string | null;
 };
 

@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, Search, Download } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTransactions } from "@/hooks/useTransactions";
-import { formatDescription, extractParty, extractUtr } from "@/lib/formatTxn";
+import { formatDescription, extractParty } from "@/lib/formatTxn";
 import { downloadStatementPdf } from "@/lib/statement";
 import { formatSignedTransactionINR } from "@/lib/supabase-helpers";
 
@@ -27,7 +27,7 @@ const fmtDate = (iso: string) => {
 
 const partyOf = (t: { description: string | null; sender_name: string | null; type: "credit" | "debit" }) =>
   (extractParty(t.description ?? "", t.type) || t.sender_name || "—").toString().toUpperCase();
-const utrOf = (t: { description: string | null }) => extractUtr(t.description ?? "") || "—";
+const utrOf = (t: { external_id: string | null }) => t.external_id || "—";
 
 function TransactionsPage() {
   const [page, setPage] = useState(1);
