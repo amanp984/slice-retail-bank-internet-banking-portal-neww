@@ -22,7 +22,7 @@ const fmtRupee = (n: number) => formatCurrencyINR(n);
 const fmtRupeeSigned = (n: number, type: "credit" | "debit") =>
   formatCurrencyINR(type === "debit" ? -Math.abs(Number(n) || 0) : Math.abs(Number(n) || 0));
 
-  // Strip any non-ASCII glyphs (e.g. ₹) from strings passed into jsPDF, so a
+// Strip any non-ASCII glyphs (e.g. ₹) from strings passed into jsPDF, so a
 // stray ₹ inside a transaction description cannot re-introduce the broken
 // letter-spacing artifact next to numbers.
 const sanitize = (s: string): string =>
@@ -246,7 +246,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     return [
       fmtShortDate(t.created_at),
       sanitize(formatDescription(t)),
-      sanitize(t.external_id || "-"),
+      t.external_id || "-",
       fmtRupeeSigned(amt, t.type),
       fmtRupee(running),
     ];
@@ -307,19 +307,19 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     },
     columnStyles: {
       0: { cellWidth: dateW, halign: "left" },
-      1: { cellWidth: descW, halign: "left" },
-      2: { cellWidth: refW, halign: "left" },
+      1: { cellWidth: descW, halign: "left", cellPadding: { top: 14, bottom: 14, left: 6, right: 10 } },
+      2: { cellWidth: refW, halign: "left", cellPadding: { top: 14, bottom: 14, left: 8, right: 8 } },
       3: {
         cellWidth: amtW,
         halign: "right",
         fontStyle: "bold",
-        cellPadding: { top: 14, bottom: 14, left: 4, right: 0 },
+        cellPadding: { top: 14, bottom: 14, left: 5, right: 5 },
       },
       4: {
         cellWidth: balW,
         halign: "right",
         fontStyle: "bold",
-        cellPadding: { top: 14, bottom: 14, left: 4, right: 0 },
+        cellPadding: { top: 14, bottom: 14, left: 5, right: 0 },
       },
     },
     margin: { left: marginX, right: marginX, top: marginTop, bottom: marginBottom },
