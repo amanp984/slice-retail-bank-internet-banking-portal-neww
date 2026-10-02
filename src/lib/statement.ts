@@ -246,7 +246,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     return [
       fmtShortDate(t.created_at),
       sanitize(formatDescription(t)),
-      sanitize(t.external_id || "—"),
+      sanitize(t.external_id || "-"),
       fmtRupeeSigned(amt, t.type),
       fmtRupee(running),
     ];
@@ -360,7 +360,7 @@ export function downloadStatementCsv(txns: Txn[]) {
   const rows = txns.map((t) => [
     fmtShortDate(t.created_at),
     formatDescription(t).replace(/"/g, '""'),
-    (t.external_id || "").replace(/"/g, '""'),
+    t.external_id || "",
     t.type,
     fmtRupeeSigned(t.amount, t.type),
     fmtRupee(t.balance_after_transaction),
