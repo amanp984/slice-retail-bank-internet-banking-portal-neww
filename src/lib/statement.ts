@@ -48,7 +48,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
   const marginX = 56;
-  const marginTop = 100; // Increased from implicit 130 for logo/header spacing
+  const marginTop = 132;
   const marginBottom = 60;
 
   // Sort chronologically (oldest -> newest) so running balance grows.
@@ -83,7 +83,8 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     doc.text("BUSINESS", marginX, 76);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
-    doc.text("Simulation / Test Environment - Not an official bank record", marginX, 88);
+    doc.setTextColor(105, 105, 105);
+    doc.text("Simulation / Test Environment - Not an official bank record", marginX, 96);
 
     // Right side: period
     doc.setTextColor(20, 20, 20);
@@ -105,12 +106,13 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
   drawChrome();
 
   // ---------- Customer header section ----------
-  let y = marginTop; // Use marginTop constant instead of hardcoded 130
+  let y = marginTop;
   doc.setTextColor(20, 20, 20);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
-  doc.text(CUSTOMER.businessName.toUpperCase(), marginX, y);
-  y += 30; // Increased from 24 to provide better spacing after business name
+  const nameLines = doc.splitTextToSize(sanitize(CUSTOMER.holderName.toUpperCase()), pageW - marginX * 2);
+  doc.text(nameLines, marginX, y, { lineHeightFactor: 1.2 });
+  y += nameLines.length * 24 + 12;
 
   // Two equal columns: left and right, each with [label, value]
   const leftRows: Array<[string, string]> = [
@@ -133,10 +135,10 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
   ];
 
   const contentW = pageW - marginX * 2;
-  const colGap = 36; // Increased from 24 to 36 for better column separation
+  const colGap = 24;
   const colW = (contentW - colGap) / 2;
-  const labelW = 120; // Increased from 100 to accommodate longer labels like "Account Opening Date"
-  const valueW = colW - labelW - 12; // Increased padding from 8 to 12
+  const labelW = 106;
+  const valueW = colW - labelW - 8;
 
   const renderCol = (
     rows: Array<[string, string]>,
@@ -144,40 +146,34 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     startY: number
   ) => {
     let cy = startY;
-    const rowHeights: number[] = [];
-
-    // First pass: calculate all row heights to ensure proper spacing
     rows.forEach(([label, value]) => {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10.5);
-      const wrapped = doc.splitTextToSize(value || "-", valueW);
-      const lines = Array.isArray(wrapped) ? wrapped.length : 1;
-      // Increased minimum row height from 20 to 24, and line spacing multiplier from 14 to 16
-      const rowHeight = Math.max(24, lines * 16 + 8);
-      rowHeights.push(rowHeight);
-    });
-
-    // Second pass: render with calculated heights
-    rows.forEach(([label, value], idx) => {
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10.5);
       doc.setTextColor(130, 130, 130);
-      doc.text(label, startX, cy);
+      const labelLines = doc.splitTextToSize(label, labelW - 8);
+      doc.text(labelLines, startX, cy, { lineHeightFactor: 1.35 });
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(11);
       doc.setTextColor(25, 25, 25);
-      const wrapped = doc.splitTextToSize(value || "-", valueW);
-      doc.text(wrapped, startX + labelW, cy);
+      const valueLines = doc.splitTextToSize(sanitize(value || "-"), valueW);
+      doc.text(valueLines, startX + labelW, cy, { lineHeightFactor: 1.3 });
 
-      cy += rowHeights[idx];
+      cy += Math.max(24, labelLines.length * 15, valueLines.length * 16) + 6;
     });
     return cy;
   };
 
   const leftEndY = renderCol(leftRows, marginX, y);
   const rightEndY = renderCol(rightRows, marginX + colW + colGap, y);
-  y = Math.max(leftEndY, rightEndY) + 24; // 32px top margin from customer details
+  y = Math.max(leftEndY, rightEndY) + 32;
+
+  // Very long profile values should not squeeze the summary into the footer.
+  if (y > pageH - 175) {
+    doc.addPage();
+    drawChrome();
+    y = marginTop;
+  }
 
   // ---------- Summary row ----------
   // 5 equal, centered columns (grid: repeat(5, 1fr)). Labels share one
@@ -250,7 +246,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     return [
       fmtShortDate(t.created_at),
       sanitize(formatDescription(t)),
-      sanitize(String(t.id).slice(0, 18)),
+      t.external_id || "-",
       fmtRupeeSigned(amt, t.type),
       fmtRupee(running),
     ];
@@ -259,11 +255,11 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
   // Table widths: give Amount + Balance enough room so values like
   // -₹19,999.78 and ₹143,000.00 never wrap or overlap the ref column.
   const tableW = contentW;
-  const dateW = tableW * 0.11;
-  const descW = tableW * 0.40;
-  const refW = tableW * 0.22;
-  const amtW = tableW * 0.13;
-  const balW = tableW * 0.14;
+  const dateW = tableW * 0.12;
+  const descW = tableW * 0.35;
+  const refW = tableW * 0.20;
+  const amtW = tableW * 0.16;
+  const balW = tableW * 0.17;
 
   autoTable(doc, {
     startY: y,
@@ -311,22 +307,22 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     },
     columnStyles: {
       0: { cellWidth: dateW, halign: "left" },
-      1: { cellWidth: descW, halign: "left" },
-      2: { cellWidth: refW, halign: "left" },
+      1: { cellWidth: descW, halign: "left", cellPadding: { top: 14, bottom: 14, left: 6, right: 10 } },
+      2: { cellWidth: refW, halign: "left", cellPadding: { top: 14, bottom: 14, left: 8, right: 8 } },
       3: {
         cellWidth: amtW,
         halign: "right",
         fontStyle: "bold",
-        cellPadding: { top: 14, bottom: 14, left: 4, right: 0 },
+        cellPadding: { top: 14, bottom: 14, left: 5, right: 5 },
       },
       4: {
         cellWidth: balW,
         halign: "right",
         fontStyle: "bold",
-        cellPadding: { top: 14, bottom: 14, left: 4, right: 0 },
+        cellPadding: { top: 14, bottom: 14, left: 5, right: 0 },
       },
     },
-    margin: { left: marginX, right: marginX, top: 110, bottom: marginBottom },
+    margin: { left: marginX, right: marginX, top: marginTop, bottom: marginBottom },
     didDrawPage: () => {
       drawChrome();
     },
@@ -360,10 +356,11 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
 }
 
 export function downloadStatementCsv(txns: Txn[]) {
-  const header = ["Date", "Description", "Type", "Amount", "Balance"];
+  const header = ["Date", "Description", "Reference", "Type", "Amount", "Balance"];
   const rows = txns.map((t) => [
     fmtShortDate(t.created_at),
     formatDescription(t).replace(/"/g, '""'),
+    t.external_id || "",
     t.type,
     fmtRupeeSigned(t.amount, t.type),
     fmtRupee(t.balance_after_transaction),

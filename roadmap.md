@@ -2,3 +2,5 @@
 - [x] Display saved descriptions unchanged across app and exports.
 - [x] Identify the simulation outside transaction descriptions in the application and statement.
 - [x] Verify representative outputs and visible indicator.
+- [ ] Show saved UTR/reference consistently in Transaction History and statement exports.
+- [ ] Prevent PDF header and transaction table overlap; visually verify long-value cases.
