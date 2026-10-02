@@ -22,7 +22,7 @@ const fmtRupee = (n: number) => formatCurrencyINR(n);
 const fmtRupeeSigned = (n: number, type: "credit" | "debit") =>
   formatCurrencyINR(type === "debit" ? -Math.abs(Number(n) || 0) : Math.abs(Number(n) || 0));
 
-// Strip any non-ASCII glyphs (e.g. ₹) from strings passed into jsPDF, so a
+  // Strip any non-ASCII glyphs (e.g. ₹) from strings passed into jsPDF, so a
 // stray ₹ inside a transaction description cannot re-introduce the broken
 // letter-spacing artifact next to numbers.
 const sanitize = (s: string): string =>
