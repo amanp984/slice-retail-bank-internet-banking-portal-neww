@@ -267,6 +267,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     body,
     theme: "plain",
     tableWidth: tableW,
+    rowPageBreak: "avoid",
     styles: {
       font: "helvetica",
       fontStyle: "normal",
