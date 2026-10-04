@@ -267,6 +267,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     body,
     theme: "plain",
     tableWidth: tableW,
+    rowPageBreak: "avoid",
     styles: {
       font: "helvetica",
       fontStyle: "normal",
@@ -360,7 +361,7 @@ export function downloadStatementCsv(txns: Txn[]) {
   const rows = txns.map((t) => [
     fmtShortDate(t.created_at),
     formatDescription(t).replace(/"/g, '""'),
-    t.external_id || "",
+    (t.external_id || "").replace(/"/g, '""'),
     t.type,
     fmtRupeeSigned(t.amount, t.type),
     fmtRupee(t.balance_after_transaction),
