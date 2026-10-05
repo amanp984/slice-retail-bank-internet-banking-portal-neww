@@ -27,6 +27,22 @@ const fmtRupeeSigned = (n: number, type: "credit" | "debit") =>
 // letter-spacing artifact next to numbers.
 const sanitize = (s: string): string =>
   (s || "").replace(/₹/g, "Rs ").replace(/[^\x20-\x7E]/g, "");
+
+// Display-only: removes DEMO/TEST marker words from text shown on the statement
+// (e.g. "DEMO-UPI-DEBIT-..." -> "UPI-DEBIT-..."). Saved descriptions are never
+// modified — this applies only at render time on the PDF document.
+const stripDemoMarkers = (s: string): string =>
+  (s || "")
+    .replace(/\bDEMO\s*\/\s*TEST\b/gi, "")
+    .replace(/\bDEMO\b/gi, "")
+    .replace(/\bTEST\b(?=\s*(?:ENTRY|TRANSACTION|DATA)\b)?/gi, (m, off, full) =>
+      // keep "TEST" when it is part of a real word/name segment, drop standalone markers
+      /^(TEST)$/i.test(m) && /[-\s]/.test((full as string)[off + m.length] ?? "-") ? "" : m
+    )
+    .replace(/-{2,}/g, "-")
+    .replace(/^[-\s]+|[-\s]+$/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 const fmtShortDate = (iso: string) => {
   const d = new Date(iso);
   const day = String(d.getDate()).padStart(2, "0");
