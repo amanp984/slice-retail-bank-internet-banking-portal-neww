@@ -94,10 +94,10 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8.5);
     doc.text("BUSINESS", marginX, 76);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.setTextColor(105, 105, 105);
-    doc.text("Simulation / Test Environment - Not an official bank record", marginX, 96);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9.5);
+    doc.setTextColor(232, 0, 130);
+    doc.text("SAMPLE STATEMENT", marginX, 96);
 
     // Right side: period
     doc.setTextColor(20, 20, 20);
@@ -258,7 +258,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     running += t.type === "credit" ? amt : -amt;
     return [
       fmtShortDate(t.created_at),
-      sanitize(formatDescription(t)),
+      sanitize(stripDemoMarkers(formatDescription(t))),
       t.external_id || "-",
       fmtRupeeSigned(amt, t.type),
       fmtRupee(running),
