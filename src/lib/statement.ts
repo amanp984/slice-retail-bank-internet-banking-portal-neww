@@ -35,10 +35,7 @@ const stripDemoMarkers = (s: string): string =>
   (s || "")
     .replace(/\bDEMO\s*\/\s*TEST\b/gi, "")
     .replace(/\bDEMO\b/gi, "")
-    .replace(/\bTEST\b(?=\s*(?:ENTRY|TRANSACTION|DATA)\b)?/gi, (m, off, full) =>
-      // keep "TEST" when it is part of a real word/name segment, drop standalone markers
-      /^(TEST)$/i.test(m) && /[-\s]/.test((full as string)[off + m.length] ?? "-") ? "" : m
-    )
+    .replace(/\bTEST\s+(?:ENTRY|TRANSACTION|RECORD)\b/gi, "")
     .replace(/-{2,}/g, "-")
     .replace(/^[-\s]+|[-\s]+$/g, "")
     .replace(/\s{2,}/g, " ")
