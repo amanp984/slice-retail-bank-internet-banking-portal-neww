@@ -1,2 +1,3 @@
 Display saved transaction descriptions without reconstructing them; the stored text is authoritative across the app and exports.
 Keep simulation disclaimers at the view or document level, not in generated transaction descriptions; this separates context from data.
+Represent sample/test status with a dedicated transaction field and display it separately from the saved description, so exports and views retain the authoritative description text.
