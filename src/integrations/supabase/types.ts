@@ -112,6 +112,7 @@ export type Database = {
           description: string | null
           external_id: string | null
           id: string
+          is_sample: boolean
           mode: string | null
           sender_name: string | null
           type: string
@@ -127,6 +128,7 @@ export type Database = {
           description?: string | null
           external_id?: string | null
           id?: string
+          is_sample?: boolean
           mode?: string | null
           sender_name?: string | null
           type: string
@@ -142,6 +144,7 @@ export type Database = {
           description?: string | null
           external_id?: string | null
           id?: string
+          is_sample?: boolean
           mode?: string | null
           sender_name?: string | null
           type?: string
