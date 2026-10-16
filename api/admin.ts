@@ -92,6 +92,7 @@ export default async function handler(req: any, res: any) {
 
     if (body.action === "create_transaction") {
       const patch: any = pick(body.transaction, TXN_COLUMNS);
+      patch.is_sample = true;
       patch.amount = Number(patch.amount) || 0;
       patch.type = patch.type === "debit" ? "debit" : "credit";
       if (!patch.created_at) patch.created_at = new Date().toISOString();

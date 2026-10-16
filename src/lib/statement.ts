@@ -257,7 +257,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     const amt = Number(t.amount);
     running += t.type === "credit" ? amt : -amt;
     return [
-      fmtShortDate(t.created_at),
+      `${fmtShortDate(t.created_at)}${t.is_sample ? "\nSAMPLE" : ""}`,
       sanitize(stripDemoMarkers(formatDescription(t))),
       t.external_id || "-",
       fmtRupeeSigned(amt, t.type),
@@ -370,9 +370,10 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
 }
 
 export function downloadStatementCsv(txns: Txn[]) {
-  const header = ["Date", "Description", "Reference", "Type", "Amount", "Balance"];
+  const header = ["Date", "Record status", "Description", "Reference", "Type", "Amount", "Balance"];
   const rows = txns.map((t) => [
     fmtShortDate(t.created_at),
+    t.is_sample ? "Sample" : "",
     formatDescription(t).replace(/"/g, '""'),
     (t.external_id || "").replace(/"/g, '""'),
     t.type,

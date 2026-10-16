@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { useTransactions } from "@/hooks/useTransactions";
 import { CUSTOMER, useCustomer } from "@/lib/customer";
+import { formatDescription } from "@/lib/formatTxn";
+import { formatINR, formatSignedTransactionINR } from "@/lib/supabase-helpers";
 
 const fmtINR = (n: number) =>
   "₹" + new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2 }).format(Math.abs(n));
@@ -94,7 +96,7 @@ function AccountsPage() {
   const [active, setActive] = useState<TabKey>("current");
   const [modal, setModal] = useState<null | "fd" | "loan" | "invest">(null);
   const [toast, setToast] = useState<string | null>(null);
-  const { balance } = useTransactions(50);
+  const { balance, txns } = useTransactions(50);
 
   const accountData = buildAccountData();
   const baseData = accountData[active === "loan" || active === "savings" ? "current" : active];
@@ -196,9 +198,26 @@ function AccountsPage() {
                   </div>
                 </div>
 
-                <div className="mt-6 flex items-center gap-3 bg-accent/60 text-foreground/80 text-sm rounded-lg px-4 py-3">
-                  <Info className="w-4 h-4 text-primary shrink-0" />
-                  You have no transactions in this account yet.
+                <div className="mt-6 border-y border-border py-4">
+                  <h3 className="text-sm font-semibold text-foreground mb-3">Recent transactions</h3>
+                  {txns.length === 0 ? (
+                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                      <Info className="w-4 h-4 text-primary shrink-0" />
+                      No transactions in this account yet.
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-border">
+                      {txns.slice(0, 5).map((txn) => (
+                        <div key={txn.id} className="flex items-start justify-between gap-4 py-3 text-sm">
+                          <div className="min-w-0">
+                            <div className="text-foreground break-words">{formatDescription(txn)}</div>
+                            {txn.is_sample && <span className="inline-flex mt-1 text-[10px] font-semibold uppercase text-primary bg-accent px-1.5 py-0.5 rounded">Sample</span>}
+                          </div>
+                          <span className="shrink-0 font-medium tabular-nums text-foreground">{formatSignedTransactionINR(txn.amount, txn.type)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-6 divide-y divide-border">
