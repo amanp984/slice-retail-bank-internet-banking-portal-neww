@@ -9,6 +9,7 @@ export type Txn = {
   account_reference: string | null;
   external_id: string | null;
   upi_id?: string | null;
+  is_sample: boolean;
 };
 
 export const LIVE_SUPABASE_PROJECT_ID = "usjynnxdtmghgznfcrjf";

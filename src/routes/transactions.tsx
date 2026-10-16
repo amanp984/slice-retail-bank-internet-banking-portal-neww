@@ -121,7 +121,10 @@ function TransactionsPage() {
                       ) : null}
                     </td>
                     <td className="py-4 pr-4 text-muted-foreground align-top border-b border-border/60 font-mono text-xs">{utrOf(t)}</td>
-                    <td className="py-4 pr-6 text-foreground leading-relaxed align-top border-b border-border/60">{formatDescription(t)}</td>
+                    <td className="py-4 pr-6 text-foreground leading-relaxed align-top border-b border-border/60">
+                      <div>{formatDescription(t)}</div>
+                      {t.is_sample && <span className="inline-flex mt-1 text-[10px] font-semibold uppercase text-primary bg-accent px-1.5 py-0.5 rounded">Sample</span>}
+                    </td>
                     <td className="py-4 pr-6 text-right font-medium text-foreground tabular-nums whitespace-nowrap align-top border-b border-border/60">
                       {formatSignedTransactionINR(t.amount, t.type)}
                     </td>
