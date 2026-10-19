@@ -97,8 +97,6 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9.5);
     doc.setTextColor(232, 0, 130);
-    doc.text("SAMPLE STATEMENT", marginX, 96);
-
     // Right side: period
     doc.setTextColor(20, 20, 20);
     doc.setFont("helvetica", "bold");
@@ -257,7 +255,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     const amt = Number(t.amount);
     running += t.type === "credit" ? amt : -amt;
     return [
-      `${fmtShortDate(t.created_at)}${t.is_sample ? "\nSAMPLE" : ""}`,
+      fmtShortDate(t.created_at),
       sanitize(stripDemoMarkers(formatDescription(t))),
       t.external_id || "-",
       fmtRupeeSigned(amt, t.type),
@@ -370,10 +368,9 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
 }
 
 export function downloadStatementCsv(txns: Txn[]) {
-  const header = ["Date", "Record status", "Description", "Reference", "Type", "Amount", "Balance"];
+  const header = ["Date", "Description", "Reference", "Type", "Amount", "Balance"];
   const rows = txns.map((t) => [
     fmtShortDate(t.created_at),
-    t.is_sample ? "Sample" : "",
     formatDescription(t).replace(/"/g, '""'),
     (t.external_id || "").replace(/"/g, '""'),
     t.type,
