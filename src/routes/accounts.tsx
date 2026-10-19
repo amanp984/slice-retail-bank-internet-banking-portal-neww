@@ -211,7 +211,6 @@ function AccountsPage() {
                         <div key={txn.id} className="flex items-start justify-between gap-4 py-3 text-sm">
                           <div className="min-w-0">
                             <div className="text-foreground break-words">{formatDescription(txn)}</div>
-                            {txn.is_sample && <span className="inline-flex mt-1 text-[10px] font-semibold uppercase text-primary bg-accent px-1.5 py-0.5 rounded">Sample</span>}
                           </div>
                           <span className="shrink-0 font-medium tabular-nums text-foreground">{formatSignedTransactionINR(txn.amount, txn.type)}</span>
                         </div>
