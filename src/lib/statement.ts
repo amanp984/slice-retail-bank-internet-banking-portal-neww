@@ -36,6 +36,8 @@ const stripDemoMarkers = (s: string): string =>
     .replace(/\bDEMO\s*\/\s*TEST\b/gi, "")
     .replace(/\bDEMO\b/gi, "")
     .replace(/\bTEST\s+(?:ENTRY|TRANSACTION|RECORD)\b/gi, "")
+    .replace(/\bSIMULATED\b/gi, "")
+    .replace(/\bSAMPLE\s+(?:ENTRY|TRANSACTION|RECORD|STATEMENT)\b/gi, "")
     .replace(/-{2,}/g, "-")
     .replace(/^[-\s]+|[-\s]+$/g, "")
     .replace(/\s{2,}/g, " ")
@@ -95,9 +97,9 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     doc.setFontSize(8.5);
     doc.text("BUSINESS", marginX, 76);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(9.5);
-    doc.setTextColor(232, 0, 130);
-    doc.text("Simulation / Test Environment — Not an official bank record", marginX, 96);
+    doc.setFontSize(8.5);
+    doc.setTextColor(150, 150, 150);
+    doc.text("STATEMENT", marginX, 96);
     // Right side: period
     doc.setTextColor(20, 20, 20);
     doc.setFont("helvetica", "bold");
