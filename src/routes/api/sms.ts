@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
+import { timingSafeEqual } from "node:crypto";
 import { parseSms } from "@/lib/parseSms";
+import { recomputeBalances } from "@/routes/api/admin";
 
 const LIVE_SUPABASE_PROJECT_ID = "usjynnxdtmghgznfcrjf";
 const LIVE_SUPABASE_URL = `https://${LIVE_SUPABASE_PROJECT_ID}.supabase.co`;
@@ -36,22 +38,51 @@ function getAdmin() {
     process.env.SUPABASE_PUBLISHABLE_KEY ||
     process.env.VITE_SUPABASE_ANON_KEY ||
     process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-  if (!key) throw new Error("Missing Supabase key in Vercel environment variables");
+  if (!key) throw new Error("Missing database key in environment");
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-async function handle(request: Request) {
-  console.log("[sms] request received", { method: request.method, url: request.url });
+// Timing-safe comparison so request timing never leaks the secret.
+function secretMatches(expected: string, got: string | null): boolean {
+  if (!got) return false;
+  const a = Buffer.from(expected, "utf8");
+  const b = Buffer.from(got, "utf8");
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
 
-  // Optional shared-secret auth for the webhook
+// The forwarder may send epoch seconds, epoch milliseconds, or an ISO string.
+// Returns an ISO string only when the value is a sane timestamp (2020..now+1d).
+function normalizeTimestamp(v: unknown): string | null {
+  if (v === null || v === undefined || v === "") return null;
+  let d: Date;
+  const asString = typeof v === "string" ? v.trim() : "";
+  if (typeof v === "number" || /^\d+$/.test(asString)) {
+    const n = Number(asString || v);
+    const ms = n >= 1e15 ? n / 1000 : n >= 1e11 ? n : n * 1000;
+    d = new Date(ms);
+  } else {
+    d = new Date(asString);
+  }
+  if (Number.isNaN(d.getTime())) return null;
+  const t = d.getTime();
+  const now = Date.now();
+  if (t < new Date("2020-01-01").getTime() || t > now + 24 * 60 * 60 * 1000) return null;
+  return d.toISOString();
+}
+
+async function handle(request: Request) {
+  console.log("[sms] request received", { method: request.method });
+
+  // Shared-secret auth for the webhook. The value lives only in server env
+  // (SMS_WEBHOOK_SECRET); it is never logged or returned.
   const expected = process.env.SMS_WEBHOOK_SECRET;
   if (!expected) {
     console.error("[sms] SMS_WEBHOOK_SECRET not configured — refusing request");
-    return json({ ok: false, error: "unauthorized" }, 401);
+    return json({ ok: false, error: "webhook not configured" }, 401);
   }
-  const got = request.headers.get("x-webhook-secret");
-  if (got !== expected) {
-    console.warn("[sms] unauthorized webhook request");
+  if (!secretMatches(expected, request.headers.get("x-webhook-secret"))) {
+    console.warn("[sms] unauthorized webhook request (secret mismatch)");
     return json({ ok: false, error: "unauthorized" }, 401);
   }
 
@@ -72,25 +103,19 @@ async function handle(request: Request) {
     }
   } catch (error) {
     console.error("[sms] request body parse error:", error);
-    return json({ ok: true, inserted: false, error: "invalid body" });
+    return json({ ok: false, error: "invalid body" }, 400);
   }
-
-  console.log("[sms] incoming body:", body);
 
   const raw: string =
     body.message || body.text || body.sms || body.body || body.content || "";
-  const sender: string | null =
-    body.sender || body.from || body.address || null;
+  const sender: string | null = body.sender || body.from || body.address || null;
   const bodyExternalId: string | undefined =
     body.id || body.external_id || body.messageId || body.utr || body.ref || body.reference;
-  const accountRef: string =
-    body.account_reference ||
-    process.env.DEFAULT_ACCOUNT_REFERENCE ||
-    "033311501068990";
+  const createdAt = normalizeTimestamp(body.timestamp ?? body.date ?? body.time);
 
   if (!raw || typeof raw !== "string" || !raw.trim()) {
-    console.warn("[sms] empty body, ignoring but returning 200");
-    return json({ ok: true, inserted: false, skipped: "empty message" });
+    console.warn("[sms] empty message");
+    return json({ ok: false, inserted: false, skipped: "empty message" }, 202);
   }
 
   let parsed;
@@ -102,17 +127,28 @@ async function handle(request: Request) {
   }
   if (!parsed) {
     console.warn("[sms] rejected non-transactional or unparseable message");
-    return json({ ok: true, inserted: false, skipped: "not a transaction sms" });
+    return json({ ok: false, inserted: false, skipped: "not a transaction sms" }, 202);
   }
   if (!parsed.sender_name && sender) parsed.sender_name = sender;
-  console.log("[sms] parsed:", parsed);
+  // Masked account suffix (e.g. XX8572) is informational only — never used as
+  // the ledger account and never stored.
+  console.log("[sms] parsed:", {
+    amount: parsed.amount,
+    type: parsed.type,
+    mode: parsed.mode ?? null,
+    sender_name: parsed.sender_name,
+    reference: parsed.reference ?? null,
+    account_suffix: parsed.account ?? null,
+    upi_id: parsed.upi_id ?? null,
+    created_at: createdAt,
+  });
 
   // Normalize the transaction reference for dedupe (trim + uppercase).
   // Prefer webhook body id, otherwise fall back to the UTR/Ref parsed from the SMS.
   const externalId: string | null = (() => {
-    const raw = bodyExternalId ?? parsed.reference ?? null;
-    if (!raw) return null;
-    const norm = String(raw).trim().toUpperCase();
+    const r = bodyExternalId ?? parsed.reference ?? null;
+    if (!r) return null;
+    const norm = String(r).trim().toUpperCase();
     return norm.length ? norm : null;
   })();
 
@@ -120,11 +156,12 @@ async function handle(request: Request) {
   try {
     supabase = getAdmin();
   } catch (error) {
-    console.error("[sms] Supabase client setup error:", error);
-    return json({ ok: true, inserted: false, error: "database client unavailable" });
+    console.error("[sms] database client setup error:", error);
+    return json({ ok: false, inserted: false, error: "database client unavailable" }, 500);
   }
 
-  // Dedupe by UTR/Ref (case-insensitive, trimmed)
+  // Dedupe by reference / id (case-insensitive, trimmed). The unique index on
+  // external_id is the final safety net.
   if (externalId) {
     try {
       const { data: dup, error } = await withTimeout(
@@ -137,15 +174,46 @@ async function handle(request: Request) {
       );
       if (error) console.error("[sms] dedupe lookup error:", error);
       if (dup) {
-        console.log(`Duplicate transaction skipped: ${externalId}`);
-        return json({ ok: true, inserted: false, deduped: true, id: dup.id });
+        console.log(`[sms] duplicate transaction skipped: ${externalId}`);
+        return json({ ok: true, inserted: false, deduped: true, id: dup.id }, 200);
       }
     } catch (error) {
       console.error("[sms] dedupe lookup failed:", error);
     }
   }
 
-  // Get latest balance for account
+  // Resolve the ledger account: explicit override, else the latest existing
+  // transaction's account, else the profile account number.
+  let accountRef: string | null = body.account_reference || null;
+  if (!accountRef) {
+    try {
+      const { data: last } = await withTimeout(
+        "sms account lookup",
+        supabase.from("transactions").select("account_reference").limit(1).maybeSingle(),
+      );
+      accountRef = last?.account_reference ?? null;
+    } catch (error) {
+      console.error("[sms] account lookup failed:", error);
+    }
+  }
+  if (!accountRef) {
+    try {
+      const { data: prof } = await withTimeout(
+        "sms profile lookup",
+        supabase.from("app_profile").select("account_number").eq("id", "primary").maybeSingle(),
+      );
+      accountRef = prof?.account_number ?? null;
+    } catch (error) {
+      console.error("[sms] profile lookup failed:", error);
+    }
+  }
+  if (!accountRef) {
+    console.error("[sms] no account reference available — cannot insert");
+    return json({ ok: false, inserted: false, error: "no account reference available" }, 500);
+  }
+
+  // Balance estimate from the newest row for this account. The authoritative
+  // running balance is recomputed after insert (same logic as the Admin Editor).
   let previousBalance = 0;
   try {
     const { data: last, error } = await withTimeout(
@@ -170,40 +238,60 @@ async function handle(request: Request) {
   const insert = {
     amount: parsed.amount,
     type: parsed.type,
+    mode: parsed.mode ?? null,
     sender_name: parsed.sender_name,
     description: parsed.description,
     balance_after_transaction,
     account_reference: accountRef,
     external_id: externalId,
     upi_id: parsed.upi_id ?? null,
+    ...(createdAt ? { created_at: createdAt } : {}),
   };
 
   try {
     const { data, error } = await withTimeout(
       "sms transaction insert",
-      supabase
-        .from("transactions")
-        .insert(insert)
-        .select("*")
-        .single(),
+      supabase.from("transactions").insert(insert).select("*").single(),
     );
 
     if (error) {
-      // 23505 = unique_violation. Treat as duplicate, return 200 so the
-      // SMS forwarder doesn't retry.
+      // 23505 = unique_violation → duplicate reference; 200 so the forwarder
+      // does not retry forever.
       if ((error as any).code === "23505") {
-        console.log(`Duplicate transaction skipped: ${externalId}`);
-        return json({ ok: true, inserted: false, deduped: true });
+        console.log(`[sms] duplicate transaction skipped: ${externalId}`);
+        return json({ ok: true, inserted: false, deduped: true }, 200);
       }
-      console.error("[sms] Supabase insert error:", error);
-      return json({ ok: true, inserted: false, error: "insert failed" });
+      console.error("[sms] insert error:", error);
+      return json({ ok: false, inserted: false, error: "insert failed" }, 500);
     }
 
-    console.log("[sms] Supabase insert result:", { id: data?.id, fallback: parsed.fallback });
-    return json({ ok: true, inserted: true, fallback: !!parsed.fallback, transaction: data });
+    // Recompute the running balance for the whole account chain so backdated
+    // entries keep the ledger consistent (same rule as the Admin Editor).
+    try {
+      await withTimeout("sms balance recompute", recomputeBalances(supabase, accountRef));
+    } catch (error) {
+      console.error("[sms] balance recompute failed:", error);
+    }
+
+    console.log("[sms] inserted transaction:", data?.id);
+    return json(
+      {
+        ok: true,
+        inserted: true,
+        id: data?.id,
+        amount: parsed.amount,
+        type: parsed.type,
+        mode: parsed.mode ?? null,
+        reference: externalId,
+        account_suffix: parsed.account ?? null, // informational only
+        timestamp_used: createdAt ?? null,
+        balance_after_transaction: data?.balance_after_transaction ?? balance_after_transaction,
+      },
+      201,
+    );
   } catch (error) {
-    console.error("[sms] Supabase insert failed:", error);
-    return json({ ok: true, inserted: false, error: "insert failed" });
+    console.error("[sms] insert failed:", error);
+    return json({ ok: false, inserted: false, error: "insert failed" }, 500);
   }
 }
 
@@ -212,7 +300,7 @@ async function safeHandle(request: Request) {
     return await handle(request);
   } catch (error) {
     console.error("[sms] unexpected webhook failure:", error);
-    return json({ ok: true, inserted: false, error: "unexpected webhook failure" });
+    return json({ ok: false, inserted: false, error: "unexpected webhook failure" }, 500);
   }
 }
 
