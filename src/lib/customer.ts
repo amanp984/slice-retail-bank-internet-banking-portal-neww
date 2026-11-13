@@ -207,6 +207,7 @@ export function getActiveCustomer(): CustomerProfile {
 }
 
 export function useCustomer(): CustomerProfile {
+  const hydrated = useSyncExternalStore(() => () => {}, () => true, () => false);
   useSyncExternalStore(
     (cb) => {
       listeners.add(cb);
@@ -215,7 +216,7 @@ export function useCustomer(): CustomerProfile {
     () => version,
     () => 0
   );
-  return getActiveCustomer();
+  return hydrated ? getActiveCustomer() : EMPTY_PROFILE;
 }
 
 export async function verifyLogin(

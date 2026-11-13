@@ -6,6 +6,7 @@
 - [x] Prevent PDF header and transaction table overlap; visually verify long-value cases.
 - [x] Add a separate sample marker for newly created transactions and show it outside saved descriptions in dashboard, accounts, history, PDF, and CSV.
 - [x] Approved demo transaction replacement completed in the earlier task.
-- [ ] Add shared calendar date-range statements and consistent account-scoped exports.
-- [ ] Add persistent server-validated admin holds and shared ledger/available balance values.
-- [ ] Verify hold persistence, date filtering, downloaded exports, and compilation diagnostics.
+- [x] Add shared calendar date-range statements and consistent account-scoped exports.
+- [x] Add persistent server-validated admin holds and shared ledger/available balance values.
+- [x] Verify sixteen balance/date rules, signed-in date filters, actual PDF/CSV downloads, account isolation, and automatic compilation diagnostics.
+- [ ] Enable and verify admin hold saving, reload persistence, and reset end-to-end — blocked by declined ADMIN_PASSWORD secure form; saving remains locked.

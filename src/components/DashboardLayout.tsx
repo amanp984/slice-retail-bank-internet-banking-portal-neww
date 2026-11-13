@@ -84,7 +84,7 @@ function HeaderPanel({
 export function DashboardLayout({
   children, showGreeting = false,
 }: { children: ReactNode; showGreeting?: boolean }) {
-  useCustomer();
+  const customer = useCustomer();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [modal, setModal] = useState<ModalKind>(null);
@@ -151,7 +151,7 @@ export function DashboardLayout({
           <div>
             {showGreeting && (
               <>
-                <h1 className="text-2xl font-bold text-foreground">Hello, {CUSTOMER.holderName.split(" ")[0]}</h1>
+                <h1 className="text-2xl font-bold text-foreground">Hello, {customer.holderName.split(" ")[0]}</h1>
                 <p className="text-sm text-muted-foreground mt-1">Last login: {lastLogin || "—"}</p>
               </>
             )}
@@ -237,7 +237,7 @@ export function DashboardLayout({
 
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 rounded-full bg-accent text-primary grid place-items-center font-semibold text-sm">
-                {(CUSTOMER.holderName?.charAt(0) || "").toUpperCase()}
+                {(customer.holderName?.charAt(0) || "").toUpperCase()}
               </div>
             </div>
           </div>

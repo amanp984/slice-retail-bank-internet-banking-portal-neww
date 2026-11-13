@@ -45,7 +45,7 @@ const fmtDate = (iso: string) => {
 const labelType = (t: "credit" | "debit") => (t === "credit" ? "Credit" : "Debit");
 
 function Dashboard() {
-  useCustomer();
+  const customer = useCustomer();
   const [show, setShow] = useState(true);
   const { txns, balance, loading } = useTransactions(50);
   const { ledgerBalance, holdAmount, availableBalance } = useAccountBalances(balance);
@@ -60,7 +60,7 @@ function Dashboard() {
             <span className="font-medium">Current Account</span>
             <span className="px-1.5 py-0.5 rounded-full bg-white/15 text-[9px] font-semibold">Primary</span>
           </div>
-          <div className="text-[11px] opacity-80 mt-0.5">{CUSTOMER.accountNumber}</div>
+          <div className="text-[11px] opacity-80 mt-0.5">{customer.accountNumber}</div>
           <div className="mt-4 text-[11px] opacity-90">Available Balance</div>
           <div className="flex items-center gap-2 mt-0.5 h-9">
             <AnimatePresence mode="wait" initial={false}>
@@ -165,7 +165,7 @@ function Dashboard() {
         <div className="col-span-12 lg:col-span-4 bg-card rounded-2xl p-6 shadow-card border border-border">
           <h2 className="font-bold text-foreground">Download Statement</h2>
           <p className="text-xs text-muted-foreground mt-1 mb-4">Select account and period to download your statement</p>
-          <AccountStatement accountNumber={CUSTOMER.accountNumber} ledgerReference={txns[0]?.account_reference ?? CUSTOMER.accountNumber} ledgerBalance={ledgerBalance} />
+          <AccountStatement accountNumber={customer.accountNumber} ledgerReference={txns[0]?.account_reference ?? customer.accountNumber} ledgerBalance={ledgerBalance} />
           <p className="text-[10px] text-muted-foreground mt-4 flex items-center gap-1">
             <ShieldCheck className="w-3 h-3" /> Your statement password will be your DOB (DDMMYYYY)
           </p>
@@ -177,8 +177,8 @@ function Dashboard() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             {[
               ["Account Type", "Current Account"],
-              ["Account Number", CUSTOMER.accountNumber],
-              ["IFSC Code", CUSTOMER.ifsc],
+              ["Account Number", customer.accountNumber],
+              ["IFSC Code", customer.ifsc],
               ["Hold Amount", formatINR(holdAmount)],
               ["Branch", "Mumbai - Corporate Branch"],
             ].map(([k, v]) => (
