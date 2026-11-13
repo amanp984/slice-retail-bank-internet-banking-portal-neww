@@ -10,7 +10,7 @@ export const Route = createFileRoute("/profile")({
     meta: [
       { title: "Profile & Settings — Slice Bank" },
       { name: "description", content: "View your Slice Bank banking profile information." },
-    ],
+    { property: "og:title", content: "Profile & Settings — Slice Bank" }, { property: "og:description", content: "View your Slice Bank banking profile information." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }],
   }),
   component: Profile,
 });

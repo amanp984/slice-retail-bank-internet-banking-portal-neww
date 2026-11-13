@@ -22,7 +22,7 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/transfers/verify")({
-  head: () => ({ meta: [{ title: "Verify Transfer — Slice Bank" }] }),
+  head: () => ({ meta: [{ title: "Verify Transfer — Slice Bank" }, { name: "description", content: "Verify Transfer in the Slice Bank test environment." }, { property: "og:title", content: "Verify Transfer — Slice Bank" }, { property: "og:description", content: "Verify Transfer in the Slice Bank test environment." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   validateSearch: (s) => searchSchema.parse(s),
   component: VerifyPage,
 });

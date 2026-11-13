@@ -8,7 +8,7 @@ export const Route = createFileRoute("/cards/")({
     meta: [
       { title: "My Cards — Slice Bank" },
       { name: "description", content: "View and manage your Slice Bank debit and credit cards." },
-    ],
+    { property: "og:title", content: "My Cards — Slice Bank" }, { property: "og:description", content: "View and manage your Slice Bank debit and credit cards." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }],
   }),
   component: Cards,
 });

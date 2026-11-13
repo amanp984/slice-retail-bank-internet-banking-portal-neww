@@ -6,7 +6,7 @@ import { Search, Filter, Plus, MoreVertical, UserPlus, Bell, Info, ChevronLeft, 
 import { useState } from "react";
 
 export const Route = createFileRoute("/transfers/managebeneficiaries")({
-  head: () => ({ meta: [{ title: "Manage Beneficiaries — Slice Bank" }] }),
+  head: () => ({ meta: [{ title: "Manage Beneficiaries — Slice Bank" }, { name: "description", content: "Manage Beneficiaries in the Slice Bank test environment." }, { property: "og:title", content: "Manage Beneficiaries — Slice Bank" }, { property: "og:description", content: "Manage Beneficiaries in the Slice Bank test environment." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: ManageBeneficiaries,
 });
 

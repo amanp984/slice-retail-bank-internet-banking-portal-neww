@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -8,16 +8,17 @@ import {
 import { useState } from "react";
 import { useTransactions } from "@/hooks/useTransactions";
 import { formatDescription } from "@/lib/formatTxn";
-import { downloadStatementPdf, downloadStatementCsv } from "@/lib/statement";
 import { CUSTOMER, useCustomer } from "@/lib/customer";
 import { formatINR, formatSignedTransactionINR } from "@/lib/supabase-helpers";
+import { useAccountBalances } from "@/hooks/useAccountBalances";
+import { AccountStatement } from "@/components/AccountStatement";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
       { title: "Dashboard — Slice Bank" },
       { name: "description", content: "Your Slice Bank account overview, balances, transactions and quick actions." },
-    ],
+    { property: "og:title", content: "Dashboard — Slice Bank" }, { property: "og:description", content: "Your Slice Bank account overview, balances, transactions and quick actions." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }],
   }),
   component: Dashboard,
 });
@@ -46,8 +47,8 @@ const labelType = (t: "credit" | "debit") => (t === "credit" ? "Credit" : "Debit
 function Dashboard() {
   useCustomer();
   const [show, setShow] = useState(true);
-  const navigate = useNavigate();
   const { txns, balance, loading } = useTransactions(50);
+  const { ledgerBalance, holdAmount, availableBalance } = useAccountBalances(balance);
   const recent = txns.slice(0, 5);
   return (
     <DashboardLayout showGreeting>
@@ -65,7 +66,7 @@ function Dashboard() {
             <AnimatePresence mode="wait" initial={false}>
               {show ? (
                 <motion.span key={`v-${balance}`} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18 }}
-                  className="text-2xl font-bold tabular-nums">{formatINR(balance)}</motion.span>
+                  className="text-2xl font-bold tabular-nums">{formatINR(availableBalance)}</motion.span>
               ) : (
                 <motion.span key="h" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18 }}
                   className="text-2xl font-bold tracking-widest">₹ ••••••••</motion.span>
@@ -77,8 +78,8 @@ function Dashboard() {
             </button>
           </div>
           <div className="grid grid-cols-2 gap-3 mt-3 text-[11px]">
-            <div><div className="opacity-80">Total Balance</div><div className="font-semibold text-sm">{show ? formatINR(balance) : "₹ ••••••"}</div></div>
-            <div><div className="opacity-80">Uncleared</div><div className="font-semibold text-sm">{show ? "₹0.00" : "₹ ••••"}</div></div>
+            <div><div className="opacity-80">Ledger Balance</div><div className="font-semibold text-sm">{show ? formatINR(ledgerBalance) : "₹ ••••••"}</div></div>
+            <div><div className="opacity-80">Hold Amount</div><div className="font-semibold text-sm">{show ? formatINR(holdAmount) : "₹ ••••"}</div></div>
           </div>
           <Link to="/accounts" className="inline-block mt-4 px-3.5 py-1.5 rounded-lg bg-white text-primary text-xs font-semibold hover:bg-white/90 transition active:scale-[0.98] shadow-sm">View Account Details</Link>
         </motion.div>
@@ -95,13 +96,13 @@ function Dashboard() {
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{q.desc}</p>
               {q.action === "download-statement" ? (
                 <button
-                  onClick={() => downloadStatementPdf(txns, balance)}
+                  onClick={() => document.getElementById("account-statement")?.scrollIntoView({ behavior: "smooth" })}
                   className="inline-block mt-3 text-xs font-semibold text-primary hover:underline"
                 >
                   {q.cta} →
                 </button>
               ) : (
-                <Link to={q.to!} className="inline-block mt-3 text-xs font-semibold text-primary hover:underline">{q.cta} →</Link>
+                q.to ? <Link to={q.to} className="inline-block mt-3 text-xs font-semibold text-primary hover:underline">{q.cta} →</Link> : null
               )}
             </motion.div>
           ))}
@@ -164,27 +165,7 @@ function Dashboard() {
         <div className="col-span-12 lg:col-span-4 bg-card rounded-2xl p-6 shadow-card border border-border">
           <h2 className="font-bold text-foreground">Download Statement</h2>
           <p className="text-xs text-muted-foreground mt-1 mb-4">Select account and period to download your statement</p>
-          <label className="text-xs text-muted-foreground">Account</label>
-          <select className="w-full mt-1 mb-3 px-3 py-2 rounded-lg border border-border text-sm bg-white">
-            <option>Current Account - {CUSTOMER.accountNumber}</option>
-          </select>
-          <label className="text-xs text-muted-foreground">Select Period</label>
-          <select className="w-full mt-1 mb-4 px-3 py-2 rounded-lg border border-border text-sm bg-white">
-            <option>May 2026</option><option>April 2026</option>
-          </select>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { Icon: FileType, label: "PDF", sub: "Download PDF", onClick: () => downloadStatementPdf(txns, balance) },
-              { Icon: Eye, label: "View Statement", sub: "View Online", onClick: () => navigate({ to: "/transactions" }) },
-              { Icon: FileText, label: "CSV", sub: "Download CSV", onClick: () => downloadStatementCsv(txns) },
-              { Icon: MonitorPlay, label: "View Online", sub: "View Statement", onClick: () => navigate({ to: "/transactions" }) },
-            ].map(({ Icon, label, sub, onClick }) => (
-              <button key={label} onClick={onClick} className="flex items-center gap-2 p-3 rounded-lg border border-border hover:border-primary/40 hover:bg-accent/40 transition text-left">
-                <Icon className="w-5 h-5 text-primary" />
-                <div><div className="text-xs font-semibold">{label}</div><div className="text-[10px] text-muted-foreground">{sub}</div></div>
-              </button>
-            ))}
-          </div>
+          <AccountStatement accountNumber={CUSTOMER.accountNumber} ledgerReference={txns[0]?.account_reference ?? CUSTOMER.accountNumber} ledgerBalance={ledgerBalance} />
           <p className="text-[10px] text-muted-foreground mt-4 flex items-center gap-1">
             <ShieldCheck className="w-3 h-3" /> Your statement password will be your DOB (DDMMYYYY)
           </p>
@@ -198,6 +179,7 @@ function Dashboard() {
               ["Account Type", "Current Account"],
               ["Account Number", CUSTOMER.accountNumber],
               ["IFSC Code", CUSTOMER.ifsc],
+              ["Hold Amount", formatINR(holdAmount)],
               ["Branch", "Mumbai - Corporate Branch"],
             ].map(([k, v]) => (
               <div key={k}>

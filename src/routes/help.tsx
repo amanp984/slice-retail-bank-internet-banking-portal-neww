@@ -12,7 +12,7 @@ export const Route = createFileRoute("/help")({
   head: () => ({ meta: [
     { title: "Help & Support — Slice Bank" },
     { name: "description", content: "24x7 enterprise banking support from Slice Bank — tickets, disputes, FAQs and more." },
-  ] }),
+  { property: "og:title", content: "Help & Support — Slice Bank" }, { property: "og:description", content: "24x7 enterprise banking support from Slice Bank — tickets, disputes, FAQs and more." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: HelpPage,
 });
 

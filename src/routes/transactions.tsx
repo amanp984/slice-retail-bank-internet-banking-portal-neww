@@ -7,6 +7,8 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { formatDescription, extractParty } from "@/lib/formatTxn";
 import { downloadStatementPdf } from "@/lib/statement";
 import { formatSignedTransactionINR } from "@/lib/supabase-helpers";
+import { useAccountBalances } from "@/hooks/useAccountBalances";
+import { formatINR } from "@/lib/supabase-helpers";
 
 export const Route = createFileRoute("/transactions")({
   head: () => ({ meta: [
@@ -34,6 +36,7 @@ function TransactionsPage() {
   const [q, setQ] = useState("");
   const pageSize = 10;
   const { txns, balance, loading } = useTransactions(200);
+  const balances = useAccountBalances(balance);
 
   const filtered = useMemo(
     () =>
@@ -59,7 +62,7 @@ function TransactionsPage() {
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold">Transaction History</h1>
-          <p className="text-sm text-muted-foreground mt-1">View all your past transactions</p>
+          <p className="text-sm text-muted-foreground mt-1">Ledger Balance {formatINR(balances.ledgerBalance)} · Hold Amount {formatINR(balances.holdAmount)} · Available Balance {formatINR(balances.availableBalance)}</p>
         </div>
         <button
           onClick={() => downloadStatementPdf(filtered, balance)}

@@ -5,7 +5,7 @@ import { ShieldAlert, ShieldCheck, ArrowLeft, Lock, CheckCircle2 } from "lucide-
 import { useRef, useState } from "react";
 
 export const Route = createFileRoute("/cards/block-card")({
-  head: () => ({ meta: [{ title: "Block Card — Slice Bank" }] }),
+  head: () => ({ meta: [{ title: "Block Card — Slice Bank" }, { name: "description", content: "Block Card in the Slice Bank test environment." }, { property: "og:title", content: "Block Card — Slice Bank" }, { property: "og:description", content: "Block Card in the Slice Bank test environment." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: BlockCard,
 });
 

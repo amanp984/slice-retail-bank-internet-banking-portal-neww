@@ -11,6 +11,8 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { CUSTOMER, useCustomer } from "@/lib/customer";
 import { formatDescription } from "@/lib/formatTxn";
 import { formatINR, formatSignedTransactionINR } from "@/lib/supabase-helpers";
+import { useAccountBalances } from "@/hooks/useAccountBalances";
+import { AccountStatement } from "@/components/AccountStatement";
 
 const fmtINR = (n: number) =>
   "₹" + new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2 }).format(Math.abs(n));
@@ -20,7 +22,7 @@ export const Route = createFileRoute("/accounts")({
     meta: [
       { title: "Accounts — Slice Bank" },
       { name: "description", content: "View and manage all your Slice Bank accounts." },
-    ],
+    { property: "og:title", content: "Accounts — Slice Bank" }, { property: "og:description", content: "View and manage all your Slice Bank accounts." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }],
   }),
   component: AccountsPage,
 });
@@ -96,11 +98,17 @@ function AccountsPage() {
   const [active, setActive] = useState<TabKey>("current");
   const [modal, setModal] = useState<null | "fd" | "loan" | "invest">(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [statementOpen, setStatementOpen] = useState(false);
+  const [statementView, setStatementView] = useState(false);
   const { balance, txns } = useTransactions(50);
 
   const accountData = buildAccountData();
   const baseData = accountData[active === "loan" || active === "savings" ? "current" : active];
-  const data = active === "current" ? { ...baseData, balance: fmtINR(balance) } : baseData;
+  const ledgerReference = active === "current" ? txns[0]?.account_reference ?? baseData.number : baseData.number;
+  const accountTxns = txns.filter((txn) => txn.account_reference === ledgerReference);
+  const ledger = active === "current" ? balance : Number(accountTxns[0]?.balance_after_transaction ?? 0);
+  const balances = useAccountBalances(ledger, baseData.number);
+  const data = { ...baseData, balance: formatINR(balances.availableBalance) };
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -200,14 +208,14 @@ function AccountsPage() {
 
                 <div className="mt-6 border-y border-border py-4">
                   <h3 className="text-sm font-semibold text-foreground mb-3">Recent transactions</h3>
-                  {txns.length === 0 ? (
+                  {accountTxns.length === 0 ? (
                     <div className="flex items-center gap-3 text-sm text-muted-foreground">
                       <Info className="w-4 h-4 text-primary shrink-0" />
                       No transactions in this account yet.
                     </div>
                   ) : (
                     <div className="divide-y divide-border">
-                      {txns.slice(0, 5).map((txn) => (
+                      {accountTxns.slice(0, 5).map((txn) => (
                         <div key={txn.id} className="flex items-start justify-between gap-4 py-3 text-sm">
                           <div className="min-w-0">
                             <div className="text-foreground break-words">{formatDescription(txn)}</div>
@@ -226,6 +234,9 @@ function AccountsPage() {
                     ["IFSC Code", data.ifsc],
                     ["Account Type", data.type],
                     ["Branch", data.branch],
+                    ["Ledger Balance", formatINR(balances.ledgerBalance)],
+                    ["Hold Amount", formatINR(balances.holdAmount)],
+                    ["Available Balance", formatINR(balances.availableBalance)],
                   ].map(([k, v]) => (
                     <div key={k} className="flex items-center justify-between py-3.5 text-sm">
                       <span className="text-muted-foreground">{k}</span>
@@ -268,7 +279,7 @@ function AccountsPage() {
                   return to ? (
                     <Link key={label} to={to} className="block">{inner}</Link>
                   ) : (
-                    <button key={label} onClick={() => showToast(`${label} — feature unavailable in demo`)} className="w-full text-left">{inner}</button>
+                    <button key={label} onClick={() => { setStatementOpen(true); setStatementView(label === "View Account Statement"); }} className="w-full text-left">{inner}</button>
                   );
                 })}
               </div>
@@ -315,6 +326,8 @@ function AccountsPage() {
             </div>
           </div>
         </div>
+
+        {statementOpen && active !== "savings" && <section className="mt-6 border-t border-border pt-6"><h2 className="font-bold mb-4">Account Statement</h2><AccountStatement key={data.number} accountNumber={data.number} ledgerReference={ledgerReference} ledgerBalance={ledger} initialView={statementView} /></section>}
 
         <p className="mt-8 text-xs text-muted-foreground">
           Slice Bank Internet Banking is safe, secure and easy to use. Do not share your password, OTP or card details with anyone.

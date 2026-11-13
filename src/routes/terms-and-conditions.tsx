@@ -6,7 +6,7 @@ export const Route = createFileRoute("/terms-and-conditions")({
     meta: [
       { title: "Terms & Conditions — Slice Retail" },
       { name: "description", content: "Terms and conditions for using the Slice Retail digital platform services." },
-    ],
+    { property: "og:title", content: "Terms & Conditions — Slice Retail" }, { property: "og:description", content: "Terms and conditions for using the Slice Retail digital platform services." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }],
   }),
   component: TermsPage,
 });

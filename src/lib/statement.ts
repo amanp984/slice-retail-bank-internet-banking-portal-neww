@@ -3,6 +3,7 @@ import autoTable from "jspdf-autotable";
 import type { Txn } from "@/lib/supabase-helpers";
 import { formatDescription } from "./formatTxn";
 import { CUSTOMER } from "./customer";
+import { accountBalances, type StatementRange } from "./banking";
 
 // Shared PDF money formatter. Built-in jsPDF Helvetica does NOT include the
 // ₹ glyph (U+20B9) — using it produces the "1 2 , 0 0 8 . 0 0" letter-spacing
@@ -58,7 +59,7 @@ export function todayFileStamp(): string {
   return `${day}-${month}-${year}`;
 }
 
-export function downloadStatementPdf(txns: Txn[], _balance: number) {
+export function downloadStatementPdf(txns: Txn[], _balance: number, options?: { range: StatementRange; accountNumber: string; holdAmount: number }) {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
@@ -72,8 +73,8 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
   );
 
   // Derive period & totals
-  const firstDate = sorted[0]?.created_at ?? new Date().toISOString();
-  const lastDate = sorted[sorted.length - 1]?.created_at ?? new Date().toISOString();
+  const firstDate = options?.range.start ?? sorted[0]?.created_at ?? new Date().toISOString();
+  const lastDate = options?.range.end ?? sorted[sorted.length - 1]?.created_at ?? new Date().toISOString();
   const period = `${fmtShortDate(firstDate)} - ${fmtShortDate(lastDate)}`;
 
   const totalCredits = sorted
@@ -99,7 +100,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8.5);
     doc.setTextColor(150, 150, 150);
-    doc.text("STATEMENT", marginX, 96);
+    doc.text("SAMPLE / DEMO STATEMENT - Not an official bank record", marginX, 96);
     // Right side: period
     doc.setTextColor(20, 20, 20);
     doc.setFont("helvetica", "bold");
@@ -140,7 +141,7 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
   ];
   const rightRows: Array<[string, string]> = [
     ["Account", `${CUSTOMER.accountType} ACCOUNT`],
-    ["A/C number", CUSTOMER.accountNumber],
+    ["A/C number", options?.accountNumber ?? CUSTOMER.accountNumber],
     ["IFSC", CUSTOMER.ifsc],
     ["MICR", CUSTOMER.micr],
     ["PAN", CUSTOMER.pan],
@@ -251,6 +252,11 @@ export function downloadStatementPdf(txns: Txn[], _balance: number) {
     doc.text(c.value, cx, summaryBaselineY, { align: "center" });
   });
   y = summaryBaselineY + 42; // extra whitespace separating summary from table
+  const balances = accountBalances(_balance, options?.holdAmount ?? CUSTOMER.holdAmount);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(139, 139, 139);
+  const balanceLines = doc.splitTextToSize(`Current ledger: ${fmtRupee(balances.ledgerBalance)} | Hold: ${fmtRupee(balances.holdAmount)} | Available: ${fmtRupee(balances.availableBalance)}`, contentW);
+  doc.text(balanceLines, marginX, y - 14);
+  y += Math.max(0, balanceLines.length - 1) * 12;
 
   // ---------- Transactions table ----------
   let running = openingBalance;
@@ -380,7 +386,7 @@ export function downloadStatementCsv(txns: Txn[]) {
     fmtRupeeSigned(t.amount, t.type),
     fmtRupee(t.balance_after_transaction),
   ]);
-  const csv = [header, ...rows]
+  const csv = [["SAMPLE / DEMO STATEMENT — Not an official bank record"], header, ...rows]
     .map((r) => r.map((c) => `"${String(c)}"`).join(","))
     .join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });

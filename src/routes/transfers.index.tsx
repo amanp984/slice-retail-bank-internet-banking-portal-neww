@@ -24,7 +24,7 @@ export const Route = createFileRoute("/transfers/")({
     meta: [
       { title: "Payment Transfer — Slice Bank" },
       { name: "description", content: "Transfer money securely via IMPS, NEFT or RTGS with Slice Bank." },
-    ],
+    { property: "og:title", content: "Payment Transfer — Slice Bank" }, { property: "og:description", content: "Transfer money securely via IMPS, NEFT or RTGS with Slice Bank." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }],
   }),
   component: TransfersPage,
 });

@@ -5,7 +5,7 @@ import { ArrowLeft, ShieldCheck, CheckCircle2, AlertTriangle, Zap, FileCheck2, S
 import { useMemo, useState } from "react";
 
 export const Route = createFileRoute("/payments/$category")({
-  head: ({ params }) => ({ meta: [{ title: `Pay ${params.category} — Slice Bank` }] }),
+  head: ({ params }) => ({ meta: [{ title: `Pay ${params.category} — Slice Bank` }, { name: "description", content: `Slice Bank test environment: ${params.category} payment details.` }, { property: "og:title", content: `Pay ${params.category} — Slice Bank` }, { property: "og:description", content: `Slice Bank test environment: ${params.category} payment details.` }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: PaymentForm,
 });
 

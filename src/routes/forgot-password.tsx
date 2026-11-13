@@ -8,7 +8,7 @@ export const Route = createFileRoute("/forgot-password")({
     meta: [
       { title: "Reset Password — Slice Retail" },
       { name: "description", content: "Reset your Slice Retail platform password securely." },
-    ],
+    { property: "og:title", content: "Reset Password — Slice Retail" }, { property: "og:description", content: "Reset your Slice Retail platform password securely." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }],
   }),
   component: ForgotPasswordPage,
 });

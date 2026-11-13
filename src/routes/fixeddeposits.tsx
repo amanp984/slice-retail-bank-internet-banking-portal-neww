@@ -6,7 +6,7 @@ import { useState } from "react";
 import { InfoModal } from "@/components/InfoModal";
 
 export const Route = createFileRoute("/fixeddeposits")({
-  head: () => ({ meta: [{ title: "Fixed Deposits — Slice Bank" }] }),
+  head: () => ({ meta: [{ title: "Fixed Deposits — Slice Bank" }, { name: "description", content: "Fixed Deposits in the Slice Bank test environment." }, { property: "og:title", content: "Fixed Deposits — Slice Bank" }, { property: "og:description", content: "Fixed Deposits in the Slice Bank test environment." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: FixedDepositsPage,
 });
 

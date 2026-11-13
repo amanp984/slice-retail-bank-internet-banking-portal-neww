@@ -31,6 +31,7 @@ export type CustomerProfile = {
   branch: string;
   openingDate: string;
   udyam: string;
+  holdAmount: number;
 };
 
 const BOOTSTRAP: CustomerProfile = {
@@ -58,13 +59,14 @@ const BOOTSTRAP: CustomerProfile = {
   branch: "-",
   openingDate: "16 May '26",
   udyam: "-",
+  holdAmount: 0,
 };
 
 const EMPTY_PROFILE: CustomerProfile = Object.fromEntries(
   Object.keys(BOOTSTRAP).map((k) => [k, ""])
 ) as unknown as CustomerProfile;
 
-export type ProfileRow = Record<string, string | null>;
+export type ProfileRow = Record<string, string | number | null>;
 
 export function rowToProfile(row: ProfileRow): CustomerProfile {
   const s = (v: unknown, fallback = "-") =>
@@ -94,6 +96,7 @@ export function rowToProfile(row: ProfileRow): CustomerProfile {
     branch: s(row.branch_name),
     openingDate: s(row.opening_date),
     udyam: s(row.udyam),
+    holdAmount: Number(row.hold_amount) || 0,
   };
 }
 

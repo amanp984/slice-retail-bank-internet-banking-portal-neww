@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Home, Car, GraduationCap, Briefcase, IndianRupee, ShieldCheck, Info } from "lucide-react";
 
 export const Route = createFileRoute("/loans")({
-  head: () => ({ meta: [{ title: "Loans — Slice Bank" }] }),
+  head: () => ({ meta: [{ title: "Loans — Slice Bank" }, { name: "description", content: "Loans in the Slice Bank test environment." }, { property: "og:title", content: "Loans — Slice Bank" }, { property: "og:description", content: "Loans in the Slice Bank test environment." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: LoansPage,
 });
 

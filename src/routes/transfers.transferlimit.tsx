@@ -4,7 +4,7 @@ import { ShieldCheck, Zap, Landmark, Clock, Pencil, Sliders, Timer, CalendarCloc
 import { useState } from "react";
 
 export const Route = createFileRoute("/transfers/transferlimit")({
-  head: () => ({ meta: [{ title: "Account Limits — Slice Bank" }] }),
+  head: () => ({ meta: [{ title: "Account Limits — Slice Bank" }, { name: "description", content: "Account Limits in the Slice Bank test environment." }, { property: "og:title", content: "Account Limits — Slice Bank" }, { property: "og:description", content: "Account Limits in the Slice Bank test environment." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: TransferLimit,
 });
 

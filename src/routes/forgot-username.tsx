@@ -8,7 +8,7 @@ export const Route = createFileRoute("/forgot-username")({
     meta: [
       { title: "Forgot Username — Slice Retail" },
       { name: "description", content: "Recover your Slice Retail platform username." },
-    ],
+    { property: "og:title", content: "Forgot Username — Slice Retail" }, { property: "og:description", content: "Recover your Slice Retail platform username." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }],
   }),
   component: ForgotUsernamePage,
 });

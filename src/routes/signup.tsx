@@ -8,7 +8,7 @@ export const Route = createFileRoute("/signup")({
     meta: [
       { title: "New User Sign Up — Slice Bank" },
       { name: "description", content: "Register for Slice Bank internet banking." },
-    ],
+    { property: "og:title", content: "New User Sign Up — Slice Bank" }, { property: "og:description", content: "Register for Slice Bank internet banking." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }],
   }),
   component: SignupPage,
 });

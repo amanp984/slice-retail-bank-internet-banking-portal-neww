@@ -8,7 +8,7 @@ export const Route = createFileRoute("/payments/")({
     meta: [
       { title: "Payments — Slice Bank" },
       { name: "description", content: "Pay your bills, utilities, EMIs and recharges seamlessly with Slice Bank." },
-    ],
+    { property: "og:title", content: "Payments — Slice Bank" }, { property: "og:description", content: "Pay your bills, utilities, EMIs and recharges seamlessly with Slice Bank." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }],
   }),
   component: Payments,
 });
