@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { IdCard, MapPin, Building, Mail, Phone, Clock, ShieldCheck, Eye, UserCheck, FileText, CheckCircle2 } from "lucide-react";
 import { useState, useRef } from "react";
-import { CUSTOMER, useCustomer } from "@/lib/customer";
+import { useCustomer, type CustomerProfile } from "@/lib/customer";
 import { AdminEditor } from "@/components/AdminEditor";
 
 export const Route = createFileRoute("/profile")({
@@ -15,19 +15,19 @@ export const Route = createFileRoute("/profile")({
   component: Profile,
 });
 
-const buildInfo = () => [
-  { i: IdCard, k: "Customer ID", v: CUSTOMER.customerId },
-  { i: IdCard, k: "Aadhaar Card (Last 4 Digits)", v: CUSTOMER.aadhaarMasked },
-  { i: MapPin, k: "Address", v: CUSTOMER.address },
-  { i: IdCard, k: "PAN Card Number", v: CUSTOMER.pan },
-  { i: MapPin, k: "Permanent Address", v: CUSTOMER.address },
+const buildInfo = (customer: CustomerProfile) => [
+  { i: IdCard, k: "Customer ID", v: customer.customerId },
+  { i: IdCard, k: "Aadhaar Card (Last 4 Digits)", v: customer.aadhaarMasked },
+  { i: MapPin, k: "Address", v: customer.address },
+  { i: IdCard, k: "PAN Card Number", v: customer.pan },
+  { i: MapPin, k: "Permanent Address", v: customer.address },
   { i: Building, k: "Bank Address", v: "Slice Bank, 6th Floor, Tower 1,\nOne World Centre, Senapati Bapat Marg,\nLower Parel, Mumbai - 400013" },
-  { i: Building, k: "Branch Address", v: CUSTOMER.branch },
+  { i: Building, k: "Branch Address", v: customer.branch },
 ];
 
 function Profile() {
-  useCustomer();
-  const info = buildInfo();
+  const customer = useCustomer();
+  const info = buildInfo(customer);
   const [adminOpen, setAdminOpen] = useState(false);
   const clicks = useRef<number[]>([]);
   const onOverviewClick = () => {
@@ -53,10 +53,10 @@ function Profile() {
 
             <h3 className="font-bold mb-4">Profile Picture</h3>
             <div className="flex items-center gap-5 pb-6 border-b border-border">
-              <div className="w-20 h-20 rounded-full bg-accent text-primary grid place-items-center text-2xl font-bold">{CUSTOMER.holderName.charAt(0).toUpperCase()}</div>
+              <div className="w-20 h-20 rounded-full bg-accent text-primary grid place-items-center text-2xl font-bold">{customer.holderName.charAt(0).toUpperCase()}</div>
               <div>
-                <div className="text-lg font-bold">{CUSTOMER.holderName}</div>
-                <div className="text-sm text-muted-foreground">Customer ID: {CUSTOMER.customerId}</div>
+                <div className="text-lg font-bold">{customer.holderName}</div>
+                <div className="text-sm text-muted-foreground">Customer ID: {customer.customerId}</div>
               </div>
             </div>
 

@@ -9,4 +9,5 @@
 - [x] Add shared calendar date-range statements and consistent account-scoped exports.
 - [x] Add persistent server-validated admin holds and shared ledger/available balance values.
 - [x] Verify sixteen balance/date rules, signed-in date filters, actual PDF/CSV downloads, account isolation, and automatic compilation diagnostics.
-- [ ] Enable and verify admin hold saving, reload persistence, and reset end-to-end — blocked by declined ADMIN_PASSWORD secure form; saving remains locked.
+- [x] Verify admin hold saving, reload/logout persistence, and reset end-to-end with the configured existing admin password; restore the original hold after testing.
+- [x] Complete compact Account Balance & Hold Management in the existing panel; 18 rule tests pass, automatic compilation passes, and signed-in checks have no runtime errors.

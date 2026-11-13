@@ -6,3 +6,4 @@ Use AccountStatement for account-scoped, paginated date-range reads and the same
 Authorize hold writes only with a configured server-only admin secret and server validation; public profile writes remain denied.
 Preserve the existing primary-account ledger reference resolved from its latest transaction, matching the existing admin flow; statement headings and hold writes use the profile account number without rewriting legacy transactions.
 Render session-dependent profile fields only after hydration, using the same empty server and initial client snapshot to prevent profile text mismatch.
+Keep hold management in AccountHoldManagement inside the existing authorized AdminEditor; use the persisted profile and latest saved ledger balance without creating placeholder accounts or transactions.

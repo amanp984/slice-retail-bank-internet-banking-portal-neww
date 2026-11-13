@@ -3,10 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { verifyAdmin, saveProfileRow, saveTransactionRow, createTransactionRow } from "@/lib/admin-api";
 import { getProfileRecord, profileToRow, loadProfile } from "@/lib/customer";
 import { generateDemoDescription } from "@/lib/demoDescription";
-import { useServerFn } from "@tanstack/react-start";
-import { saveAccountHold } from "@/lib/hold.functions";
-import { getAdminPassword } from "@/lib/admin-api";
-import { Button } from "@/components/ui/button";
+import { AccountHoldManagement } from "@/components/AccountHoldManagement";
 
 type Props = { open: boolean; onClose: () => void };
 
@@ -67,8 +64,6 @@ export function AdminEditor({ open, onClose }: Props) {
   const [newMode, setNewMode] = useState<string>("");
   const [newTxn, setNewTxn] = useState<Record<string, any>>({});
   const [liveNow, setLiveNow] = useState(true);
-  const [holdAmount, setHoldAmount] = useState("0.00");
-  const saveHold = useServerFn(saveAccountHold);
 
   // Keep the date/time pinned to "now" while the real-time toggle is on.
   useEffect(() => {
@@ -107,7 +102,6 @@ export function AdminEditor({ open, onClose }: Props) {
   useEffect(() => {
     if (!authed) return;
     setProfile(profileToRow(getProfileRecord()) as any);
-    setHoldAmount(getProfileRecord().holdAmount.toFixed(2));
     (supabase as any)
       .from("transactions")
       .select("*")
@@ -334,23 +328,7 @@ export function AdminEditor({ open, onClose }: Props) {
               <p className={`mt-4 text-sm ${msg.ok ? "text-primary" : "text-destructive"}`}>{msg.text}</p>
             )}
 
-            <section className="mt-5 border-t border-border pt-4 space-y-3">
-              <h3 className="font-semibold text-sm">Account Balance &amp; Hold Settings</h3>
-              <p className="text-xs text-muted-foreground">Account {getProfileRecord().accountNumber}</p>
-              <label htmlFor="hold-amount" className="text-xs text-muted-foreground">Hold Amount (₹)</label>
-              <input id="hold-amount" type="number" min="0" step="0.01" className={input} value={holdAmount} onChange={(event) => setHoldAmount(event.target.value)} />
-              <div className="flex gap-2">
-                {([false, true] as const).map((reset) => <Button key={String(reset)} variant={reset ? "outline" : "default"} disabled={busy} onClick={async () => {
-                  setBusy(true); setMsg(null);
-                  try {
-                    const result = await saveHold({ data: { password: getAdminPassword(), accountNumber: getProfileRecord().accountNumber, amount: reset ? "0.00" : holdAmount } });
-                    setHoldAmount(result.holdAmount.toFixed(2)); await loadProfile();
-                    setMsg({ ok: true, text: "Hold Amount saved. Ledger balance is unchanged." });
-                  } catch (error) { setMsg({ ok: false, text: error instanceof Error ? error.message : "Hold Amount could not be saved." }); }
-                  finally { setBusy(false); }
-                }}>{reset ? "Reset Hold to ₹0.00" : "Save Hold Amount"}</Button>)}
-              </div>
-            </section>
+            <AccountHoldManagement />
 
             <div className="mt-5 flex gap-2">
               <button

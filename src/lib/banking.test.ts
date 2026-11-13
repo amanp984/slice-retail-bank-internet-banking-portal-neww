@@ -9,6 +9,8 @@ describe("hold amounts", () => {
   it("restores availability after reset", () => expect(accountBalances(2150, 0).availableBalance).toBe(2150));
   it("does not clamp negative balances", () => expect(accountBalances(10, 12).availableBalance).toBe(-2));
   it("supports two decimal places", () => expect(validateHoldAmount("2.15")).toBe(2.15));
+  it("accepts the reset value", () => expect(validateHoldAmount("0.00")).toBe(0));
+  it("rejects an empty amount", () => expect(() => validateHoldAmount("")).toThrow());
   it("rejects excess decimal places", () => expect(() => validateHoldAmount("2.001")).toThrow());
   it("rejects negative holds", () => expect(() => validateHoldAmount("-2")).toThrow());
   it("rejects non-finite holds", () => expect(() => validateHoldAmount("Infinity")).toThrow());
