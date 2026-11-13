@@ -5,4 +5,7 @@
 - [x] Show saved UTR/reference consistently in Transaction History and statement exports.
 - [x] Prevent PDF header and transaction table overlap; visually verify long-value cases.
 - [x] Add a separate sample marker for newly created transactions and show it outside saved descriptions in dashboard, accounts, history, PDF, and CSV.
-- [ ] After explicit approval, replace only the three audited demo transaction rows with five approved amounts; verify every running balance and view.
+- [x] Approved demo transaction replacement completed in the earlier task.
+- [ ] Add shared calendar date-range statements and consistent account-scoped exports.
+- [ ] Add persistent server-validated admin holds and shared ledger/available balance values.
+- [ ] Verify hold persistence, date filtering, downloaded exports, and compilation diagnostics.
