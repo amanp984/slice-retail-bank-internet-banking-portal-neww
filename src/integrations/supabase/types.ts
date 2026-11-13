@@ -28,6 +28,7 @@ export type Database = {
           created_at: string
           customer_id: string | null
           email: string | null
+          hold_amount: number
           holder_name: string | null
           id: string
           ifsc: string | null
@@ -56,6 +57,7 @@ export type Database = {
           created_at?: string
           customer_id?: string | null
           email?: string | null
+          hold_amount?: number
           holder_name?: string | null
           id?: string
           ifsc?: string | null
@@ -84,6 +86,7 @@ export type Database = {
           created_at?: string
           customer_id?: string | null
           email?: string | null
+          hold_amount?: number
           holder_name?: string | null
           id?: string
           ifsc?: string | null

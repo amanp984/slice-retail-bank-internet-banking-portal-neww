@@ -1,0 +1,3 @@
+ALTER TABLE public.app_profile ADD COLUMN IF NOT EXISTS hold_amount numeric NOT NULL DEFAULT 0;
+ALTER TABLE public.app_profile ADD CONSTRAINT app_profile_hold_amount_valid CHECK (hold_amount >= 0 AND hold_amount = round(hold_amount, 2) AND hold_amount <= 999999999999.99);
+COMMENT ON COLUMN public.app_profile.hold_amount IS 'Account hold amount; only server-authorized administrator operations may update. Transactions and ledger balances are unchanged.';
